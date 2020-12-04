@@ -26,6 +26,7 @@ This must be included.
         # Start argument
         (
             '''# Header
+
 {%
   include-markdown "{filepath}"
   start="<!--start-here-->"
@@ -35,6 +36,7 @@ This must be included.
 <!--start-here-->
 This must be included.''',
             '''# Header
+
 <!-- BEGIN INCLUDE {filepath} &lt;!--start-here--&gt;  -->
 
 This must be included.
@@ -45,6 +47,7 @@ This must be included.
         # End argument
         (
             '''# Header
+
 {%
   include-markdown "{filepath}"
   end="<!--end-here-->"
@@ -54,6 +57,7 @@ This must be included.
 <!--end-here-->
 This must be ignored.''',
             '''# Header
+
 <!-- BEGIN INCLUDE {filepath}  &lt;!--end-here--&gt; -->
 This must be included.
 
@@ -64,6 +68,7 @@ This must be included.
         # Start and end arguments
         (
             '''# Header
+
 {%
   include-markdown "{filepath}"
   start="<!--start-here-->"
@@ -76,6 +81,7 @@ This must be included.
 <!--end-here-->
 This must be ignored also.''',
             '''# Header
+
 <!-- BEGIN INCLUDE {filepath} &lt;!--start-here--&gt; &lt;!--end-here--&gt; -->
 
 This must be included.
@@ -94,7 +100,7 @@ def test_include_markdown(includer_schema, content_to_include,
 
         page_content = includer_schema.replace('{filepath}', f_to_include.name)
         f_includer.write(page_content.encode("utf-8"))
-        f_to_include.seek(0)
+        f_includer.seek(0)
 
         # Include by absolute path
         expected_result = expected_result_schema.replace(
@@ -109,3 +115,21 @@ def test_include_markdown(includer_schema, content_to_include,
             '{filepath}', os.path.basename(f_to_include.name))
         assert _on_page_markdown(
             page_content, page(f_includer.name)) == expected_result
+
+
+def test_include_markdown_filepath_error(page):
+    page_content = '''# Header
+
+{%
+include-markdown "/path/to/file/that/does/not/exists"
+start="<!--start-here-->"
+end="<!--end-here-->"
+%}
+'''
+
+    with tempfile.NamedTemporaryFile(suffix='.md') as f_includer:
+        f_includer.write(page_content.encode("utf-8"))
+        f_includer.seek(0)
+
+        with pytest.raises(ValueError):
+            _on_page_markdown(page_content, page(f_includer.name))

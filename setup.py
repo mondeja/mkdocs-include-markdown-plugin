@@ -10,8 +10,7 @@ URL = 'https://github.com/mondeja/mkdocs-include-markdown-plugin'
 
 TEST_EXTRAS = [
     'pytest==6.1.2',
-    'pytest-cov==2.10.1',
-    'mkdocs==1.1.2'
+    'pytest-cov==2.10.1'
 ]
 LINT_EXTRAS = [
     'flake8==3.8.4',
