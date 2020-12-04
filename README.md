@@ -30,7 +30,7 @@ This plugin includes two directives, one to include markdown files and another
 to include files of any type:
 
 
-### **`include-markdown`**
+#### **`include-markdown`**
 
 Includes markdown file content, optionally using two delimiters to filter the
 content to include.
@@ -38,7 +38,7 @@ content to include.
 - **start** Delimiter that marks the beginning of the content to include.
 - **end** Delimiter that marks the end of the content to include.
 
-#### Example
+##### Example
 
 ```
 {%
@@ -48,11 +48,11 @@ content to include.
 %}
 ```
 
-### **`include`**
+#### **`include`**
 
 Includes arbitrary file content.
 
-#### Example
+##### Example
 
 ~~~
 ```yaml
@@ -66,8 +66,8 @@ Includes arbitrary file content.
  [giving me the permissions][cibuildwheel-470] to separate this plugin from the
  documentation of [cibuildwheel][cibuildwheel-repo-link].
 
-[tests-image]: https://img.shields.io/github/workflow/status/mondeja/mkdocs-include-markdown-plugin/Test?logo=github
-[tests-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/actions?query=workflow%3ATest
+[tests-image]: https://img.shields.io/github/workflow/status/mondeja/mkdocs-include-markdown-plugin/CI?logo=github
+[tests-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/actions?query=workflow%3ACI
 [coverage-image]: https://img.shields.io/coveralls/github/mondeja/mkdocs-include-markdown-plugin?logo=coveralls
 [coverage-link]: https://coveralls.io/github/mondeja/mkdocs-include-markdown-plugin
 
