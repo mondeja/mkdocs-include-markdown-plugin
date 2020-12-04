@@ -92,3 +92,46 @@ jobs:
           password: ${{ secrets.PYPI_TOKEN }}
           # repository_url: https://test.pypi.org/legacy/
           skip_existing: true
+
+  release:
+    name: Release
+    needs:
+      - build-sdist
+      - build-wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get tag metadata
+        id: tag
+        run: |
+          TAG_TITLE=${GITHUB_REF#refs/*/}
+          echo ::set-output name=title::$TAG_TITLE
+          git -c protocol.version=2 fetch --prune --progress \
+            --no-recurse-submodules origin \
+            +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+          TAG_BODY="$(git tag -l --format='%(contents)' $TAG_TITLE)"
+          TAG_BODY="${TAG_BODY//'%'/'%25'}"
+          TAG_BODY="${TAG_BODY//$'\n'/'%0A'}"
+          TAG_BODY="${TAG_BODY//$'\r'/'%0D'}"
+          echo ::set-output name=body::$TAG_BODY
+      - name: Create Release
+        uses: actions/create-release@v1.1.4
+        id: create-release
+        with:
+          tag_name: ${{ steps.tag.outputs.title }}
+          release_name: ${{ steps.tag.outputs.title }}
+          body: ${{ steps.tag.outputs.body }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v2
+        name: Download builds
+        with:
+          name: artifact
+          path: dist
+      - uses: shogo82148/actions-upload-release-asset@v1.2.3
+        name: Upload release assets
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: dist/*
