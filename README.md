@@ -36,8 +36,8 @@ to include files of any type:
 Includes markdown file content, optionally using two delimiters to filter the
 content to include.
 
-- **start** Delimiter that marks the beginning of the content to include.
-- **end** Delimiter that marks the end of the content to include.
+- **start**: Delimiter that marks the beginning of the content to include.
+- **end**: Delimiter that marks the end of the content to include.
 
 ##### Example
 
