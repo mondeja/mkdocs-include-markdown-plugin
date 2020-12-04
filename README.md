@@ -27,8 +27,9 @@ plugins:
 
 ### Directives
 
-This plugin includes two directives, one to include markdown files and another
-to include files of any type:
+This plugin provides two directives, one to include markdown files and another
+to include files of any type. Paths of included files can be absolute or
+relative to the path of the file that includes them:
 
 
 #### **`include-markdown`**
@@ -51,7 +52,7 @@ content to include.
 
 #### **`include`**
 
-Includes arbitrary file content.
+Includes the content of a file.
 
 ##### Example
 
