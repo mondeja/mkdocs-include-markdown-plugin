@@ -1,0 +1,52 @@
+ignore: |
+  venv
+  build
+
+rules:
+  braces:
+    forbid: true
+  brackets:
+    forbid: true
+  colons:
+    max-spaces-after: 1
+    max-spaces-before: 0
+  comments:
+    ignore-shebangs: true
+    min-spaces-from-content: 2
+    require-starting-space: true
+  comments-indentation: enable
+  empty-lines:
+    max: 1
+  hyphens:
+    max-spaces-after: 1
+  indentation:
+    check-multi-line-strings: true
+    indent-sequences: true
+    spaces: consistent
+    ignore: |
+      .github
+  key-duplicates: enable
+  key-ordering:
+    ignore: |
+      .pre-commit-config.yaml
+      .github
+  line-length:
+    allow-non-breakable-words: true
+    max: 80
+    ignore: |
+      .github
+  new-lines:
+    type: unix
+  octal-values:
+    forbid-explicit-octal: true
+    forbid-implicit-octal: true
+  quoted-strings:
+    extra-required:
+      # Dependabot does not parse unquoted hours as strings:
+      # https://github.com/mondeja/latex-ji18n/runs/1459035577
+      # https://github.community/t/dependabot-parser-treat-hours-as-integers/145596
+      - \d\d:\d\d
+    quote-type: single
+    required: only-when-needed
+  trailing-spaces: enable
+  truthy: disable
