@@ -14,6 +14,18 @@ def test_relative_link():
     '''
 
 
+def test_multiline_link():
+    input = '''
+        Here's a [link whose text is really long and so is broken across
+        multiple lines](CHANGELOG.md) to the changelog.
+    '''
+    output = rewrite_relative_urls(input, Path('README'), Path('docs/nav.md'))
+    assert output == '''
+        Here's a [link whose text is really long and so is broken across
+        multiple lines](../CHANGELOG.md) to the changelog.
+    '''
+
+
 def test_relative_link_down():
     input = '''
         Check [this link](foobar.md) for more information
