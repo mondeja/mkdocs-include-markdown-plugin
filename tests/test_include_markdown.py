@@ -203,3 +203,20 @@ def test_include_markdown_relative_rewrite(page, tmp_path, should_rewrite):
 
             <!-- END INCLUDE -->
         ''')  # noqa: E501
+
+
+def test_include_markdown_relative_rewrite_invalid_option(page):
+    page_content = textwrap.dedent('''
+        # Header
+
+        {%
+            include-markdown "/path/to/file/that/does/not/exists"
+            rewrite_relative_urls=invalidoption
+        %}
+    ''')
+
+    with pytest.raises(ValueError):
+        _on_page_markdown(
+            page_content,
+            page('page.md'),
+        )
