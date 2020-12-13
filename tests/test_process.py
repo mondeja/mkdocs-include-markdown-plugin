@@ -1,6 +1,7 @@
-from mkdocs_include_markdown_plugin.process import rewrite_relative_urls
-from pathlib import Path
 import textwrap
+from pathlib import Path
+
+from mkdocs_include_markdown_plugin.process import rewrite_relative_urls
 
 
 def test_relative_link():
@@ -46,7 +47,7 @@ def test_link_reference():
     output = rewrite_relative_urls(input, Path('README'), Path('docs/nav.md'))
     assert output == textwrap.dedent('''
         Here's a [link][changelog] to the changelog.
-        
+
         [changelog]: ../CHANGELOG.md
     ''')
 
@@ -73,7 +74,7 @@ def test_image_inside_link():
 
 def test_dont_touch_absolute_urls():
     input = '''
-        [Homepage](/) - [Github](https://github.com/user/repo)
+        [Homepage](/) [Github](https://github.com/user/repo)
         [Privacy policy](/privacy)
     '''
     output = rewrite_relative_urls(input, Path('README'), Path('docs/nav.md'))

@@ -1,5 +1,6 @@
 import os
 import tempfile
+import textwrap
 
 import pytest
 
@@ -133,3 +134,72 @@ end="<!--end-here-->"
 
         with pytest.raises(ValueError):
             _on_page_markdown(page_content, page(f_includer.name))
+
+
+@pytest.mark.parametrize('should_rewrite', [True, False, None])
+def test_include_markdown_relative_rewrite(page, tmp_path, should_rewrite):
+    option_value = {
+        True: 'rewrite_relative_urls=true',
+        False: 'rewrite_relative_urls=false',
+        None: '',
+    }[should_rewrite]
+
+    includer_path = tmp_path / 'includer.md'
+    includer_path.write_text(textwrap.dedent(f'''
+        # Heading
+
+        {{%
+            include-markdown "docs/page.md"
+            start="<!--start-here-->"
+            end="<!--end-here-->"
+            {option_value}
+        %}}
+    '''))
+
+    (tmp_path / 'docs').mkdir()
+    included_file_path = tmp_path / 'docs' / 'page.md'
+    included_file_path.write_text(textwrap.dedent('''
+        # Subpage Heading
+        <!--start-here-->
+        Here's [a link](page2.md) and here's an image: ![](image.png)
+
+        Here's a [reference link][ref-link].
+
+        [ref-link]: page3.md
+        <!--end-here-->
+    '''))
+
+    output = _on_page_markdown(
+        includer_path.read_text(),
+        page(str(includer_path))
+    )
+
+    if should_rewrite is True or should_rewrite is None:
+        assert output == textwrap.dedent('''
+            # Heading
+
+            <!-- BEGIN INCLUDE docs/page.md &lt;!--start-here--&gt; &lt;!--end-here--&gt; -->
+
+            Here's [a link](docs/page2.md) and here's an image: ![](docs/image.png)
+
+            Here's a [reference link][ref-link].
+
+            [ref-link]: docs/page3.md
+
+            <!-- END INCLUDE -->
+        ''')  # noqa: E501
+    else:
+        # include without rewriting
+        assert output == textwrap.dedent('''
+            # Heading
+
+            <!-- BEGIN INCLUDE docs/page.md &lt;!--start-here--&gt; &lt;!--end-here--&gt; -->
+
+            Here's [a link](page2.md) and here's an image: ![](image.png)
+
+            Here's a [reference link][ref-link].
+
+            [ref-link]: page3.md
+
+            <!-- END INCLUDE -->
+        ''')  # noqa: E501

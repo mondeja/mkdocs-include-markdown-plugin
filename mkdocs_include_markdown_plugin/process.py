@@ -1,7 +1,7 @@
 import os
 import re
-from pathlib import Path
 from functools import partial
+from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 
 
