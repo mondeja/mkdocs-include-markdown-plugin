@@ -117,7 +117,7 @@ def rewrite_relative_urls(
 
         return urlunparse((scheme, netloc, path, params, query, fragment))
 
-    def found_href(m: re.Match, url_group_index=-1) -> str:
+    def found_href(m: 're.Match', url_group_index=-1) -> str:
         match_start, match_end = m.span(0)
         href = m.group(url_group_index)
         href_start, href_end = m.span(url_group_index)
