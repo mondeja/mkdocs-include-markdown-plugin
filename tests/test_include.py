@@ -61,5 +61,5 @@ def test_include_filepath_error(page):
         f_includer.write(page_content.encode("utf-8"))
         f_includer.seek(0)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(FileNotFoundError):
             _on_page_markdown(page_content, page(f_includer.name))

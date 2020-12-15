@@ -40,11 +40,11 @@ content to include.
 - **start**: Delimiter that marks the beginning of the content to include.
 - **end**: Delimiter that marks the end of the content to include.
 - **rewrite_relative_urls**: When this option is enabled, Markdown links and 
-  images in the content that are specified by a relative URL are 
-  rewritten to work correctly in their new location. Default: `true`. Possible
-  values: `true` , `false`.
+ images in the content that are specified by a relative URL are 
+ rewritten to work correctly in their new location. Default: `true`. Possible
+ values: `true` , `false`.
 
-##### Example
+##### Examples
 
 ```
 {%
@@ -53,8 +53,6 @@ content to include.
    end="<!--intro-end-->"
 %}
 ```
-
-##### Example
 
 ```
 {%

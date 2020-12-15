@@ -44,7 +44,7 @@ def _on_page_markdown(markdown, page, **kwargs):
         file_path_abs = Path(page_src_path).parent / filename
 
         if not file_path_abs.exists():
-            raise ValueError('File \'%s\' not found' % filename)
+            raise FileNotFoundError('File \'%s\' not found' % filename)
 
         text_to_include = file_path_abs.read_text(encoding='utf8')
 
@@ -67,14 +67,14 @@ def _on_page_markdown(markdown, page, **kwargs):
             should_rewrite_relative = False
         else:
             raise ValueError(
-                'Unknown value for rewrite_relative_urls. Possible values '
+                'Unknown value for \'rewrite_relative_urls\'. Possible values '
                 'are: true, false'
             )
 
         file_path_abs = Path(page_src_path).parent / filename
 
         if not file_path_abs.exists():
-            raise ValueError('File \'%s\' not found' % filename)
+            raise FileNotFoundError('File \'%s\' not found' % filename)
 
         text_to_include = file_path_abs.read_text(encoding='utf8')
 

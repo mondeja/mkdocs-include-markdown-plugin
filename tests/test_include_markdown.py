@@ -132,7 +132,7 @@ end="<!--end-here-->"
         f_includer.write(page_content.encode("utf-8"))
         f_includer.seek(0)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(FileNotFoundError):
             _on_page_markdown(page_content, page(f_includer.name))
 
 
@@ -216,9 +216,8 @@ def test_include_markdown_relative_rewrite_invalid_option(page):
     ''')
 
     with pytest.raises(ValueError) as excinfo:
-        _on_page_markdown(
-            page_content,
-            page('page.md'),
-        )
+        _on_page_markdown(page_content, page('page.md'))
 
-    assert "Unknown value for rewrite_relative_urls" in str(excinfo.value)
+    expected_exc_message = ('Unknown value for \'rewrite_relative_urls\'.'
+                            ' Possible values are: true, false')
+    assert expected_exc_message == str(excinfo.value)

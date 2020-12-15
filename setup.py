@@ -27,19 +27,19 @@ DEV_EXTRAS = [
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-with io.open(os.path.join(HERE, "README.md"), encoding="utf-8") as f:
-    LONG_DESCRIPTION = "\n" + f.read()
+with io.open(os.path.join(HERE, 'README.md'), encoding='utf-8') as f:
+    LONG_DESCRIPTION = '\n' + f.read()
 
 ABOUT = {}
 INIT_FILEPATH = os.path.join(
-    HERE, "mkdocs_include_markdown_plugin", "__init__.py")
+    HERE, 'mkdocs_include_markdown_plugin', '__init__.py')
 with io.open(INIT_FILEPATH, encoding="utf-8") as f:
     content = f.read()
-    ABOUT["__title__"] = \
+    ABOUT['__title__'] = \
         re.search(r"__title__\s=\s[\"']([^\"']+)[\"']", content).group(1)
-    ABOUT["__version__"] = \
+    ABOUT['__version__'] = \
         re.search(r"__version__\s=\s[\"']([^\"']+)[\"']", content).group(1)
-    ABOUT["__description__"] = \
+    ABOUT['__description__'] = \
         re.search(r"__description__\s=\s[\"']([^\"']+)[\"']", content).group(1)
 
 
