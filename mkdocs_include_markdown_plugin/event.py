@@ -2,6 +2,8 @@ import html
 import re
 from pathlib import Path
 
+from mkdocs_include_markdown_plugin import process
+
 
 INCLUDE_TAG_REGEX = re.compile(
     r'''
@@ -25,6 +27,7 @@ INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
         "(?P<filename>[^"]+)" # "filename"
         (?:\s+start="(?P<start>[^"]+)")? # optional start expression
         (?:\s+end="(?P<end>[^"]+)")? # optional end expression
+        (?:\s+rewrite_relative_urls=(?P<rewrite_relative_urls>\w*))? # option
         \s*
         %} # closing tag
     ''',
@@ -56,6 +59,18 @@ def _on_page_markdown(markdown, page, **kwargs):
         start = match.group('start')
         end = match.group('end')
 
+        option_value = match.group('rewrite_relative_urls')
+        if option_value in [None, 'true']:
+            # if unspecified, default to true
+            should_rewrite_relative = True
+        elif option_value == 'false':
+            should_rewrite_relative = False
+        else:
+            raise ValueError(
+                'Unknown value for rewrite_relative_urls. Possible values '
+                'are: true, false'
+            )
+
         file_path_abs = Path(page_src_path).parent / filename
 
         if not file_path_abs.exists():
@@ -68,6 +83,13 @@ def _on_page_markdown(markdown, page, **kwargs):
 
         if end:
             text_to_include, _, _ = text_to_include.partition(end)
+
+        if should_rewrite_relative:
+            text_to_include = process.rewrite_relative_urls(
+                text_to_include,
+                source_path=file_path_abs,
+                destination_path=Path(page_src_path),
+            )
 
         return (
             '<!-- BEGIN INCLUDE %s %s %s -->\n' % (
