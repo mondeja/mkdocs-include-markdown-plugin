@@ -2,7 +2,7 @@ import html
 import re
 from pathlib import Path
 
-from . import process
+from mkdocs_include_markdown_plugin import process
 
 
 INCLUDE_TAG_REGEX = re.compile(
@@ -60,10 +60,8 @@ def _on_page_markdown(markdown, page, **kwargs):
         end = match.group('end')
 
         option_value = match.group('rewrite_relative_urls')
-        if option_value is None:
+        if option_value in [None, 'true']:
             # if unspecified, default to true
-            should_rewrite_relative = True
-        elif option_value == 'true':
             should_rewrite_relative = True
         elif option_value == 'false':
             should_rewrite_relative = False

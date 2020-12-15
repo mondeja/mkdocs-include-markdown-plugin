@@ -174,7 +174,7 @@ def test_include_markdown_relative_rewrite(page, tmp_path, should_rewrite):
         page(str(includer_path))
     )
 
-    if should_rewrite is True or should_rewrite is None:
+    if should_rewrite in [True, None]:
         assert output == textwrap.dedent('''
             # Heading
 
