@@ -210,13 +210,15 @@ def test_include_markdown_relative_rewrite_invalid_option(page):
         # Header
 
         {%
-            include-markdown "/path/to/file/that/does/not/exists"
+            include-markdown "subfile.md"
             rewrite_relative_urls=invalidoption
         %}
     ''')
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as excinfo:
         _on_page_markdown(
             page_content,
             page('page.md'),
         )
+
+    assert "Unknown value for rewrite_relative_urls" in str(excinfo.value)
