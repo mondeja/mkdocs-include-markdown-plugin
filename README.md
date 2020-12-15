@@ -58,7 +58,7 @@ content to include.
 
 ```
 {%
-   include-markdown "docs/v1/compatibility.md"
+   include-markdown "docs/includes/header.md"
    start="<!--table-start-->"
    end="<!--table-end-->"
    rewrite_relative_urls=false
