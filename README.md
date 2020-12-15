@@ -39,6 +39,10 @@ content to include.
 
 - **start**: Delimiter that marks the beginning of the content to include.
 - **end**: Delimiter that marks the end of the content to include.
+- **rewrite_relative_urls**: When this option is enabled, Markdown links and 
+  images in the content that are specified by a relative URL are 
+  rewritten to work correctly in their new location. Default: `true`. Possible
+  values: `true` , `false`.
 
 ##### Example
 
@@ -47,6 +51,17 @@ content to include.
    include-markdown "../README.md"
    start="<!--intro-start-->"
    end="<!--intro-end-->"
+%}
+```
+
+##### Example
+
+```
+{%
+   include-markdown "docs/v1/compatibility.md"
+   start="<!--table-start-->"
+   end="<!--table-end-->"
+   rewrite_relative_urls=false
 %}
 ```
 
