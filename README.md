@@ -44,6 +44,10 @@ content to include.
  work correctly in their new location. Default: `true`. Possible values are
  `true` and `false`.
 
+Note that the **start** and **end** strings may contain usual (Python-style)
+escape sequences like `\n`, which is handy if you need to match on a multi-line
+start or end trigger.
+
 ##### Examples
 
 ```

@@ -54,10 +54,13 @@ def _on_page_markdown(markdown, page, **kwargs):
 
         return text_to_include
 
+    def interpret_escapes(str):
+        return str.encode('latin-1','backslashreplace').decode('unicode_escape')
+
     def found_include_markdown_tag(match):
         filename = match.group('filename')
-        start = match.group('start')
-        end = match.group('end')
+        start = interpret_escapes(match.group('start'))
+        end = interpret_escapes(match.group('end'))
 
         option_value = match.group('rewrite_relative_urls')
         if option_value in [None, 'true']:
