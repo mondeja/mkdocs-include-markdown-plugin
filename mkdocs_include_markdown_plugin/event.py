@@ -59,6 +59,11 @@ def _on_page_markdown(markdown, page, **kwargs):
         start = match.group('start')
         end = match.group('end')
 
+        if start is not None:
+            start = process.interpret_escapes(start)
+        if end is not None:
+            end = process.interpret_escapes(end)
+
         option_value = match.group('rewrite_relative_urls')
         if option_value in [None, 'true']:
             # if unspecified, default to true

@@ -89,6 +89,58 @@ This must be included.
 
 <!-- END INCLUDE -->
 ''',
+        ),
+
+        # Escaped special characters
+        (
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  start="<!--\\tstart -->"
+  end="<!--\\tend -->"
+%}
+''',
+            '''This must be ignored.
+<!--\tstart -->
+This must be included.
+<!--\tend -->
+This must be ignored also.''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath} &lt;!--\tstart --&gt; &lt;!--\tend --&gt; -->
+
+This must be included.
+
+<!-- END INCLUDE -->
+''',
+        ),
+
+        # Unescaped special characters
+        (
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  start="<!--\nstart -->"
+  end="<!--\nend -->"
+%}
+''',
+            '''This must be ignored.
+<!--\nstart -->
+This must be included.
+<!--\nend -->
+This must be ignored also.''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath} &lt;!--
+start --&gt; &lt;!--
+end --&gt; -->
+
+This must be included.
+
+<!-- END INCLUDE -->
+''',
         )
     ),
 )
