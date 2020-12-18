@@ -20,7 +20,7 @@ pip install mkdocs-include-markdown-plugin
 
 Enable the plugin in your `mkdocs.yml`:
 
-```
+```yaml
 plugins:
   - include-markdown
 ```
@@ -31,7 +31,6 @@ This plugin provides two directives, one to include markdown files and another
 to include files of any type. Paths of included files can be absolute or
 relative to the path of the file that includes them:
 
-
 #### **`include-markdown`**
 
 Includes markdown file content, optionally using two delimiters to filter the
@@ -39,18 +38,18 @@ content to include.
 
 - **start**: Delimiter that marks the beginning of the content to include.
 - **end**: Delimiter that marks the end of the content to include.
-- **rewrite_relative_urls**: When this option is enabled, Markdown links and 
+- **rewrite_relative_urls**: When this option is enabled, Markdown links and
  images in the content that are specified by a relative URL are rewritten to
  work correctly in their new location. Default: `true`. Possible values are
  `true` and `false`.
 
-Note that the **start** and **end** strings may contain usual (Python-style)
+> Note that the **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line
 start or end trigger.
 
 ##### Examples
 
-```
+```jinja
 {%
    include-markdown "../README.md"
    start="<!--intro-start-->"
@@ -58,11 +57,11 @@ start or end trigger.
 %}
 ```
 
-```
+```jinja
 {%
    include-markdown "docs/includes/header.md"
-   start="<!--table-start-->"
-   end="<!--table-end-->"
+   start="<!--\n\ttable-start\n-->"
+   end="<!--\n\ttable-end\n-->"
    rewrite_relative_urls=false
 %}
 ```
@@ -73,11 +72,11 @@ Includes the content of a file.
 
 ##### Example
 
-~~~
-```yaml
+```jinja
+~~~yaml
 {% include "../examples/github-minimal.yml" %}
-```
 ~~~
+```
 
 ## Acknowledgment
 
@@ -92,6 +91,5 @@ Includes the content of a file.
 [coverage-image]: https://img.shields.io/coveralls/github/mondeja/mkdocs-include-markdown-plugin?logo=coveralls
 [coverage-link]: https://coveralls.io/github/mondeja/mkdocs-include-markdown-plugin
 
-[cibuildwheel-470]:https://github.com/joerick/cibuildwheel/issues/470
+[cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
-

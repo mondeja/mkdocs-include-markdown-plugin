@@ -36,12 +36,12 @@ INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
 
 
 def _on_page_markdown(markdown, page, **kwargs):
-    page_src_path = page.file.abs_src_path
+    page_src_path = Path(page.file.abs_src_path)
 
     def found_include_tag(match):
         filename = match.group('filename')
 
-        file_path_abs = Path(page_src_path).parent / filename
+        file_path_abs = page_src_path.parent / filename
 
         if not file_path_abs.exists():
             raise FileNotFoundError('File \'%s\' not found' % filename)
@@ -64,36 +64,31 @@ def _on_page_markdown(markdown, page, **kwargs):
         if end is not None:
             end = process.interpret_escapes(end)
 
-        option_value = match.group('rewrite_relative_urls')
-        if option_value in [None, 'true']:
-            # if unspecified, default to true
-            should_rewrite_relative = True
-        elif option_value == 'false':
-            should_rewrite_relative = False
-        else:
+        option_value = match.group('rewrite_relative_urls') or 'true'
+        if option_value not in ['true', 'false']:
             raise ValueError(
                 'Unknown value for \'rewrite_relative_urls\'. Possible values '
                 'are: true, false'
             )
+        should_rewrite_relative = {'true': True, 'false': False}[option_value]
 
-        file_path_abs = Path(page_src_path).parent / filename
+        file_path_abs = page_src_path.parent / filename
 
         if not file_path_abs.exists():
             raise FileNotFoundError('File \'%s\' not found' % filename)
 
         text_to_include = file_path_abs.read_text(encoding='utf8')
 
-        if start:
+        if start is not None:
             _, _, text_to_include = text_to_include.partition(start)
-
-        if end:
+        if end is not None:
             text_to_include, _, _ = text_to_include.partition(end)
 
         if should_rewrite_relative:
             text_to_include = process.rewrite_relative_urls(
                 text_to_include,
                 source_path=file_path_abs,
-                destination_path=Path(page_src_path),
+                destination_path=page_src_path,
             )
 
         return (

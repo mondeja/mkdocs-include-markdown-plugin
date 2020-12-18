@@ -22,3 +22,9 @@ repos:
         args:
           - -c
           - .yamllint
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.0.12
+    hooks:
+      - id: markdownlint-cli2
+        name: markdownlint-readme
+        files: ^README.md
