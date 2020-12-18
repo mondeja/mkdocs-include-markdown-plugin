@@ -5,6 +5,14 @@ from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 
 
+def interpret_escapes(value: str) -> str:
+    '''
+      Replaces any standard escape sequences in value with their
+      usual meanings as in ordinary python string literals.
+    '''
+    return value.encode('latin-1', 'backslashreplace').decode('unicode_escape')
+
+
 # Markdown regular expressions. Taken from the original Markdown.pl by John
 # Gruber, and modified to work in Python
 
