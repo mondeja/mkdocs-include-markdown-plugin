@@ -7,6 +7,7 @@ from setuptools import Command, find_packages, setup
 
 
 URL = 'https://github.com/mondeja/mkdocs-include-markdown-plugin'
+REQUIRES_PYTHON = '>=3.6'
 
 TEST_EXTRAS = [
     'pytest==6.1.2',
@@ -91,6 +92,7 @@ setup(
     long_description_content_type='text/markdown',
     author='Joe Rickerby',
     url=URL,
+    python_requires=REQUIRES_PYTHON,
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
     entry_points={
