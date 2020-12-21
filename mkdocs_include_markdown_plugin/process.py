@@ -98,8 +98,9 @@ def rewrite_relative_urls(
     def rewrite_url(url: str) -> str:
         scheme, netloc, path, params, query, fragment = urlparse(url)
 
-        is_absolute = path.startswith('/')
-        if is_absolute:
+        if path.startswith('/'):  # is absolute
+            return url
+        if scheme == 'mailto':
             return url
 
         trailing_slash = path.endswith('/')

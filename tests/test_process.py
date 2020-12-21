@@ -91,3 +91,9 @@ def test_dont_touch_absolute_urls():
     '''
     output = rewrite_relative_urls(input, Path('README'), Path('docs/nav.md'))
     assert output == input
+
+
+def test_dont_touch_mailto_emails():
+    input = '''[contact us](mailto:hello@example.com)'''
+    output = rewrite_relative_urls(input, Path('README'), Path('docs/nav.md'))
+    assert output == input
