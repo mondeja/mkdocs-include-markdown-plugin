@@ -141,7 +141,17 @@ This must be included.
 
 <!-- END INCLUDE -->
 ''',
-        )
+        ),
+
+        # Exclude comments
+        (
+            '''{%
+        include-markdown "{filepath}"
+        comments=false
+        %}''',
+            '''Foo''',
+            '''Foo''',
+        ),
     ),
 )
 def test_include_markdown(includer_schema, content_to_include,
@@ -171,14 +181,11 @@ def test_include_markdown(includer_schema, content_to_include,
 
 
 def test_include_markdown_filepath_error(page):
-    page_content = '''# Header
-
-{%
-include-markdown "/path/to/file/that/does/not/exists"
-start="<!--start-here-->"
-end="<!--end-here-->"
-%}
-'''
+    page_content = '''{%
+    include-markdown "/path/to/file/that/does/not/exists"
+    start="<!--start-here-->"
+    end="<!--end-here-->"
+%}'''
 
     with tempfile.NamedTemporaryFile(suffix='.md') as f_includer:
         f_includer.write(page_content.encode("utf-8"))
@@ -188,13 +195,11 @@ end="<!--end-here-->"
             _on_page_markdown(page_content, page(f_includer.name))
 
 
-@pytest.mark.parametrize('should_rewrite', [True, False, None])
-def test_include_markdown_relative_rewrite(page, tmp_path, should_rewrite):
-    option_value = {
-        True: 'rewrite_relative_urls=true',
-        False: 'rewrite_relative_urls=false',
-        None: '',
-    }[should_rewrite]
+@pytest.mark.parametrize('rewrite_relative_urls', ['true', 'false', None])
+def test_include_markdown_relative_rewrite(page, tmp_path,
+                                           rewrite_relative_urls):
+    option_value = '' if rewrite_relative_urls is None else (
+        'rewrite_relative_urls=' + rewrite_relative_urls)
 
     includer_path = tmp_path / 'includer.md'
     includer_path.write_text(textwrap.dedent(f'''
@@ -226,7 +231,7 @@ def test_include_markdown_relative_rewrite(page, tmp_path, should_rewrite):
         page(str(includer_path))
     )
 
-    if should_rewrite in [True, None]:
+    if rewrite_relative_urls in ['true', None]:
         assert output == textwrap.dedent('''
             # Heading
 
@@ -257,19 +262,18 @@ def test_include_markdown_relative_rewrite(page, tmp_path, should_rewrite):
         ''')  # noqa: E501
 
 
-def test_include_markdown_relative_rewrite_invalid_option(page):
-    page_content = textwrap.dedent('''
-        # Header
+@pytest.mark.parametrize('opt_name', ('rewrite_relative_urls', 'comments'))
+def test_include_markdown_invalid_bool_option(opt_name, page):
+    page_content = textwrap.dedent('''{%
+        include-markdown "subfile.md"
+        {opt_name}=invalidoption
+    %}''').replace('{opt_name}', opt_name)
 
-        {%
-            include-markdown "subfile.md"
-            rewrite_relative_urls=invalidoption
-        %}
-    ''')
+    with tempfile.NamedTemporaryFile(suffix='.md') as f_includer:
+        with pytest.raises(ValueError) as excinfo:
+            _on_page_markdown(page_content, page(f_includer.name))
 
-    with pytest.raises(ValueError) as excinfo:
-        _on_page_markdown(page_content, page('page.md'))
-
-    expected_exc_message = ('Unknown value for \'rewrite_relative_urls\'.'
-                            ' Possible values are: true, false')
-    assert expected_exc_message == str(excinfo.value)
+        expected_exc_message = (
+            'Unknown value for \'%(opt_name)s\'.'
+            ' Possible values are: true, false') % {'opt_name': opt_name}
+        assert expected_exc_message == str(excinfo.value)

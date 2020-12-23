@@ -38,10 +38,14 @@ content to include.
 
 - **start**: Delimiter that marks the beginning of the content to include.
 - **end**: Delimiter that marks the end of the content to include.
-- **rewrite_relative_urls**: When this option is enabled, Markdown links and
- images in the content that are specified by a relative URL are rewritten to
- work correctly in their new location. Default: `true`. Possible values are
+- **rewrite_relative_urls** (*true*): When this option is enabled (default),
+ Markdown links and images in the content that are specified by a relative URL
+ are rewritten to work correctly in their new location. Possible values are
  `true` and `false`.
+- **comments** (*true*): When this option is enabled (default), the content to
+ include is wrapped by `<!-- BEGIN INCLUDE -->` and `<!-- END INCLUDE -->`
+ comments which help to identify that the content has been included. Possible
+ values are `true` and `false`.
 
 > Note that the **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line
@@ -63,6 +67,7 @@ start or end trigger.
    start="<!--\n\ttable-start\n-->"
    end="<!--\n\ttable-end\n-->"
    rewrite_relative_urls=false
+   comments=false
 %}
 ```
 
