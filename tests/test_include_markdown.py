@@ -146,11 +146,25 @@ This must be included.
         # Exclude comments
         (
             '''{%
-        include-markdown "{filepath}"
-        comments=false
-        %}''',
+  include-markdown "{filepath}"
+  comments=false
+%}''',
             '''Foo''',
             '''Foo''',
+        ),
+
+        # Preserve includer/included indent
+        (
+            '''1. Ordered list item
+    {%
+      include-markdown "{filepath}"
+      comments=false
+    %}''',
+            '''- Unordered sublist item
+    - Other unordered sublist item''',
+            '''1. Ordered list item
+    - Unordered sublist item
+    - Other unordered sublist item''',
         ),
     ),
 )
