@@ -153,7 +153,7 @@ This must be included.
             '''Foo''',
         ),
 
-        # Preserve includer/included indent
+        # Preserve included indent
         (
             '''1. Ordered list item
     {%
@@ -166,6 +166,23 @@ This must be included.
     - Unordered sublist item
     - Other unordered sublist item''',
         ),
+
+        # Preserve includer indent
+        (
+            '''1. Ordered list item
+    {%
+      include-markdown "{filepath}"
+      comments=false
+      preserve_includer_indent=true
+    %}''',
+            '''- First unordered sublist item
+- Second unordered sublist item
+- Third unordered sublist item''',
+            '''1. Ordered list item
+    - First unordered sublist item
+    - Second unordered sublist item
+    - Third unordered sublist item''',
+        )
     ),
 )
 def test_include_markdown(includer_schema, content_to_include,
@@ -276,16 +293,23 @@ def test_include_markdown_relative_rewrite(page, tmp_path,
         ''')  # noqa: E501
 
 
-@pytest.mark.parametrize('opt_name', ('rewrite_relative_urls', 'comments'))
+@pytest.mark.parametrize(
+    'opt_name',
+    (
+        'rewrite_relative_urls',
+        'comments',
+        'preserve_includer_indent'
+    )
+)
 def test_include_markdown_invalid_bool_option(opt_name, page):
-    page_content = textwrap.dedent('''{%
-        include-markdown "subfile.md"
-        {opt_name}=invalidoption
-    %}''').replace('{opt_name}', opt_name)
+    with tempfile.NamedTemporaryFile(suffix='.md') as f:
+        page_content = textwrap.dedent('''{%
+            include-markdown "{filepath}"
+            {opt_name}=invalidoption
+        %}''').replace('{opt_name}', opt_name).replace('{filepath}', f.name)
 
-    with tempfile.NamedTemporaryFile(suffix='.md') as f_includer:
         with pytest.raises(ValueError) as excinfo:
-            _on_page_markdown(page_content, page(f_includer.name))
+            _on_page_markdown(page_content, page(f.name))
 
         expected_exc_message = (
             'Unknown value for \'%(opt_name)s\'.'

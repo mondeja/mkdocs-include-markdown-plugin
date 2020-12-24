@@ -46,6 +46,10 @@ content to include.
  include is wrapped by `<!-- BEGIN INCLUDE -->` and `<!-- END INCLUDE -->`
  comments which help to identify that the content has been included. Possible
  values are `true` and `false`.
+- **preserve_includer_indent** (*false*): When this option is enabled, all
+ lines of the content to include is indented with the same number of spaces
+ used to indent the includer `{% %}` template. Possible values are `true` and
+ `false`.
 
 > Note that the **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line
