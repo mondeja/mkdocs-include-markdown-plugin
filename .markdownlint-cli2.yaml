@@ -1,0 +1,2 @@
+config:
+  no-duplicate-header: false

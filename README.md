@@ -79,12 +79,32 @@ start or end trigger.
 
 Includes the content of a file.
 
-##### Example
+- **start**: Delimiter that marks the beginning of the content to include.
+- **end**: Delimiter that marks the end of the content to include.
+- **preserve_includer_indent** (*false*): When this option is enabled, every
+ line of the content to include is indented with the same number of spaces
+ used to indent the includer `{% %}` template. Possible values are `true` and
+ `false`.
+
+> Note that the **start** and **end** strings may contain usual (Python-style)
+escape sequences like `\n`, which is handy if you need to match on a multi-line
+start or end trigger.
+
+##### Examples
 
 ```jinja
 ~~~yaml
 {% include "../examples/github-minimal.yml" %}
 ~~~
+```
+
+```jinja
+    {%
+      include "../examples/github-minimal.yml"
+      start="~~~yaml"
+      end="~~~"
+      preserve_includer_indent=true
+    %}
 ```
 
 ## Acknowledgment
