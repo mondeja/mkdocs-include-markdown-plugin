@@ -1,5 +1,7 @@
 '''``include`` directive tests.'''
 
+import textwrap
+
 import pytest
 
 from mkdocs_include_markdown_plugin.event import _on_page_markdown
@@ -160,3 +162,25 @@ def test_include_filepath_error(page, tmp_path):
 
     with pytest.raises(FileNotFoundError):
         _on_page_markdown(page_content, page(page_filepath))
+
+
+@pytest.mark.parametrize(
+    'opt_name',
+    (
+        'preserve_includer_indent',
+    )
+)
+def test_include_invalid_bool_option(opt_name, page, tmp_path):
+    page_filepath = tmp_path / 'example.md'
+    page_content = textwrap.dedent(f'''{{%
+        include "{page_filepath}"
+        {opt_name}=invalidoption
+    %}}''')
+    page_filepath.write_text(page_content)
+
+    with pytest.raises(ValueError) as excinfo:
+        _on_page_markdown(page_content, page(page_filepath))
+
+    expected_exc_message = (f'Unknown value for \'{opt_name}\'.'
+                            ' Possible values are: true, false')
+    assert expected_exc_message == str(excinfo.value)
