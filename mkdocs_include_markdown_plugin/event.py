@@ -60,9 +60,21 @@ def _on_page_markdown(markdown, page, **kwargs):
 
         text_to_include = file_path_abs.read_text(encoding='utf8')
 
-        # Allow good practice of having a final newline in the file
-        if text_to_include.endswith('\n'):
-            text_to_include = text_to_include[:-1]
+        # nested includes
+        new_text_to_include = re.sub(INCLUDE_TAG_REGEX,
+                                     found_include_tag,
+                                     text_to_include)
+        new_text_to_include = re.sub(INCLUDE_MARKDOWN_TAG_REGEX,
+                                     found_include_markdown_tag,
+                                     new_text_to_include)
+
+        if text_to_include == new_text_to_include:
+            # At last inclusion, allow good practice of having a final newline
+            #   in the file
+            if text_to_include.endswith('\n'):
+                text_to_include = text_to_include[:-1]
+        else:
+            text_to_include = new_text_to_include
 
         return text_to_include
 
@@ -121,6 +133,14 @@ def _on_page_markdown(markdown, page, **kwargs):
                 for line in text_to_include.splitlines(keepends=True))
         else:
             text_to_include = includer_indent + text_to_include
+
+        # nested includes
+        text_to_include = re.sub(INCLUDE_TAG_REGEX,
+                                 found_include_tag,
+                                 text_to_include)
+        text_to_include = re.sub(INCLUDE_MARKDOWN_TAG_REGEX,
+                                 found_include_markdown_tag,
+                                 text_to_include)
 
         if not bool_options['comments']:
             return text_to_include

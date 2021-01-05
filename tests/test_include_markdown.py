@@ -1,3 +1,5 @@
+'''``include-markdown`` directive tests'''
+
 import textwrap
 
 import pytest

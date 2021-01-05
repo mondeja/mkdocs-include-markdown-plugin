@@ -1,3 +1,5 @@
+'''String processing tests.'''
+
 import textwrap
 from pathlib import Path
 

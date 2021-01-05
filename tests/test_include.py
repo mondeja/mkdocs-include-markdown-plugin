@@ -1,3 +1,5 @@
+'''``include`` directive tests.'''
+
 import pytest
 
 from mkdocs_include_markdown_plugin.event import _on_page_markdown
