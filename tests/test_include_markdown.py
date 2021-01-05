@@ -1,5 +1,3 @@
-import os
-import tempfile
 import textwrap
 
 import pytest
@@ -186,44 +184,36 @@ This must be included.
     ),
 )
 def test_include_markdown(includer_schema, content_to_include,
-                          expected_result_schema, page):
-    with tempfile.NamedTemporaryFile(suffix='.md') as f_to_include, \
-            tempfile.NamedTemporaryFile(suffix='.md') as f_includer:
-        f_to_include.write(content_to_include.encode("utf-8"))
-        f_to_include.seek(0)
+                          expected_result_schema, page, tmp_path):
+    included_filepath = tmp_path / 'included.md'
+    includer_filepath = tmp_path / 'includer.md'
 
-        page_content = includer_schema.replace('{filepath}', f_to_include.name)
-        f_includer.write(page_content.encode("utf-8"))
-        f_includer.seek(0)
+    included_filepath.write_text(content_to_include)
+    includer_filepath.write_text(
+        content_to_include.replace('{filepath}', included_filepath.as_posix()))
 
-        # Include by absolute path
-        expected_result = expected_result_schema.replace(
-            '{filepath}', f_to_include.name)
-        assert _on_page_markdown(
-            page_content, page(f_includer.name)) == expected_result
+    page_content = includer_schema.replace(
+        '{filepath}', included_filepath.as_posix())
+    includer_filepath.write_text(page_content)
 
-        # Include by relative path
-        page_content = includer_schema.replace(
-            '{filepath}', os.path.basename(f_to_include.name))
-        expected_result = expected_result_schema.replace(
-            '{filepath}', os.path.basename(f_to_include.name))
-        assert _on_page_markdown(
-            page_content, page(f_includer.name)) == expected_result
+    expected_result = expected_result_schema.replace(
+        '{filepath}', included_filepath.as_posix())
+    assert _on_page_markdown(
+        page_content, page(included_filepath)) == expected_result
 
 
-def test_include_markdown_filepath_error(page):
+def test_include_markdown_filepath_error(page, tmp_path):
     page_content = '''{%
     include-markdown "/path/to/file/that/does/not/exists"
     start="<!--start-here-->"
     end="<!--end-here-->"
 %}'''
 
-    with tempfile.NamedTemporaryFile(suffix='.md') as f_includer:
-        f_includer.write(page_content.encode("utf-8"))
-        f_includer.seek(0)
+    page_filepath = tmp_path / 'example.md'
+    page_filepath.write_text(page_content)
 
-        with pytest.raises(FileNotFoundError):
-            _on_page_markdown(page_content, page(f_includer.name))
+    with pytest.raises(FileNotFoundError):
+        _on_page_markdown(page_content, page(page_filepath))
 
 
 @pytest.mark.parametrize('rewrite_relative_urls', ['true', 'false', None])
@@ -301,17 +291,17 @@ def test_include_markdown_relative_rewrite(page, tmp_path,
         'preserve_includer_indent'
     )
 )
-def test_include_markdown_invalid_bool_option(opt_name, page):
-    with tempfile.NamedTemporaryFile(suffix='.md') as f:
-        page_content = textwrap.dedent('''{%
-            include-markdown "{filepath}"
-            {opt_name}=invalidoption
-        %}''').replace('{opt_name}', opt_name).replace('{filepath}', f.name)
+def test_include_markdown_invalid_bool_option(opt_name, page, tmp_path):
+    page_filepath = tmp_path / 'example.md'
+    page_content = textwrap.dedent(f'''{{%
+        include-markdown "{page_filepath}"
+        {opt_name}=invalidoption
+    %}}''')
+    page_filepath.write_text(page_content)
 
-        with pytest.raises(ValueError) as excinfo:
-            _on_page_markdown(page_content, page(f.name))
+    with pytest.raises(ValueError) as excinfo:
+        _on_page_markdown(page_content, page(page_filepath))
 
-        expected_exc_message = (
-            'Unknown value for \'%(opt_name)s\'.'
-            ' Possible values are: true, false') % {'opt_name': opt_name}
-        assert expected_exc_message == str(excinfo.value)
+    expected_exc_message = (f'Unknown value for \'{opt_name}\'.'
+                            ' Possible values are: true, false')
+    assert expected_exc_message == str(excinfo.value)
