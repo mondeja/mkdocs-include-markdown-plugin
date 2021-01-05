@@ -182,7 +182,25 @@ This must be included.
     - First unordered sublist item
     - Second unordered sublist item
     - Third unordered sublist item''',
-        )
+        ),
+
+        # Options custom ordering
+        (
+            '''1. Ordered list item
+    {%
+      include-markdown "{filepath}"
+      preserve_includer_indent=true
+      end="<!--end-->"
+      comments=false
+      start="<!--start-->"
+    %}''',
+            '''<!--start-->- First unordered sublist item
+- Second unordered sublist item<!--end-->
+- Third unordered sublist item''',
+            '''1. Ordered list item
+    - First unordered sublist item
+    - Second unordered sublist item''',
+        ),
     ),
 )
 def test_include_markdown(includer_schema, content_to_include,

@@ -22,32 +22,34 @@ INCLUDE_TAG_REGEX = re.compile(
         include
         \s+
         "(?P<filename>[^"]+)"
-        (?:\s+start="(?P<start>[^"]+)")?
-        (?:\s+end="(?P<end>[^"]+)")?
-        (?:\s+preserve_includer_indent=(?P<preserve_includer_indent>\w*))?
+        (?P<arguments>.*)
         \s*
         %}
     ''',
-    flags=re.VERBOSE,
+    flags=re.VERBOSE | re.DOTALL,
 )
 
 INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
     r'''
         (?P<_includer_indent>[^\S\r\n]*){%
         \s*
-        include\-markdown # directive name
+        include\-markdown
         \s+
-        "(?P<filename>[^"]+)" # "filename"
-        (?:\s+start="(?P<start>[^"]+)")?
-        (?:\s+end="(?P<end>[^"]+)")?
-        (?:\s+rewrite_relative_urls=(?P<rewrite_relative_urls>\w*))?
-        (?:\s+comments=(?P<comments>\w*))?
-        (?:\s+preserve_includer_indent=(?P<preserve_includer_indent>\w*))?
+        "(?P<filename>[^"]+)"
+        (?P<arguments>.*)
         \s*
         %}
     ''',
-    flags=re.VERBOSE,
+    flags=re.VERBOSE | re.DOTALL,
 )
+
+ARGUMENT_REGEXES = {
+    'start': re.compile(r'start="([^"]+)"'),
+    'end': re.compile(r'end="([^"]+)"'),
+    'rewrite_relative_urls': re.compile(r'rewrite_relative_urls=(\w*)'),
+    'comments': re.compile(r'comments=(\w*)'),
+    'preserve_includer_indent': re.compile(r'preserve_includer_indent=(\w*)'),
+}
 
 
 def _on_page_markdown(markdown, page, **kwargs):
@@ -65,28 +67,37 @@ def _on_page_markdown(markdown, page, **kwargs):
 
         # handle options and regex modifiers
         _includer_indent = match.group('_includer_indent')
+        arguments_string = match.group("arguments")
 
         #   boolean options
-        bool_options = {'preserve_includer_indent': False}
+        bool_options = {
+            'preserve_includer_indent': {
+                'value': False,
+                'regex': ARGUMENT_REGEXES['preserve_includer_indent']
+            }
+        }
 
-        for opt_name, default_value in bool_options.items():
+        for opt_name, opt_data in bool_options.items():
+            match = re.search(opt_data['regex'], arguments_string)
+            if match is None:
+                continue
             try:
-                bool_options[opt_name] = TRUE_FALSE_STR_BOOL[
-                    match.group(opt_name) or TRUE_FALSE_BOOL_STR[default_value]
+                bool_options[opt_name]['value'] = TRUE_FALSE_STR_BOOL[
+                    match.group(1) or TRUE_FALSE_BOOL_STR[opt_data['value']]
                 ]
             except KeyError:
                 raise ValueError(('Unknown value for \'%s\'. Possible values '
                                   'are: true, false') % opt_name)
 
         #   string options
-        start = match.group('start')
-        if start is not None:
-            start = process.interpret_escapes(start)
+        start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
+        if start_match is not None:
+            start = process.interpret_escapes(start_match.group(1))
             _, _, text_to_include = text_to_include.partition(start)
 
-        end = match.group('end')
-        if end is not None:
-            end = process.interpret_escapes(end)
+        end_match = re.search(ARGUMENT_REGEXES['end'], arguments_string)
+        if end_match is not None:
+            end = process.interpret_escapes(end_match.group(1))
             text_to_include, _, _ = text_to_include.partition(end)
 
         # nested includes
@@ -105,7 +116,7 @@ def _on_page_markdown(markdown, page, **kwargs):
         else:
             text_to_include = new_text_to_include
 
-        if bool_options['preserve_includer_indent']:
+        if bool_options['preserve_includer_indent']['value']:
             text_to_include = ''.join(
                 _includer_indent + line
                 for line in text_to_include.splitlines(keepends=True))
@@ -127,36 +138,51 @@ def _on_page_markdown(markdown, page, **kwargs):
 
         # handle options and regex modifiers
         _includer_indent = match.group('_includer_indent')
+        arguments_string = match.group("arguments")
 
         #   boolean options
         bool_options = {
-            'rewrite_relative_urls': True,
-            'comments': True,
-            'preserve_includer_indent': False
+            'rewrite_relative_urls': {
+                'value': True,
+                'regex': ARGUMENT_REGEXES['rewrite_relative_urls']
+            },
+            'comments': {
+                'value': True,
+                'regex': ARGUMENT_REGEXES['comments']
+            },
+            'preserve_includer_indent': {
+                'value': False,
+                'regex': ARGUMENT_REGEXES['preserve_includer_indent']
+            },
         }
 
-        for opt_name, default_value in bool_options.items():
+        for opt_name, opt_data in bool_options.items():
+            match = re.search(opt_data['regex'], arguments_string)
+            if match is None:
+                continue
             try:
-                bool_options[opt_name] = TRUE_FALSE_STR_BOOL[
-                    match.group(opt_name) or TRUE_FALSE_BOOL_STR[default_value]
+                bool_options[opt_name]['value'] = TRUE_FALSE_STR_BOOL[
+                    match.group(1) or TRUE_FALSE_BOOL_STR[opt_data['value']]
                 ]
             except KeyError:
                 raise ValueError(('Unknown value for \'%s\'. Possible values '
                                   'are: true, false') % opt_name)
 
         #   string options
-        start = match.group('start')
-        if start is not None:
-            start = process.interpret_escapes(start)
+        start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
+        start = None
+        if start_match is not None:
+            start = process.interpret_escapes(start_match.group(1))
             _, _, text_to_include = text_to_include.partition(start)
 
-        end = match.group('end')
-        if end is not None:
-            end = process.interpret_escapes(end)
+        end_match = re.search(ARGUMENT_REGEXES['end'], arguments_string)
+        end = None
+        if end_match is not None:
+            end = process.interpret_escapes(end_match.group(1))
             text_to_include, _, _ = text_to_include.partition(end)
 
         # Relative URLs rewriting
-        if bool_options['rewrite_relative_urls']:
+        if bool_options['rewrite_relative_urls']['value']:
             text_to_include = process.rewrite_relative_urls(
                 text_to_include,
                 source_path=file_path_abs,
@@ -164,7 +190,7 @@ def _on_page_markdown(markdown, page, **kwargs):
             )
 
         # Includer indentation preservation
-        if bool_options['preserve_includer_indent']:
+        if bool_options['preserve_includer_indent']['value']:
             text_to_include = ''.join(
                 _includer_indent + line
                 for line in text_to_include.splitlines(keepends=True))
@@ -179,7 +205,7 @@ def _on_page_markdown(markdown, page, **kwargs):
                                  found_include_markdown_tag,
                                  text_to_include)
 
-        if not bool_options['comments']:
+        if not bool_options['comments']['value']:
             return text_to_include
 
         return (
