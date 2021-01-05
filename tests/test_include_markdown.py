@@ -24,7 +24,7 @@ This must be included.
 ''',
         ),
 
-        # Start argument
+        # Start option
         (
             '''# Header
 
@@ -45,7 +45,7 @@ This must be included.
 ''',
         ),
 
-        # End argument
+        # End option
         (
             '''# Header
 
@@ -66,7 +66,7 @@ This must be included.
 ''',
         ),
 
-        # Start and end arguments
+        # Start and end options
         (
             '''# Header
 
@@ -91,7 +91,7 @@ This must be included.
 ''',
         ),
 
-        # Escaped special characters
+        # Start and end with escaped special characters
         (
             '''# Header
 
@@ -116,7 +116,7 @@ This must be included.
 ''',
         ),
 
-        # Unescaped special characters
+        # Start and end with unescaped special characters
         (
             '''# Header
 
@@ -143,7 +143,7 @@ This must be included.
 ''',
         ),
 
-        # Exclude comments
+        # Exclude start and end comments
         (
             '''{%
   include-markdown "{filepath}"

@@ -17,11 +17,14 @@ TRUE_FALSE_BOOL_STR = {
 
 INCLUDE_TAG_REGEX = re.compile(
     r'''
-        {%
+        (?P<_includer_indent>[^\S\r\n]*){%
         \s*
         include
         \s+
         "(?P<filename>[^"]+)"
+        (?:\s+start="(?P<start>[^"]+)")?
+        (?:\s+end="(?P<end>[^"]+)")?
+        (?:\s+preserve_includer_indent=(?P<preserve_includer_indent>\w*))?
         \s*
         %}
     ''',
@@ -30,7 +33,7 @@ INCLUDE_TAG_REGEX = re.compile(
 
 INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
     r'''
-        (?P<includer_indent>[^\S\r\n]*){%
+        (?P<_includer_indent>[^\S\r\n]*){%
         \s*
         include\-markdown # directive name
         \s+
@@ -60,6 +63,32 @@ def _on_page_markdown(markdown, page, **kwargs):
 
         text_to_include = file_path_abs.read_text(encoding='utf8')
 
+        # handle options and regex modifiers
+        _includer_indent = match.group('_includer_indent')
+
+        #   boolean options
+        bool_options = {'preserve_includer_indent': False}
+
+        for opt_name, default_value in bool_options.items():
+            try:
+                bool_options[opt_name] = TRUE_FALSE_STR_BOOL[
+                    match.group(opt_name) or TRUE_FALSE_BOOL_STR[default_value]
+                ]
+            except KeyError:
+                raise ValueError(('Unknown value for \'%s\'. Possible values '
+                                  'are: true, false') % opt_name)
+
+        #   string options
+        start = match.group('start')
+        if start is not None:
+            start = process.interpret_escapes(start)
+            _, _, text_to_include = text_to_include.partition(start)
+
+        end = match.group('end')
+        if end is not None:
+            end = process.interpret_escapes(end)
+            text_to_include, _, _ = text_to_include.partition(end)
+
         # nested includes
         new_text_to_include = re.sub(INCLUDE_TAG_REGEX,
                                      found_include_tag,
@@ -76,6 +105,13 @@ def _on_page_markdown(markdown, page, **kwargs):
         else:
             text_to_include = new_text_to_include
 
+        if bool_options['preserve_includer_indent']:
+            text_to_include = ''.join(
+                _includer_indent + line
+                for line in text_to_include.splitlines(keepends=True))
+        else:
+            text_to_include = _includer_indent + text_to_include
+
         return text_to_include
 
     def found_include_markdown_tag(match):
@@ -89,10 +125,8 @@ def _on_page_markdown(markdown, page, **kwargs):
 
         text_to_include = file_path_abs.read_text(encoding='utf8')
 
-        # handle options
-        start = match.group('start')
-        end = match.group('end')
-        includer_indent = match.group('includer_indent')
+        # handle options and regex modifiers
+        _includer_indent = match.group('_includer_indent')
 
         #   boolean options
         bool_options = {
@@ -110,16 +144,18 @@ def _on_page_markdown(markdown, page, **kwargs):
                 raise ValueError(('Unknown value for \'%s\'. Possible values '
                                   'are: true, false') % opt_name)
 
+        #   string options
+        start = match.group('start')
         if start is not None:
             start = process.interpret_escapes(start)
+            _, _, text_to_include = text_to_include.partition(start)
+
+        end = match.group('end')
         if end is not None:
             end = process.interpret_escapes(end)
-
-        if start is not None:
-            _, _, text_to_include = text_to_include.partition(start)
-        if end is not None:
             text_to_include, _, _ = text_to_include.partition(end)
 
+        # Relative URLs rewriting
         if bool_options['rewrite_relative_urls']:
             text_to_include = process.rewrite_relative_urls(
                 text_to_include,
@@ -127,12 +163,13 @@ def _on_page_markdown(markdown, page, **kwargs):
                 destination_path=page_src_path,
             )
 
+        # Includer indentation preservation
         if bool_options['preserve_includer_indent']:
             text_to_include = ''.join(
-                includer_indent + line
+                _includer_indent + line
                 for line in text_to_include.splitlines(keepends=True))
         else:
-            text_to_include = includer_indent + text_to_include
+            text_to_include = _includer_indent + text_to_include
 
         # nested includes
         text_to_include = re.sub(INCLUDE_TAG_REGEX,
@@ -146,12 +183,12 @@ def _on_page_markdown(markdown, page, **kwargs):
             return text_to_include
 
         return (
-            includer_indent
+            _includer_indent
             + '<!-- BEGIN INCLUDE %s %s %s -->\n' % (
                 filename, html.escape(start or ''), html.escape(end or '')
             )
             + text_to_include
-            + '\n<!-- END INCLUDE -->'
+            + '\n' + _includer_indent + '<!-- END INCLUDE -->'
         )
 
     markdown = re.sub(INCLUDE_TAG_REGEX,

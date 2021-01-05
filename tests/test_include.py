@@ -7,7 +7,9 @@ from mkdocs_include_markdown_plugin.event import _on_page_markdown
 
 @pytest.mark.parametrize(
     (
-        'includer_schema', 'content_to_include', 'expected_result_schema'
+        'includer_schema',
+        'content_to_include',
+        'expected_result'
     ),
     (
         (
@@ -22,10 +24,99 @@ from mkdocs_include_markdown_plugin.event import _on_page_markdown
             'This must be included.\n',
             '# Header\n\nThis must be included.\n'
         ),
+
+        # Start and end options
+        (
+            '''# Header
+
+{%
+  include "{filepath}"
+  start="start here"
+  end="end here"
+%}
+''',
+            '''This must be ignored.
+start hereThis must be included.end here
+This must be ignored also.
+''',
+            '''# Header
+
+This must be included.
+'''
+        ),
+
+        # Start and end options with escaped special characters
+        (
+            '''# Header
+
+{%
+  include "{filepath}"
+  start="\\tstart here"
+  end="\\tend here"
+%}
+''',
+            '''This must be ignored.
+\tstart hereThis must be included.\tend here
+This must be ignored also.
+''',
+            '''# Header
+
+This must be included.
+'''
+        ),
+
+        # Start and end options with unescaped special characters
+        (
+            '''# Header
+
+{%
+  include "{filepath}"
+  start="\tstart here"
+  end="\tend here"
+%}
+''',
+            '''This must be ignored.
+\tstart hereThis must be included.\tend here
+This must be ignored also.
+''',
+            '''# Header
+
+This must be included.
+'''
+        ),
+
+        # Preserve included indent
+        (
+            '''1. Ordered list item
+    {%
+      include "{filepath}"
+    %}''',
+            '''- Unordered sublist item
+    - Other unordered sublist item''',
+            '''1. Ordered list item
+    - Unordered sublist item
+    - Other unordered sublist item''',
+        ),
+
+        # Preserve includer indent
+        (
+            '''1. Ordered list item
+    {%
+      include "{filepath}"
+      preserve_includer_indent=true
+    %}''',
+            '''- First unordered sublist item
+- Second unordered sublist item
+- Third unordered sublist item''',
+            '''1. Ordered list item
+    - First unordered sublist item
+    - Second unordered sublist item
+    - Third unordered sublist item''',
+        )
     )
 )
-def test_include(includer_schema, content_to_include,
-                 expected_result_schema, page, tmp_path):
+def test_include(includer_schema, content_to_include, expected_result,
+                 page, tmp_path):
     included_filepath = tmp_path / 'included.md'
     includer_filepath = tmp_path / 'includer.md'
 
@@ -37,8 +128,6 @@ def test_include(includer_schema, content_to_include,
         '{filepath}', included_filepath.as_posix())
     includer_filepath.write_text(page_content)
 
-    expected_result = expected_result_schema.replace(
-        '{filepath}', included_filepath.as_posix())
     assert _on_page_markdown(
         page_content, page(included_filepath)) == expected_result
 
