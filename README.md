@@ -25,7 +25,7 @@ plugins:
   - include-markdown
 ```
 
-### Directives
+### Reference
 
 This plugin provides two directives, one to include markdown files and another
 to include files of any type. Paths of included files can be absolute or
@@ -100,9 +100,9 @@ start or end trigger.
 
 ```jinja
     {%
-      include "../examples/github-minimal.yml"
+      include "../examples/__main__.py"
       start="~~~yaml"
-      end="~~~"
+      end="~~~\n"
       preserve_includer_indent=true
     %}
 ```
