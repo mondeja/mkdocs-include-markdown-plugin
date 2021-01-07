@@ -38,6 +38,11 @@ content to include.
 
 - **start**: Delimiter that marks the beginning of the content to include.
 - **end**: Delimiter that marks the end of the content to include.
+- **preserve_includer_indent** (*false*): When this option is enabled, every
+ line of the content to include is indented with the same number of spaces
+ used to indent the includer `{% %}` template. Possible values are `true` and
+ `false`.
+- **dedent** (*false*): If enabled, the included content will be dedented.
 - **rewrite_relative_urls** (*true*): When this option is enabled (default),
  Markdown links and images in the content that are specified by a relative URL
  are rewritten to work correctly in their new location. Possible values are
@@ -46,11 +51,6 @@ content to include.
  include is wrapped by `<!-- BEGIN INCLUDE -->` and `<!-- END INCLUDE -->`
  comments which help to identify that the content has been included. Possible
  values are `true` and `false`.
-- **preserve_includer_indent** (*false*): When this option is enabled, every
- line of the content to include is indented with the same number of spaces
- used to indent the includer `{% %}` template. Possible values are `true` and
- `false`.
-- **dedent** (*false*): If enabled, the included content will be dedented.
 
 > Note that the **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line
