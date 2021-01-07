@@ -23,7 +23,7 @@ INCLUDE_TAG_REGEX = re.compile(
         include
         \s+
         "(?P<filename>[^"]+)"
-        (?P<arguments>.*)
+        (?P<arguments>.*?)
         \s*
         %}
     ''',
@@ -37,7 +37,7 @@ INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
         include\-markdown
         \s+
         "(?P<filename>[^"]+)"
-        (?P<arguments>.*)
+        (?P<arguments>.*?)
         \s*
         %}
     ''',
