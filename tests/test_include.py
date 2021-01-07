@@ -132,6 +132,47 @@ This must be included.
     - First unordered sublist item
     - Second unordered sublist item''',
         ),
+
+        # Content unindentation
+        (
+            '''# Header
+
+{%
+  include "{filepath}"
+  dedent=true
+%}
+''',
+            '''    - Foo
+    - Bar
+        - Baz''',
+            '''# Header
+
+- Foo
+- Bar
+    - Baz
+'''
+        ),
+
+        # Content unindentation + preserve includer indent
+        (
+            '''# Header
+
+    {%
+      include "{filepath}"
+      dedent=true
+      preserve_includer_indent=true
+    %}
+''',
+            '''        - Foo
+        - Bar
+            - Baz''',
+            '''# Header
+
+    - Foo
+    - Bar
+        - Baz
+'''
+        )
     )
 )
 def test_include(includer_schema, content_to_include, expected_result,
@@ -168,6 +209,7 @@ def test_include_filepath_error(page, tmp_path):
     'opt_name',
     (
         'preserve_includer_indent',
+        'dedent'
     )
 )
 def test_include_invalid_bool_option(opt_name, page, tmp_path):

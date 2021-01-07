@@ -201,6 +201,49 @@ This must be included.
     - First unordered sublist item
     - Second unordered sublist item''',
         ),
+
+        # Content unindentation
+        (
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  dedent=true
+  comments=false
+%}
+''',
+            '''    - Foo
+    - Bar
+        - Baz''',
+            '''# Header
+
+- Foo
+- Bar
+    - Baz
+'''
+        ),
+
+        # Content unindentation + preserve includer indent
+        (
+            '''# Header
+
+    {%
+      include-markdown "{filepath}"
+      dedent=true
+      preserve_includer_indent=true
+      comments=false
+    %}
+''',
+            '''        - Foo
+        - Bar
+            - Baz''',
+            '''# Header
+
+    - Foo
+    - Bar
+        - Baz
+'''
+        )
     ),
 )
 def test_include_markdown(includer_schema, content_to_include,
@@ -308,7 +351,8 @@ def test_include_markdown_relative_rewrite(page, tmp_path,
     (
         'rewrite_relative_urls',
         'comments',
-        'preserve_includer_indent'
+        'preserve_includer_indent',
+        'dedent'
     )
 )
 def test_include_markdown_invalid_bool_option(opt_name, page, tmp_path):

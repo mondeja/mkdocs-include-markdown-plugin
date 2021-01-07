@@ -1,5 +1,6 @@
 import html
 import re
+import textwrap
 from pathlib import Path
 
 from mkdocs_include_markdown_plugin import process
@@ -49,6 +50,7 @@ ARGUMENT_REGEXES = {
     'rewrite_relative_urls': re.compile(r'rewrite_relative_urls=(\w*)'),
     'comments': re.compile(r'comments=(\w*)'),
     'preserve_includer_indent': re.compile(r'preserve_includer_indent=(\w*)'),
+    'dedent': re.compile(r'dedent=(\w*)'),
 }
 
 
@@ -74,6 +76,10 @@ def get_file_content(markdown, abs_src_path):
             'preserve_includer_indent': {
                 'value': False,
                 'regex': ARGUMENT_REGEXES['preserve_includer_indent']
+            },
+            'dedent': {
+                'value': False,
+                'regex': ARGUMENT_REGEXES['dedent']
             }
         }
 
@@ -111,6 +117,10 @@ def get_file_content(markdown, abs_src_path):
         else:
             text_to_include = new_text_to_include
 
+        if bool_options['dedent']:
+            text_to_include = textwrap.dedent(text_to_include)
+
+        # Includer indentation preservation
         if bool_options['preserve_includer_indent']['value']:
             text_to_include = ''.join(
                 _includer_indent + line
@@ -149,6 +159,10 @@ def get_file_content(markdown, abs_src_path):
                 'value': False,
                 'regex': ARGUMENT_REGEXES['preserve_includer_indent']
             },
+            'dedent': {
+                'value': False,
+                'regex': ARGUMENT_REGEXES['dedent']
+            }
         }
 
         for opt_name, opt_data in bool_options.items():
@@ -183,6 +197,10 @@ def get_file_content(markdown, abs_src_path):
                 source_path=file_path_abs,
                 destination_path=page_src_path,
             )
+
+        # Dedent
+        if bool_options['dedent']:
+            text_to_include = textwrap.dedent(text_to_include)
 
         # Includer indentation preservation
         if bool_options['preserve_includer_indent']['value']:

@@ -50,6 +50,7 @@ content to include.
  line of the content to include is indented with the same number of spaces
  used to indent the includer `{% %}` template. Possible values are `true` and
  `false`.
+- **dedent** (*false*): If enabled, the included content will be dedented.
 
 > Note that the **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line
@@ -85,6 +86,7 @@ Includes the content of a file.
  line of the content to include is indented with the same number of spaces
  used to indent the includer `{% %}` template. Possible values are `true` and
  `false`.
+- **dedent** (*false*): If enabled, the included content will be dedented.
 
 > Note that the **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line
