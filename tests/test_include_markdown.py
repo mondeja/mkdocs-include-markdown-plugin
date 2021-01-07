@@ -4,7 +4,7 @@ import textwrap
 
 import pytest
 
-from mkdocs_include_markdown_plugin.event import _on_page_markdown
+from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 
 @pytest.mark.parametrize(
@@ -218,7 +218,7 @@ def test_include_markdown(includer_schema, content_to_include,
 
     expected_result = expected_result_schema.replace(
         '{filepath}', included_filepath.as_posix())
-    assert _on_page_markdown(
+    assert on_page_markdown(
         page_content, page(included_filepath)) == expected_result
 
 
@@ -233,7 +233,7 @@ def test_include_markdown_filepath_error(page, tmp_path):
     page_filepath.write_text(page_content)
 
     with pytest.raises(FileNotFoundError):
-        _on_page_markdown(page_content, page(page_filepath))
+        on_page_markdown(page_content, page(page_filepath))
 
 
 @pytest.mark.parametrize('rewrite_relative_urls', ['true', 'false', None])
@@ -267,7 +267,7 @@ def test_include_markdown_relative_rewrite(page, tmp_path,
         <!--end-here-->
     '''))
 
-    output = _on_page_markdown(
+    output = on_page_markdown(
         includer_path.read_text(),
         page(str(includer_path))
     )
@@ -320,7 +320,7 @@ def test_include_markdown_invalid_bool_option(opt_name, page, tmp_path):
     page_filepath.write_text(page_content)
 
     with pytest.raises(ValueError) as excinfo:
-        _on_page_markdown(page_content, page(page_filepath))
+        on_page_markdown(page_content, page(page_filepath))
 
     expected_exc_message = (f'Unknown value for \'{opt_name}\'.'
                             ' Possible values are: true, false')

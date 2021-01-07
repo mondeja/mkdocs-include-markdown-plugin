@@ -52,8 +52,8 @@ ARGUMENT_REGEXES = {
 }
 
 
-def _on_page_markdown(markdown, page, **kwargs):
-    page_src_path = Path(page.file.abs_src_path)
+def get_file_content(markdown, abs_src_path):
+    page_src_path = Path(abs_src_path)
 
     def found_include_tag(match):
         filename = match.group('filename')
@@ -101,12 +101,7 @@ def _on_page_markdown(markdown, page, **kwargs):
             text_to_include, _, _ = text_to_include.partition(end)
 
         # nested includes
-        new_text_to_include = re.sub(INCLUDE_TAG_REGEX,
-                                     found_include_tag,
-                                     text_to_include)
-        new_text_to_include = re.sub(INCLUDE_MARKDOWN_TAG_REGEX,
-                                     found_include_markdown_tag,
-                                     new_text_to_include)
+        new_text_to_include = get_file_content(text_to_include, file_path_abs)
 
         if text_to_include == new_text_to_include:
             # At last inclusion, allow good practice of having a final newline
@@ -198,12 +193,9 @@ def _on_page_markdown(markdown, page, **kwargs):
             text_to_include = _includer_indent + text_to_include
 
         # nested includes
-        text_to_include = re.sub(INCLUDE_TAG_REGEX,
-                                 found_include_tag,
-                                 text_to_include)
-        text_to_include = re.sub(INCLUDE_MARKDOWN_TAG_REGEX,
-                                 found_include_markdown_tag,
-                                 text_to_include)
+        new_text_to_include = get_file_content(text_to_include, file_path_abs)
+        if new_text_to_include != text_to_include:
+            text_to_include = new_text_to_include
 
         if not bool_options['comments']['value']:
             return text_to_include
@@ -224,3 +216,7 @@ def _on_page_markdown(markdown, page, **kwargs):
                       found_include_markdown_tag,
                       markdown)
     return markdown
+
+
+def on_page_markdown(markdown, page, **kwargs):
+    return get_file_content(markdown, page.file.abs_src_path)

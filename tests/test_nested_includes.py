@@ -2,7 +2,7 @@
 
 import pytest
 
-from mkdocs_include_markdown_plugin.event import _on_page_markdown
+from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 
 @pytest.mark.parametrize(
@@ -127,6 +127,46 @@ def test_nested_include(first_includer_content, second_includer_content,
     second_includer_filepath.write_text(second_includer_content)
     included_filepath.write_text(included_content)
 
-    assert _on_page_markdown(
+    assert on_page_markdown(
+        first_includer_content, page(first_includer_filepath)
+    ) == expected_result
+
+
+def test_nested_include_relpath(page, tmp_path):
+    first_includer_filepath = tmp_path / 'first-includer.txt'
+    docs_path = tmp_path / 'docs'
+    docs_path.mkdir()
+    second_includer_filepath = docs_path / 'second-includer.txt'
+    included_filepath = tmp_path / 'included.txt'
+
+    first_includer_content = '''# Header
+
+{%
+  include-markdown "docs/second-includer.txt"
+  comments=false
+%}
+'''
+    first_includer_filepath.write_text(first_includer_content)
+
+    second_includer_content = '''Text from second includer.
+
+{%
+  include-markdown "../included.txt"
+  comments=false
+%}
+'''
+    second_includer_filepath.write_text(second_includer_content)
+
+    included_filepath.write_text('Included content.')
+
+    expected_result = '''# Header
+
+Text from second includer.
+
+Included content.
+
+'''
+
+    assert on_page_markdown(
         first_includer_content, page(first_includer_filepath)
     ) == expected_result
