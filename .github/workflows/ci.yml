@@ -36,11 +36,12 @@ jobs:
           pip list
       - name: Test with pytest
         # https://github.com/actions/runner/issues/241#issuecomment-577360161
-        run: |
-          pytest -svv --cov=mkdocs_include_markdown_plugin --cov-config setup.cfg
-          coveralls
+        run: pytest -svv --cov=mkdocs_include_markdown_plugin --cov-config setup.cfg
+      - name: Coveralls
+        run: coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_SERVICE_NAME: github
 
   build-sdist:
     if: startsWith(github.ref, 'refs/tags/')
