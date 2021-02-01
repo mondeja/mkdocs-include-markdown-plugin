@@ -35,7 +35,6 @@ jobs:
           python -m pip install .[test]
           pip list
       - name: Test with pytest
-        # https://github.com/actions/runner/issues/241#issuecomment-577360161
         run: pytest -svv --cov=mkdocs_include_markdown_plugin --cov-config setup.cfg
       - name: Coveralls
         run: coveralls
