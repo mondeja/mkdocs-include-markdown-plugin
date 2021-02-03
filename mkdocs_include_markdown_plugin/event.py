@@ -8,12 +8,12 @@ from mkdocs_include_markdown_plugin import process
 
 TRUE_FALSE_STR_BOOL = {
     'true': True,
-    'false': False
+    'false': False,
 }
 
 TRUE_FALSE_BOOL_STR = {
     True: 'true',
-    False: 'false'
+    False: 'false',
 }
 
 INCLUDE_TAG_REGEX = re.compile(
@@ -63,24 +63,24 @@ def get_file_content(markdown, abs_src_path):
         file_path_abs = page_src_path.parent / filename
 
         if not file_path_abs.exists():
-            raise FileNotFoundError('File \'%s\' not found' % filename)
+            raise FileNotFoundError(f'File \'{filename}\' not found')
 
         text_to_include = file_path_abs.read_text(encoding='utf8')
 
         # handle options and regex modifiers
         _includer_indent = match.group('_includer_indent')
-        arguments_string = match.group("arguments")
+        arguments_string = match.group('arguments')
 
         #   boolean options
         bool_options = {
             'preserve_includer_indent': {
                 'value': False,
-                'regex': ARGUMENT_REGEXES['preserve_includer_indent']
+                'regex': ARGUMENT_REGEXES['preserve_includer_indent'],
             },
             'dedent': {
                 'value': False,
-                'regex': ARGUMENT_REGEXES['dedent']
-            }
+                'regex': ARGUMENT_REGEXES['dedent'],
+            },
         }
 
         for opt_name, opt_data in bool_options.items():
@@ -92,8 +92,10 @@ def get_file_content(markdown, abs_src_path):
                     match.group(1) or TRUE_FALSE_BOOL_STR[opt_data['value']]
                 ]
             except KeyError:
-                raise ValueError(('Unknown value for \'%s\'. Possible values '
-                                  'are: true, false') % opt_name)
+                raise ValueError(
+                    f'Unknown value for \'{opt_name}\'. Possible values are:'
+                    ' true, false',
+                )
 
         #   string options
         start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
@@ -124,7 +126,8 @@ def get_file_content(markdown, abs_src_path):
         if bool_options['preserve_includer_indent']['value']:
             text_to_include = ''.join(
                 _includer_indent + line
-                for line in text_to_include.splitlines(keepends=True))
+                for line in text_to_include.splitlines(keepends=True)
+            )
         else:
             text_to_include = _includer_indent + text_to_include
 
@@ -137,32 +140,32 @@ def get_file_content(markdown, abs_src_path):
         file_path_abs = page_src_path.parent / filename
 
         if not file_path_abs.exists():
-            raise FileNotFoundError('File \'%s\' not found' % filename)
+            raise FileNotFoundError(f'File \'{filename}\' not found')
 
         text_to_include = file_path_abs.read_text(encoding='utf8')
 
         # handle options and regex modifiers
         _includer_indent = match.group('_includer_indent')
-        arguments_string = match.group("arguments")
+        arguments_string = match.group('arguments')
 
         #   boolean options
         bool_options = {
             'rewrite_relative_urls': {
                 'value': True,
-                'regex': ARGUMENT_REGEXES['rewrite_relative_urls']
+                'regex': ARGUMENT_REGEXES['rewrite_relative_urls'],
             },
             'comments': {
                 'value': True,
-                'regex': ARGUMENT_REGEXES['comments']
+                'regex': ARGUMENT_REGEXES['comments'],
             },
             'preserve_includer_indent': {
                 'value': False,
-                'regex': ARGUMENT_REGEXES['preserve_includer_indent']
+                'regex': ARGUMENT_REGEXES['preserve_includer_indent'],
             },
             'dedent': {
                 'value': False,
-                'regex': ARGUMENT_REGEXES['dedent']
-            }
+                'regex': ARGUMENT_REGEXES['dedent'],
+            },
         }
 
         for opt_name, opt_data in bool_options.items():
@@ -174,8 +177,10 @@ def get_file_content(markdown, abs_src_path):
                     match.group(1) or TRUE_FALSE_BOOL_STR[opt_data['value']]
                 ]
             except KeyError:
-                raise ValueError(('Unknown value for \'%s\'. Possible values '
-                                  'are: true, false') % opt_name)
+                raise ValueError(
+                    f'Unknown value for \'{opt_name}\'. Possible values are:'
+                    ' true, false',
+                )
 
         #   string options
         start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
@@ -206,7 +211,8 @@ def get_file_content(markdown, abs_src_path):
         if bool_options['preserve_includer_indent']['value']:
             text_to_include = ''.join(
                 _includer_indent + line
-                for line in text_to_include.splitlines(keepends=True))
+                for line in text_to_include.splitlines(keepends=True)
+            )
         else:
             text_to_include = _includer_indent + text_to_include
 
@@ -220,19 +226,23 @@ def get_file_content(markdown, abs_src_path):
 
         return (
             _includer_indent
-            + '<!-- BEGIN INCLUDE %s %s %s -->\n' % (
-                filename, html.escape(start or ''), html.escape(end or '')
+            + '<!-- BEGIN INCLUDE {} {} {} -->\n'.format(
+                filename, html.escape(start or ''), html.escape(end or ''),
             )
             + text_to_include
             + '\n' + _includer_indent + '<!-- END INCLUDE -->'
         )
 
-    markdown = re.sub(INCLUDE_TAG_REGEX,
-                      found_include_tag,
-                      markdown)
-    markdown = re.sub(INCLUDE_MARKDOWN_TAG_REGEX,
-                      found_include_markdown_tag,
-                      markdown)
+    markdown = re.sub(
+        INCLUDE_TAG_REGEX,
+        found_include_tag,
+        markdown,
+    )
+    markdown = re.sub(
+        INCLUDE_MARKDOWN_TAG_REGEX,
+        found_include_markdown_tag,
+        markdown,
+    )
     return markdown
 
 

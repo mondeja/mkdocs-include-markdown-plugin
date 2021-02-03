@@ -35,7 +35,7 @@ def test_relative_link_down():
     output = rewrite_relative_urls(
         input,
         Path('docs/includes/feature_a/index.md'),
-        Path('docs/setup.md')
+        Path('docs/setup.md'),
     )
     assert output == '''
         Check [this link](includes/feature_a/foobar.md) for more information

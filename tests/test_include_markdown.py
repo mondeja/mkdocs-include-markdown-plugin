@@ -9,7 +9,7 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 @pytest.mark.parametrize(
     (
-        'includer_schema', 'content_to_include', 'expected_result_schema'
+        'includer_schema', 'content_to_include', 'expected_result_schema',
     ),
     (
         # Simple case
@@ -220,7 +220,7 @@ This must be included.
 - Foo
 - Bar
     - Baz
-'''
+''',
         ),
 
         # Content unindentation + preserve includer indent
@@ -242,27 +242,33 @@ This must be included.
     - Foo
     - Bar
         - Baz
-'''
-        )
+''',
+        ),
     ),
 )
-def test_include_markdown(includer_schema, content_to_include,
-                          expected_result_schema, page, tmp_path):
+def test_include_markdown(
+    includer_schema, content_to_include,
+    expected_result_schema, page, tmp_path,
+):
     included_filepath = tmp_path / 'included.md'
     includer_filepath = tmp_path / 'includer.md'
 
     included_filepath.write_text(content_to_include)
     includer_filepath.write_text(
-        content_to_include.replace('{filepath}', included_filepath.as_posix()))
+        content_to_include.replace('{filepath}', included_filepath.as_posix()),
+    )
 
     page_content = includer_schema.replace(
-        '{filepath}', included_filepath.as_posix())
+        '{filepath}', included_filepath.as_posix(),
+    )
     includer_filepath.write_text(page_content)
 
     expected_result = expected_result_schema.replace(
-        '{filepath}', included_filepath.as_posix())
+        '{filepath}', included_filepath.as_posix(),
+    )
     assert on_page_markdown(
-        page_content, page(included_filepath)) == expected_result
+        page_content, page(included_filepath),
+    ) == expected_result
 
 
 def test_include_markdown_filepath_error(page, tmp_path):
@@ -280,13 +286,17 @@ def test_include_markdown_filepath_error(page, tmp_path):
 
 
 @pytest.mark.parametrize('rewrite_relative_urls', ['true', 'false', None])
-def test_include_markdown_relative_rewrite(page, tmp_path,
-                                           rewrite_relative_urls):
+def test_include_markdown_relative_rewrite(
+    page, tmp_path,
+    rewrite_relative_urls,
+):
     option_value = '' if rewrite_relative_urls is None else (
-        'rewrite_relative_urls=' + rewrite_relative_urls)
+        'rewrite_relative_urls=' + rewrite_relative_urls
+    )
 
     includer_path = tmp_path / 'includer.md'
-    includer_path.write_text(textwrap.dedent(f'''
+    includer_path.write_text(
+        textwrap.dedent(f'''
         # Heading
 
         {{%
@@ -295,11 +305,13 @@ def test_include_markdown_relative_rewrite(page, tmp_path,
             end="<!--end-here-->"
             {option_value}
         %}}
-    '''))
+    '''),
+    )
 
     (tmp_path / 'docs').mkdir()
     included_file_path = tmp_path / 'docs' / 'page.md'
-    included_file_path.write_text(textwrap.dedent('''
+    included_file_path.write_text(
+        textwrap.dedent('''
         # Subpage Heading
         <!--start-here-->
         Here's [a link](page2.md) and here's an image: ![](image.png)
@@ -308,11 +320,12 @@ def test_include_markdown_relative_rewrite(page, tmp_path,
 
         [ref-link]: page3.md
         <!--end-here-->
-    '''))
+    '''),
+    )
 
     output = on_page_markdown(
         includer_path.read_text(),
-        page(str(includer_path))
+        page(str(includer_path)),
     )
 
     if rewrite_relative_urls in ['true', None]:
@@ -352,8 +365,8 @@ def test_include_markdown_relative_rewrite(page, tmp_path,
         'rewrite_relative_urls',
         'comments',
         'preserve_includer_indent',
-        'dedent'
-    )
+        'dedent',
+    ),
 )
 def test_include_markdown_invalid_bool_option(opt_name, page, tmp_path):
     page_filepath = tmp_path / 'example.md'
@@ -366,6 +379,8 @@ def test_include_markdown_invalid_bool_option(opt_name, page, tmp_path):
     with pytest.raises(ValueError) as excinfo:
         on_page_markdown(page_content, page(page_filepath))
 
-    expected_exc_message = (f'Unknown value for \'{opt_name}\'.'
-                            ' Possible values are: true, false')
+    expected_exc_message = (
+        f'Unknown value for \'{opt_name}\'.'
+        ' Possible values are: true, false'
+    )
     assert expected_exc_message == str(excinfo.value)

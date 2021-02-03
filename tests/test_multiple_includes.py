@@ -46,4 +46,5 @@ Another
 Another
 '''
     assert on_page_markdown(
-        includer_content, page(includer_filepath)) == expected_result
+        includer_content, page(includer_filepath),
+    ) == expected_result

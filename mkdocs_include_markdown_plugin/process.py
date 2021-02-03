@@ -89,7 +89,7 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
 
 
 def rewrite_relative_urls(
-    markdown: str, source_path: Path, destination_path: Path
+    markdown: str, source_path: Path, destination_path: Path,
 ) -> str:
     '''Rewrites markdown so that relative links that were written at
     ``source_path`` will still work when inserted into a file at
@@ -105,8 +105,10 @@ def rewrite_relative_urls(
 
         trailing_slash = path.endswith('/')
 
-        path = os.path.relpath(source_path.parent / path,
-                               destination_path.parent)
+        path = os.path.relpath(
+            source_path.parent / path,
+            destination_path.parent,
+        )
 
         # ensure forward slashes are used, on Windows
         path = Path(path).as_posix()
@@ -132,17 +134,17 @@ def rewrite_relative_urls(
     markdown = re.sub(
         MARKDOWN_LINK_REGEX,
         partial(found_href, url_group_index=3),
-        markdown
+        markdown,
     )
     markdown = re.sub(
         MARKDOWN_IMAGE_REGEX,
         partial(found_href, url_group_index=3),
-        markdown
+        markdown,
     )
     markdown = re.sub(
         MARKDOWN_LINK_DEFINITION_REGEX,
         partial(found_href, url_group_index=2),
-        markdown
+        markdown,
     )
 
     return markdown
