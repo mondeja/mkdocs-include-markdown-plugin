@@ -74,7 +74,7 @@ def get_file_content(markdown, abs_src_path):
         #   boolean options
         bool_options = {
             'preserve_includer_indent': {
-                'value': False,
+                'value': True,
                 'regex': ARGUMENT_REGEXES['preserve_includer_indent'],
             },
             'dedent': {
@@ -159,7 +159,7 @@ def get_file_content(markdown, abs_src_path):
                 'regex': ARGUMENT_REGEXES['comments'],
             },
             'preserve_includer_indent': {
-                'value': False,
+                'value': True,
                 'regex': ARGUMENT_REGEXES['preserve_includer_indent'],
             },
             'dedent': {

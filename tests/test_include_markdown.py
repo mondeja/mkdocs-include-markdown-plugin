@@ -159,6 +159,7 @@ This must be included.
     {%
       include-markdown "{filepath}"
       comments=false
+      preserve_includer_indent=false
     %}''',
             '''- Unordered sublist item
     - Other unordered sublist item''',
@@ -173,7 +174,6 @@ This must be included.
     {%
       include-markdown "{filepath}"
       comments=false
-      preserve_includer_indent=true
     %}''',
             '''- First unordered sublist item
 - Second unordered sublist item

@@ -92,6 +92,7 @@ This must be included.
             '''1. Ordered list item
     {%
       include "{filepath}"
+      preserve_includer_indent=false
     %}''',
             '''- Unordered sublist item
     - Other unordered sublist item''',
@@ -105,7 +106,6 @@ This must be included.
             '''1. Ordered list item
     {%
       include "{filepath}"
-      preserve_includer_indent=true
     %}''',
             '''- First unordered sublist item
 - Second unordered sublist item

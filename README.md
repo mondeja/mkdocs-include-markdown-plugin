@@ -38,7 +38,7 @@ content to include.
 
 - **start**: Delimiter that marks the beginning of the content to include.
 - **end**: Delimiter that marks the end of the content to include.
-- **preserve_includer_indent** (*false*): When this option is enabled, every
+- **preserve_includer_indent** (*true*): When this option is enabled, every
  line of the content to include is indented with the same number of spaces
  used to indent the includer `{% %}` template. Possible values are `true` and
  `false`.
@@ -82,7 +82,7 @@ Includes the content of a file.
 
 - **start**: Delimiter that marks the beginning of the content to include.
 - **end**: Delimiter that marks the end of the content to include.
-- **preserve_includer_indent** (*false*): When this option is enabled, every
+- **preserve_includer_indent** (*true*): When this option is enabled, every
  line of the content to include is indented with the same number of spaces
  used to indent the includer `{% %}` template. Possible values are `true` and
  `false`.
