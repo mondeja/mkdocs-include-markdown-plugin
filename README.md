@@ -105,7 +105,6 @@ start or end trigger.
       include "../examples/__main__.py"
       start="~~~yaml"
       end="~~~\n"
-      preserve_includer_indent=true
     %}
 ```
 
