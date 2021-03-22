@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.10.0
+    rev: v2.11.0
     hooks:
       - id: pyupgrade
         args:
@@ -33,7 +33,7 @@ repos:
           - flake8-print
           - flake8-implicit-str-concat
   - repo: https://github.com/PyCQA/isort
-    rev: 5.7.0
+    rev: 5.8.0
     hooks:
       - id: isort
         args:
