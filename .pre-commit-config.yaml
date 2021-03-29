@@ -48,7 +48,7 @@ repos:
           - -c
           - .yamllint
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.0.14
+    rev: v0.0.15
     hooks:
       - id: markdownlint-cli2
         name: markdownlint-readme
