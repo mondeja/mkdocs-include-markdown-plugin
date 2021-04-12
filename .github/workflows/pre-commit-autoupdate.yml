@@ -26,4 +26,3 @@ jobs:
           body: Update versions of pre-commit tools to latest version.
           labels: dependencies
           delete-branch: true
-          reviewers: mondeja
