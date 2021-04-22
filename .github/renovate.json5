@@ -1,0 +1,22 @@
+{
+  extends: ["config:base"],
+
+  labels: ["dependencies"],
+  assignees: ["@mondeja"],
+  schedule: "every 6 months on the first day of the month",
+  separateMajorMinor: true,
+
+  // Only automerge patchs
+  packageRules: [
+    {
+      matchUpdateTypes: ["patch", "pin", "digest"],
+      automerge: true,
+    },
+  ],
+
+  // Security vulnerabilities should be fixed ASAP
+  vulnerabilityAlerts: {
+    addLabels: ["security"],
+    schedule: "at any time",
+  },
+}
