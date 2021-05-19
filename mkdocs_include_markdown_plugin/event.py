@@ -228,14 +228,10 @@ def get_file_content(markdown, abs_src_path):
             arguments_string,
         )
         if offset_match:
-            offset = int(offset_match.group(1))
-            lines = []
-            for line in text_to_include.splitlines(keepends=True):
-                if line.startswith('#'):
-                    lines.append('#' * offset + line)
-                else:
-                    lines.append(line)
-            text_to_include = ''.join(lines)
+            text_to_include = process.increase_headings_offset(
+                text_to_include,
+                offset=int(offset_match.group(1)),
+            )
 
         if not bool_options['comments']['value']:
             return text_to_include

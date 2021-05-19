@@ -155,3 +155,28 @@ def interpret_escapes(value: str) -> str:
     meanings as in ordinary python string literals.
     '''
     return value.encode('latin-1', 'backslashreplace').decode('unicode_escape')
+
+
+def increase_headings_offset(markdown, offset=0):
+    '''Increases the headings depth of a snippet of Makdown content.'''
+    _inside_fenced_codeblock = False
+    _current_fenced_codeblock_delimiter = None
+
+    lines = []
+    for line in markdown.splitlines(keepends=True):
+        if not _inside_fenced_codeblock:
+            if line.startswith('```') or line.startswith('~~~'):
+                _inside_fenced_codeblock = True
+                _current_fenced_codeblock_delimiter = line[:3]
+                lines.append(line)
+            elif line.startswith('#'):
+                lines.append('#' * offset + line)
+            else:
+                lines.append(line)
+        else:
+            lines.append(line)
+            if line.startswith(_current_fenced_codeblock_delimiter):
+                _inside_fenced_codeblock = False
+                _current_fenced_codeblock_delimiter = None
+
+    return ''.join(lines)
