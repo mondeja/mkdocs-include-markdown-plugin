@@ -244,6 +244,111 @@ This must be included.
         - Baz
 ''',
         ),
+
+        # Markdown heading offset 1
+        (
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=1
+%}
+''',
+            '''# This should be a second level heading.
+
+Example data''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath}   -->
+## This should be a second level heading.
+
+Example data
+<!-- END INCLUDE -->
+''',
+        ),
+        # Markdown heading offset 2
+        (
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=2
+%}
+''',
+            '''# This should be a third level heading.
+
+Example data''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath}   -->
+### This should be a third level heading.
+
+Example data
+<!-- END INCLUDE -->
+''',
+        ),
+        # Markdown heading no offset
+        (
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+%}
+''',
+            '''# This should be a first level heading.
+
+Example data''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath}   -->
+# This should be a first level heading.
+
+Example data
+<!-- END INCLUDE -->
+''',
+        ),
+        # Markdown heading zero offset
+        (
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=0
+%}
+''',
+            '''# This should be a first level heading.
+
+Example data''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath}   -->
+# This should be a first level heading.
+
+Example data
+<!-- END INCLUDE -->
+''',
+        ),
+        # Markdown heading offset string
+        (
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=true
+%}
+''',
+            '''# This should be a first level heading.
+
+Example data''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath}   -->
+# This should be a first level heading.
+
+Example data
+<!-- END INCLUDE -->
+''',
+        ),
     ),
 )
 def test_include_markdown(
