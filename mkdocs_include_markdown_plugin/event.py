@@ -223,12 +223,16 @@ def get_file_content(markdown, abs_src_path):
             text_to_include = new_text_to_include
 
         # heading offset
-        offset = re.search(ARGUMENT_REGEXES['heading-offset'], arguments_string)
-        if offset:
+        offset_match = re.search(
+            ARGUMENT_REGEXES['heading-offset'],
+            arguments_string,
+        )
+        if offset_match:
+            offset = int(offset_match.group(1))
             lines = []
             for line in text_to_include.splitlines(keepends=True):
                 if line.startswith('#'):
-                    lines.append('#' * int(offset.group(1)) + line)
+                    lines.append('#' * offset + line)
                 else:
                     lines.append(line)
             text_to_include = ''.join(lines)

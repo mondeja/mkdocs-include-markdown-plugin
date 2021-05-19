@@ -254,10 +254,10 @@ This must be included.
   heading-offset=1
 %}
 ''',
-    '''# This should be a second level heading.
+            '''# This should be a second level heading.
 
 Example data''',
-    '''# Header
+            '''# Header
 
 <!-- BEGIN INCLUDE {filepath}   -->
 ## This should be a second level heading.
@@ -275,10 +275,10 @@ Example data
   heading-offset=2
 %}
 ''',
-    '''# This should be a third level heading.
+            '''# This should be a third level heading.
 
 Example data''',
-    '''# Header
+            '''# Header
 
 <!-- BEGIN INCLUDE {filepath}   -->
 ### This should be a third level heading.
@@ -295,10 +295,10 @@ Example data
   include-markdown "{filepath}"
 %}
 ''',
-    '''# This should be a first level heading.
+            '''# This should be a first level heading.
 
 Example data''',
-    '''# Header
+            '''# Header
 
 <!-- BEGIN INCLUDE {filepath}   -->
 # This should be a first level heading.
@@ -316,10 +316,10 @@ Example data
   heading-offset=0
 %}
 ''',
-    '''# This should be a first level heading.
+            '''# This should be a first level heading.
 
 Example data''',
-    '''# Header
+            '''# Header
 
 <!-- BEGIN INCLUDE {filepath}   -->
 # This should be a first level heading.
@@ -337,10 +337,10 @@ Example data
   heading-offset=true
 %}
 ''',
-    '''# This should be a first level heading.
+            '''# This should be a first level heading.
 
 Example data''',
-    '''# Header
+            '''# Header
 
 <!-- BEGIN INCLUDE {filepath}   -->
 # This should be a first level heading.
@@ -348,7 +348,7 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
-        )
+        ),
     ),
 )
 def test_include_markdown(
