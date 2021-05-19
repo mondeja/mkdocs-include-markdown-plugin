@@ -159,7 +159,7 @@ This must be included.
     {%
       include-markdown "{filepath}"
       comments=false
-      preserve_includer_indent=false
+      preserve-includer-indent=false
     %}''',
             '''- Unordered sublist item
     - Other unordered sublist item''',
@@ -189,7 +189,7 @@ This must be included.
             '''1. Ordered list item
     {%
       include-markdown "{filepath}"
-      preserve_includer_indent=true
+      preserve-includer-indent=true
       end="<!--end-->"
       comments=false
       start="<!--start-->"
@@ -230,7 +230,7 @@ This must be included.
     {%
       include-markdown "{filepath}"
       dedent=true
-      preserve_includer_indent=true
+      preserve-includer-indent=true
       comments=false
     %}
 ''',
@@ -396,7 +396,7 @@ def test_include_markdown_relative_rewrite(
     rewrite_relative_urls,
 ):
     option_value = '' if rewrite_relative_urls is None else (
-        'rewrite_relative_urls=' + rewrite_relative_urls
+        'rewrite-relative-urls=' + rewrite_relative_urls
     )
 
     includer_path = tmp_path / 'includer.md'
@@ -467,9 +467,9 @@ def test_include_markdown_relative_rewrite(
 @pytest.mark.parametrize(
     'opt_name',
     (
-        'rewrite_relative_urls',
+        'rewrite-relative-urls',
         'comments',
-        'preserve_includer_indent',
+        'preserve-includer-indent',
         'dedent',
     ),
 )

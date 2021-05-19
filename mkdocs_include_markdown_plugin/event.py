@@ -47,9 +47,9 @@ INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
 ARGUMENT_REGEXES = {
     'start': re.compile(r'start="([^"]+)"'),
     'end': re.compile(r'end="([^"]+)"'),
-    'rewrite_relative_urls': re.compile(r'rewrite_relative_urls=(\w*)'),
+    'rewrite-relative-urls': re.compile(r'rewrite-relative-urls=(\w*)'),
     'comments': re.compile(r'comments=(\w*)'),
-    'preserve_includer_indent': re.compile(r'preserve_includer_indent=(\w*)'),
+    'preserve-includer-indent': re.compile(r'preserve-includer-indent=(\w*)'),
     'dedent': re.compile(r'dedent=(\w*)'),
     'heading-offset': re.compile(r'heading-offset=([0-5])'),
 }
@@ -74,9 +74,9 @@ def get_file_content(markdown, abs_src_path):
 
         #   boolean options
         bool_options = {
-            'preserve_includer_indent': {
+            'preserve-includer-indent': {
                 'value': True,
-                'regex': ARGUMENT_REGEXES['preserve_includer_indent'],
+                'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
             },
             'dedent': {
                 'value': False,
@@ -113,8 +113,8 @@ def get_file_content(markdown, abs_src_path):
         new_text_to_include = get_file_content(text_to_include, file_path_abs)
 
         if text_to_include == new_text_to_include:
-            # At last inclusion, allow good practice of having a final newline
-            #   in the file
+            # at last inclusion, allow good practice of having a final newline
+            # in the file
             if text_to_include.endswith('\n'):
                 text_to_include = text_to_include[:-1]
         else:
@@ -124,7 +124,7 @@ def get_file_content(markdown, abs_src_path):
             text_to_include = textwrap.dedent(text_to_include)
 
         # Includer indentation preservation
-        if bool_options['preserve_includer_indent']['value']:
+        if bool_options['preserve-includer-indent']['value']:
             text_to_include = ''.join(
                 _includer_indent + line
                 for line in text_to_include.splitlines(keepends=True)
@@ -151,17 +151,17 @@ def get_file_content(markdown, abs_src_path):
 
         #   boolean options
         bool_options = {
-            'rewrite_relative_urls': {
+            'rewrite-relative-urls': {
                 'value': True,
-                'regex': ARGUMENT_REGEXES['rewrite_relative_urls'],
+                'regex': ARGUMENT_REGEXES['rewrite-relative-urls'],
             },
             'comments': {
                 'value': True,
                 'regex': ARGUMENT_REGEXES['comments'],
             },
-            'preserve_includer_indent': {
+            'preserve-includer-indent': {
                 'value': True,
-                'regex': ARGUMENT_REGEXES['preserve_includer_indent'],
+                'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
             },
             'dedent': {
                 'value': False,
@@ -196,20 +196,20 @@ def get_file_content(markdown, abs_src_path):
             end = process.interpret_escapes(end_match.group(1))
             text_to_include, _, _ = text_to_include.partition(end)
 
-        # Relative URLs rewriting
-        if bool_options['rewrite_relative_urls']['value']:
+        # relative URLs rewriting
+        if bool_options['rewrite-relative-urls']['value']:
             text_to_include = process.rewrite_relative_urls(
                 text_to_include,
                 source_path=file_path_abs,
                 destination_path=page_src_path,
             )
 
-        # Dedent
+        # dedent
         if bool_options['dedent']:
             text_to_include = textwrap.dedent(text_to_include)
 
-        # Includer indentation preservation
-        if bool_options['preserve_includer_indent']['value']:
+        # includer indentation preservation
+        if bool_options['preserve-includer-indent']['value']:
             text_to_include = ''.join(
                 _includer_indent + line
                 for line in text_to_include.splitlines(keepends=True)

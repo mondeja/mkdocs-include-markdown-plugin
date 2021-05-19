@@ -92,7 +92,7 @@ This must be included.
             '''1. Ordered list item
     {%
       include "{filepath}"
-      preserve_includer_indent=false
+      preserve-includer-indent=false
     %}''',
             '''- Unordered sublist item
     - Other unordered sublist item''',
@@ -121,7 +121,7 @@ This must be included.
             '''1. Ordered list item
     {%
       include "{filepath}"
-      preserve_includer_indent=true
+      preserve-includer-indent=true
       end="<!--end-->"
       start="<!--start-->"
     %}''',
@@ -160,7 +160,7 @@ This must be included.
     {%
       include "{filepath}"
       dedent=true
-      preserve_includer_indent=true
+      preserve-includer-indent=true
     %}
 ''',
             '''        - Foo
@@ -213,7 +213,7 @@ def test_include_filepath_error(page, tmp_path):
 @pytest.mark.parametrize(
     'opt_name',
     (
-        'preserve_includer_indent',
+        'preserve-includer-indent',
         'dedent',
     ),
 )
