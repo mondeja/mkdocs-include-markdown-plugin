@@ -38,12 +38,12 @@ content to include.
 
 - **start**: Delimiter that marks the beginning of the content to include.
 - **end**: Delimiter that marks the end of the content to include.
-- **preserve_includer_indent** (*true*): When this option is enabled (default),
+- **preserve-includer-indent** (*true*): When this option is enabled (default),
  every line of the content to include is indented with the same number of
  spaces used to indent the includer `{% %}` template. Possible values are
  `true` and `false`.
 - **dedent** (*false*): If enabled, the included content will be dedented.
-- **rewrite_relative_urls** (*true*): When this option is enabled (default),
+- **rewrite-relative-urls** (*true*): When this option is enabled (default),
  Markdown links and images in the content that are specified by a relative URL
  are rewritten to work correctly in their new location. Possible values are
  `true` and `false`.
@@ -73,7 +73,7 @@ start or end trigger.
    include-markdown "docs/includes/header.md"
    start="<!--\n\ttable-start\n-->"
    end="<!--\n\ttable-end\n-->"
-   rewrite_relative_urls=false
+   rewrite-relative-urls=false
    comments=false
 %}
 ```
@@ -91,7 +91,7 @@ Includes the content of a file.
 
 - **start**: Delimiter that marks the beginning of the content to include.
 - **end**: Delimiter that marks the end of the content to include.
-- **preserve_includer_indent** (*true*): When this option is enabled (default),
+- **preserve-includer-indent** (*true*): When this option is enabled (default),
  every line of the content to include is indented with the same number of
  spaces used to indent the includer `{% %}` template. Possible values are
  `true` and `false`.
