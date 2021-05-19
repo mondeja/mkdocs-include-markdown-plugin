@@ -51,6 +51,7 @@ ARGUMENT_REGEXES = {
     'comments': re.compile(r'comments=(\w*)'),
     'preserve_includer_indent': re.compile(r'preserve_includer_indent=(\w*)'),
     'dedent': re.compile(r'dedent=(\w*)'),
+    'heading-offset': re.compile(r'heading-offset=(\d+)'),
 }
 
 
@@ -220,6 +221,17 @@ def get_file_content(markdown, abs_src_path):
         new_text_to_include = get_file_content(text_to_include, file_path_abs)
         if new_text_to_include != text_to_include:
             text_to_include = new_text_to_include
+
+        # heading offset
+        offset = re.search(ARGUMENT_REGEXES['heading-offset'], arguments_string)
+        if offset:
+            lines = []
+            for line in text_to_include.splitlines(keepends=True):
+                if line.startswith('#'):
+                    lines.append('#' * int(offset.group(1)) + line)
+                else:
+                    lines.append(line)
+            text_to_include = ''.join(lines)
 
         if not bool_options['comments']['value']:
             return text_to_include

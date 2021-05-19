@@ -51,6 +51,8 @@ content to include.
  include is wrapped by `<!-- BEGIN INCLUDE -->` and `<!-- END INCLUDE -->`
  comments which help to identify that the content has been included. Possible
  values are `true` and `false`.
+- **heading-offset** (0): Increases the Markdown heading depth by this number.
+ Only supports number sign (#) heading syntax.
 
 > Note that the **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line
@@ -73,6 +75,13 @@ start or end trigger.
    end="<!--\n\ttable-end\n-->"
    rewrite_relative_urls=false
    comments=false
+%}
+```
+
+```jinja
+{%
+   include-markdown "docs/includes/header.md"
+   heading-offset=1
 %}
 ```
 
