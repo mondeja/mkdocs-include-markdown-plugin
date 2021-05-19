@@ -14,7 +14,7 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
     ),
     (
         # Includer -> Markdown -> Markdown
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -35,10 +35,11 @@ Some text from second includer.
 
 Some test from final included.
 ''',
+            id='includer -> markdown -> markdown',
         ),
 
         # Includer -> Markdown -> file
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -58,10 +59,11 @@ Some text from second includer.
 
 Some test from final included.
 ''',
+            id='includer -> markdown -> file',
         ),
 
         # Includer -> file -> file
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -80,10 +82,11 @@ Some text from second includer.
 
 Some test from final included.
 ''',
+            id='includer -> file -> file',
         ),
 
         # Includer -> file -> Markdown
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -109,6 +112,7 @@ Some text from second includer.
 
 Some test from final included.
 ''',
+            id='includer -> file -> markdown',
         ),
     ),
 )

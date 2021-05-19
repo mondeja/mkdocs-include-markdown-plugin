@@ -13,7 +13,7 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
     ),
     (
         # Simple case
-        (
+        pytest.param(
             '# Header\n\n{% include-markdown "{filepath}" %}\n',
             'This must be included.',
             '''# Header
@@ -22,10 +22,11 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
 This must be included.
 <!-- END INCLUDE -->
 ''',
+            id='simple case',
         ),
 
         # Start option
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -43,10 +44,11 @@ This must be included.''',
 This must be included.
 <!-- END INCLUDE -->
 ''',
+            id='start',
         ),
 
         # End option
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -64,10 +66,11 @@ This must be included.
 
 <!-- END INCLUDE -->
 ''',
+            id='end',
         ),
 
         # Start and end options
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -89,10 +92,11 @@ This must be included.
 
 <!-- END INCLUDE -->
 ''',
+            id='start/end',
         ),
 
         # Start and end with escaped special characters
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -114,10 +118,11 @@ This must be included.
 
 <!-- END INCLUDE -->
 ''',
+            id='start/end (escaped special characters)',
         ),
 
         # Start and end with unescaped special characters
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -141,35 +146,38 @@ This must be included.
 
 <!-- END INCLUDE -->
 ''',
+            id='start/end (unescaped special characters)',
         ),
 
         # Exclude start and end comments
-        (
+        pytest.param(
             '''{%
   include-markdown "{filepath}"
   comments=false
 %}''',
             '''Foo''',
             '''Foo''',
+            id='comments=false',
         ),
 
-        # Preserve included indent
-        (
+        # Don't preserve included indent
+        pytest.param(
             '''1. Ordered list item
     {%
       include-markdown "{filepath}"
       comments=false
-      preserve_includer_indent=false
+      preserve-includer-indent=false
     %}''',
             '''- Unordered sublist item
     - Other unordered sublist item''',
             '''1. Ordered list item
     - Unordered sublist item
     - Other unordered sublist item''',
+            id='preserve-includer-indent=false',
         ),
 
         # Preserve includer indent
-        (
+        pytest.param(
             '''1. Ordered list item
     {%
       include-markdown "{filepath}"
@@ -182,14 +190,15 @@ This must be included.
     - First unordered sublist item
     - Second unordered sublist item
     - Third unordered sublist item''',
+            id='preserve-includer-indent=true (default)',
         ),
 
-        # Options custom ordering
-        (
+        # Custom options ordering
+        pytest.param(
             '''1. Ordered list item
     {%
       include-markdown "{filepath}"
-      preserve_includer_indent=true
+      preserve-includer-indent=true
       end="<!--end-->"
       comments=false
       start="<!--start-->"
@@ -200,10 +209,11 @@ This must be included.
             '''1. Ordered list item
     - First unordered sublist item
     - Second unordered sublist item''',
+            id='custom options ordering',
         ),
 
         # Content unindentation
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -221,16 +231,17 @@ This must be included.
 - Bar
     - Baz
 ''',
+            id='dedent=true',
         ),
 
         # Content unindentation + preserve includer indent
-        (
+        pytest.param(
             '''# Header
 
     {%
       include-markdown "{filepath}"
       dedent=true
-      preserve_includer_indent=true
+      preserve-includer-indent=true
       comments=false
     %}
 ''',
@@ -243,10 +254,11 @@ This must be included.
     - Bar
         - Baz
 ''',
+            id='dedent=true,preserve-includer-indent=true',
         ),
 
         # Markdown heading offset 1
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -265,9 +277,10 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            id='heading-offset=1',
         ),
         # Markdown heading offset 2
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -286,9 +299,11 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            id='heading-offset=2',
         ),
+
         # Markdown heading no offset
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -306,9 +321,11 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            id='no heading-offset (default)',
         ),
+
         # Markdown heading zero offset
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -327,9 +344,10 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            id='heading-offset=0',
         ),
         # Markdown heading offset string
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -348,6 +366,7 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            id='heading-offset=<str>',
         ),
     ),
 )
@@ -396,7 +415,7 @@ def test_include_markdown_relative_rewrite(
     rewrite_relative_urls,
 ):
     option_value = '' if rewrite_relative_urls is None else (
-        'rewrite_relative_urls=' + rewrite_relative_urls
+        'rewrite-relative-urls=' + rewrite_relative_urls
     )
 
     includer_path = tmp_path / 'includer.md'
@@ -467,9 +486,9 @@ def test_include_markdown_relative_rewrite(
 @pytest.mark.parametrize(
     'opt_name',
     (
-        'rewrite_relative_urls',
+        'rewrite-relative-urls',
         'comments',
-        'preserve_includer_indent',
+        'preserve-includer-indent',
         'dedent',
     ),
 )

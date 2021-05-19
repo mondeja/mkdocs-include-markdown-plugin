@@ -14,21 +14,23 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
         'expected_result',
     ),
     (
-        (
+        pytest.param(
             '# Header\n\n{% include "{filepath}" %}\n',
             'This must be included.',
             '# Header\n\nThis must be included.\n',
+            id='simple case',
         ),
 
         # Newline at the end of the included content
-        (
+        pytest.param(
             '# Header\n\n{% include "{filepath}" %}\n',
             'This must be included.\n',
             '# Header\n\nThis must be included.\n',
+            id='newline at end of included',
         ),
 
         # Start and end options
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -45,10 +47,11 @@ This must be ignored also.
 
 This must be included.
 ''',
+            id='start/end',
         ),
 
         # Start and end options with escaped special characters
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -65,10 +68,11 @@ This must be ignored also.
 
 This must be included.
 ''',
+            id='start/end (escaped special characters)',
         ),
 
         # Start and end options with unescaped special characters
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -85,24 +89,26 @@ This must be ignored also.
 
 This must be included.
 ''',
+            id='start/end (unescaped special characters)',
         ),
 
         # Preserve included indent
-        (
+        pytest.param(
             '''1. Ordered list item
     {%
       include "{filepath}"
-      preserve_includer_indent=false
+      preserve-includer-indent=false
     %}''',
             '''- Unordered sublist item
     - Other unordered sublist item''',
             '''1. Ordered list item
     - Unordered sublist item
     - Other unordered sublist item''',
+            id='preserve included indent',
         ),
 
         # Preserve includer indent
-        (
+        pytest.param(
             '''1. Ordered list item
     {%
       include "{filepath}"
@@ -114,14 +120,15 @@ This must be included.
     - First unordered sublist item
     - Second unordered sublist item
     - Third unordered sublist item''',
+            id='preserve includer indent',
         ),
 
-        # Options custom ordering
-        (
+        # Custom options ordering
+        pytest.param(
             '''1. Ordered list item
     {%
       include "{filepath}"
-      preserve_includer_indent=true
+      preserve-includer-indent=true
       end="<!--end-->"
       start="<!--start-->"
     %}''',
@@ -131,10 +138,11 @@ This must be included.
             '''1. Ordered list item
     - First unordered sublist item
     - Second unordered sublist item''',
+            id='custom options ordering',
         ),
 
         # Content unindentation
-        (
+        pytest.param(
             '''# Header
 
 {%
@@ -151,16 +159,17 @@ This must be included.
 - Bar
     - Baz
 ''',
+            id='dedent=true',
         ),
 
         # Content unindentation + preserve includer indent
-        (
+        pytest.param(
             '''# Header
 
     {%
       include "{filepath}"
       dedent=true
-      preserve_includer_indent=true
+      preserve-includer-indent=true
     %}
 ''',
             '''        - Foo
@@ -172,6 +181,7 @@ This must be included.
     - Bar
         - Baz
 ''',
+            id='dedent=true,preserve-includer-indent=true',
         ),
     ),
 )
@@ -213,7 +223,7 @@ def test_include_filepath_error(page, tmp_path):
 @pytest.mark.parametrize(
     'opt_name',
     (
-        'preserve_includer_indent',
+        'preserve-includer-indent',
         'dedent',
     ),
 )
