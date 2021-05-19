@@ -52,7 +52,7 @@ content to include.
  comments which help to identify that the content has been included. Possible
  values are `true` and `false`.
 - **heading-offset** (0): Increases the Markdown heading depth by this number.
- Only supports number sign (#) heading syntax.
+ Only supports number sign (#) heading syntax. Max offset of 5.
 
 > Note that the **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line

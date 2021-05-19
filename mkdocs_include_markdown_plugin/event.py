@@ -51,7 +51,7 @@ ARGUMENT_REGEXES = {
     'comments': re.compile(r'comments=(\w*)'),
     'preserve_includer_indent': re.compile(r'preserve_includer_indent=(\w*)'),
     'dedent': re.compile(r'dedent=(\w*)'),
-    'heading-offset': re.compile(r'heading-offset=(\d+)'),
+    'heading-offset': re.compile(r'heading-offset=([0-5])'),
 }
 
 
