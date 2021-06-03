@@ -124,8 +124,8 @@ start or end trigger.
  documentation of [cibuildwheel][cibuildwheel-repo-link].
 
 [pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin
-[pypi-version-badge-link]: https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin
-[tests-image]: https://img.shields.io/github/workflow/status/mondeja/mkdocs-include-markdown-plugin/CI?logo=github
+[pypi-version-badge-link]: https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white
+[tests-image]: https://img.shields.io/github/workflow/status/mondeja/mkdocs-include-markdown-plugin/CI?logo=github&label=tests
 [tests-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/actions?query=workflow%3ACI
 [coverage-image]: https://img.shields.io/coveralls/github/mondeja/mkdocs-include-markdown-plugin?logo=coveralls
 [coverage-link]: https://coveralls.io/github/mondeja/mkdocs-include-markdown-plugin
