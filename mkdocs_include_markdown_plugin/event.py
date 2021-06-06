@@ -100,14 +100,13 @@ def get_file_content(markdown, abs_src_path):
 
         #   string options
         start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
-        if start_match is not None:
-            start = process.interpret_escapes(start_match.group(1))
-            _, _, text_to_include = text_to_include.partition(start)
-
         end_match = re.search(ARGUMENT_REGEXES['end'], arguments_string)
-        if end_match is not None:
-            end = process.interpret_escapes(end_match.group(1))
-            text_to_include, _, _ = text_to_include.partition(end)
+
+        text_to_include, _, _ = process.filter_inclusions(
+            start_match,
+            end_match,
+            text_to_include,
+        )
 
         # nested includes
         new_text_to_include = get_file_content(text_to_include, file_path_abs)
@@ -185,16 +184,13 @@ def get_file_content(markdown, abs_src_path):
 
         #   string options
         start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
-        start = None
-        if start_match is not None:
-            start = process.interpret_escapes(start_match.group(1))
-            _, _, text_to_include = text_to_include.partition(start)
-
         end_match = re.search(ARGUMENT_REGEXES['end'], arguments_string)
-        end = None
-        if end_match is not None:
-            end = process.interpret_escapes(end_match.group(1))
-            text_to_include, _, _ = text_to_include.partition(end)
+
+        text_to_include, start, end = process.filter_inclusions(
+            start_match,
+            end_match,
+            text_to_include,
+        )
 
         # relative URLs rewriting
         if bool_options['rewrite-relative-urls']['value']:
