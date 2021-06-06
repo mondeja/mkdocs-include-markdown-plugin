@@ -157,6 +157,33 @@ def interpret_escapes(value: str) -> str:
     return value.encode('latin-1', 'backslashreplace').decode('unicode_escape')
 
 
+def filter_inclusions(start_match, end_match, text_to_include):
+    """Manages inclusions from files using ``start`` and ``end`` diective
+    arguments.
+    """
+    start = None
+    end = None
+    if start_match is not None:
+        start = interpret_escapes(start_match.group(1))
+        if end_match is not None:
+            end = interpret_escapes(end_match.group(1))
+        new_text_to_include = ''
+        if end_match is not None:
+            for start_text in text_to_include.split(start)[1:]:
+                for i, end_text in enumerate(start_text.split(end)):
+                    if not i % 2:
+                        new_text_to_include += end_text
+        else:
+            new_text_to_include = text_to_include.split(start)[1]
+        if new_text_to_include:
+            text_to_include = new_text_to_include
+    elif end_match is not None:
+        end = interpret_escapes(end_match.group(1))
+        text_to_include, _, _ = text_to_include.partition(end)
+
+    return (text_to_include, start, end)
+
+
 def increase_headings_offset(markdown, offset=0):
     '''Increases the headings depth of a snippet of Makdown content.'''
     _inside_fenced_codeblock = False

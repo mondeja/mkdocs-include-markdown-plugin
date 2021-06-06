@@ -160,6 +160,46 @@ This must be included.
             id='comments=false',
         ),
 
+        # Multiples start and end matchs
+        pytest.param(
+            '''{%
+  include-markdown "{filepath}"
+  start="<!--start-tag-->"
+  end="<!--end-tag-->"
+  comments=false
+%}''',
+            '''Some text
+
+<!--start-tag-->
+This should be included.
+<!--end-tag-->
+
+This shouldn't be included.
+
+<!--start-tag-->
+This should be included also.
+<!--end-tag-->
+
+Here some text
+that should be ignored.
+
+<!--start-->
+<!--end-->
+
+Etc
+<!--start-tag-->
+This should be included even if hasn't defined after end tag.
+''',
+            '''
+This should be included.
+
+This should be included also.
+
+This should be included even if hasn't defined after end tag.
+''',
+            id='multiple-start-end-matchs',
+        ),
+
         # Don't preserve included indent
         pytest.param(
             '''1. Ordered list item
