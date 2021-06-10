@@ -121,14 +121,14 @@ Some test from final included.
 
 {%
   include "{filepath}"
-  heading-offset=2
+  heading-offset=1
   comments=false
 %}''',
             '''## Header 2
 
 {%
   include-markdown "{filepath}"
-  heading-offset=2
+  heading-offset=1
   comments=false
 %}
 ''',
@@ -138,7 +138,7 @@ Some test from final included.
 
 ## Header 2
 
-#### Header 3
+### Header 3
 
 ''',
             id='cumulative_heading_offset',
