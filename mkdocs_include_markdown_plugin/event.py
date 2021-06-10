@@ -55,7 +55,7 @@ ARGUMENT_REGEXES = {
 }
 
 
-def get_file_content(markdown, abs_src_path):
+def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
     page_src_path = Path(abs_src_path)
 
     def found_include_tag(match):
@@ -213,20 +213,28 @@ def get_file_content(markdown, abs_src_path):
         else:
             text_to_include = _includer_indent + text_to_include
 
-        # nested includes
-        new_text_to_include = get_file_content(text_to_include, file_path_abs)
-        if new_text_to_include != text_to_include:
-            text_to_include = new_text_to_include
-
         # heading offset
+        offset = cumulative_heading_offset
         offset_match = re.search(
             ARGUMENT_REGEXES['heading-offset'],
             arguments_string,
         )
         if offset_match:
+            offset += int(offset_match.group(1))
+
+        # nested includes
+        new_text_to_include = get_file_content(
+            text_to_include,
+            file_path_abs,
+            cumulative_heading_offset=offset,
+        )
+        if new_text_to_include != text_to_include:
+            text_to_include = new_text_to_include
+
+        if offset_match:
             text_to_include = process.increase_headings_offset(
                 text_to_include,
-                offset=int(offset_match.group(1)),
+                offset=offset,
             )
 
         if not bool_options['comments']['value']:
