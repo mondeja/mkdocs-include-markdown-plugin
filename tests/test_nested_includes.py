@@ -114,6 +114,35 @@ Some test from final included.
 ''',
             id='includer -> file -> markdown',
         ),
+
+        # cumulative_heading_offset
+        pytest.param(
+            '''# Header
+
+{%
+  include "{filepath}"
+  heading-offset=2
+  comments=false
+%}''',
+            '''## Header 2
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=2
+  comments=false
+%}
+''',
+            '''## Header 3
+''',
+            '''# Header
+
+## Header 2
+
+#### Header 3
+
+''',
+            id='cumulative_heading_offset',
+        ),
     ),
 )
 def test_nested_include(
