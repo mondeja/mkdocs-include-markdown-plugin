@@ -1,12 +1,21 @@
+<!-- mdpo-disable-next-line -->
 # mkdocs-include-markdown-plugin
 
 Mkdocs Markdown includer plugin.
 
 ## Status
 
+<!-- mdpo-disable -->
+
 [![PyPI][pypi-version-badge-link]][pypi-link]
 [![Tests][tests-image]][tests-link]
 [![Coverage status][coverage-image]][coverage-link]
+<!-- mdpo-enable -->
+
+> See this document in other languages:
+>
+> <!-- mdpo-disable-next-line -->
+> - [Español][es-readme-link]
 
 ## Installation
 
@@ -31,6 +40,7 @@ This plugin provides two directives, one to include markdown files and another
 to include files of any type. Paths of included files can be absolute or
 relative to the path of the file that includes them:
 
+<!-- mdpo-disable-next-line -->
 #### **`include-markdown`**
 
 Includes markdown file content, optionally using two delimiters to filter the
@@ -85,6 +95,7 @@ start or end trigger.
 %}
 ```
 
+<!-- mdpo-disable-next-line -->
 #### **`include`**
 
 Includes the content of a file.
@@ -132,3 +143,5 @@ start or end trigger.
 
 [cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
+
+[es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md

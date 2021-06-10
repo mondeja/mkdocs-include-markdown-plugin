@@ -39,6 +39,25 @@ repos:
         args:
           - --filter-files
         files: \.py$
+  - repo: local
+    hooks:
+      - id: update-translations
+        name: update-translations
+        entry: python scripts/update_translations.py
+        language: python
+        additional_dependencies:
+          - mdpo
+        files: (README\.md|locale)
+  - repo: https://github.com/mondeja/pre-commit-hooks
+    rev: v1.0.0
+    hooks:
+      - id: dev-extras-required
+  - repo: https://github.com/mondeja/pre-commit-po-hooks
+    rev: v1.6.0
+    hooks:
+      - id: obsolete-messages
+      - id: untranslated-messages
+      - id: remove-metadata
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.26.1
     hooks:
