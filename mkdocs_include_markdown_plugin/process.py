@@ -186,24 +186,33 @@ def filter_inclusions(start_match, end_match, text_to_include):
 
 def increase_headings_offset(markdown, offset=0):
     '''Increases the headings depth of a snippet of Makdown content.'''
-    _inside_fenced_codeblock = False
-    _current_fenced_codeblock_delimiter = None
+    _inside_fcodeblock = False            # inside fenced codeblock
+    _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
+    _inside_icodeblock = False            # inside indented codeblcok
 
     lines = []
     for line in markdown.splitlines(keepends=True):
-        if not _inside_fenced_codeblock:
-            if line.startswith('```') or line.startswith('~~~'):
-                _inside_fenced_codeblock = True
-                _current_fenced_codeblock_delimiter = line[:3]
-                lines.append(line)
+        lstripped_line = line.lstrip()
+
+        if not _inside_fcodeblock and not _inside_icodeblock:
+            if any([
+                lstripped_line.startswith('```'),
+                lstripped_line.startswith('~~~'),
+            ]):
+                _inside_fcodeblock = True
+                _current_fcodeblock_delimiter = line[:3]
+            elif line.startswith('    '):
+                _inside_icodeblock = True
             elif line.startswith('#'):
-                lines.append('#' * offset + line)
-            else:
-                lines.append(line)
+                line = '#' * offset + line
         else:
-            lines.append(line)
-            if line.startswith(_current_fenced_codeblock_delimiter):
-                _inside_fenced_codeblock = False
-                _current_fenced_codeblock_delimiter = None
+            if _current_fcodeblock_delimiter:
+                if lstripped_line.startswith(_current_fcodeblock_delimiter):
+                    _inside_fcodeblock = False
+                    _current_fcodeblock_delimiter = None
+            else:
+                if not line.startswith('    '):
+                    _inside_icodeblock = False
+        lines.append(line)
 
     return ''.join(lines)

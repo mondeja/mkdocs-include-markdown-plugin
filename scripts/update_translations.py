@@ -21,7 +21,7 @@ def main():
         if not os.path.isdir(language_dir):
             os.mkdir(language_dir)
 
-        po_filepath = os.path.join(language_dir, 'README.po')
+        po_filepath = os.path.join(language_dir, 'readme.po')
         po = markdown_to_pofile(
             'README.md', location=False, po_filepath=po_filepath,
         )

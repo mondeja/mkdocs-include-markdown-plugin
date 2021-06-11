@@ -218,6 +218,32 @@ Some text
 ''',
             id='```,~~~',
         ),
+        pytest.param(
+            '''# Foo
+
+    # this is a comment
+    hello = "world"
+
+# Bar
+
+    # another comment
+
+## Qux
+''',
+            1,
+            '''## Foo
+
+    # this is a comment
+    hello = "world"
+
+## Bar
+
+    # another comment
+
+### Qux
+''',
+            id='indented-codeblocks',
+        ),
     ),
 )
 def test_dont_increase_heading_offset_inside_fenced_codeblocks(
