@@ -138,7 +138,7 @@ Some test from final included.
 
 ## Header 2
 
-#### Header 3
+### Header 3
 
 ''',
             id='cumulative_heading_offset',

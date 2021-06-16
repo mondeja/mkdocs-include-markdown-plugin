@@ -214,7 +214,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             text_to_include = _includer_indent + text_to_include
 
         # heading offset
-        offset = cumulative_heading_offset
+        offset = 0
         offset_match = re.search(
             ARGUMENT_REGEXES['heading-offset'],
             arguments_string,
@@ -226,7 +226,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         new_text_to_include = get_file_content(
             text_to_include,
             file_path_abs,
-            cumulative_heading_offset=offset,
+            cumulative_heading_offset=cumulative_heading_offset,
         )
         if new_text_to_include != text_to_include:
             text_to_include = new_text_to_include
@@ -234,7 +234,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         if offset_match:
             text_to_include = process.increase_headings_offset(
                 text_to_include,
-                offset=offset,
+                offset=offset + cumulative_heading_offset,
             )
 
         if not bool_options['comments']['value']:
