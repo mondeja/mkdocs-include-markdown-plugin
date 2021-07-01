@@ -6,7 +6,7 @@ repos:
         args:
           - --py36-plus
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.0.1
     hooks:
       - id: trailing-whitespace
         name: trailing-whitespace
