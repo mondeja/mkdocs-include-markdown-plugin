@@ -33,10 +33,10 @@ def test_glob_include_simple(page, tmp_path):
 
     expected_result = '''foo
 
-bazbar
+barbaz
 
 <!-- with absolute path -->
-bazbar
+barbaz
 '''
 
     assert on_page_markdown(
