@@ -62,7 +62,7 @@ incluido. Los valores posibles son `true` y `false`.
 - **heading-offset** (0): Incrementa el tamaño de encabezados por este número.
 Sólo soporta sintaxis de encabezado de almohadilla (#). El valor máximo es 5.
 - **exclude**: Expecifica mediante un glob los archivos que deben ser
-ignorados.Sólo es útil pasando globs para incluir múltiples archivos.
+ignorados. Sólo es útil pasando globs para incluir múltiples archivos.
 
 > Nota que las cadenas **start** y **end** pueden contener caracteres usuales
 de secuencias de escape (al estilo Python) como `\n`, lo cual es útil si
@@ -116,7 +116,7 @@ número de espacios usados para indentar la plantilla `{% %}` incluidora. Los
 valores posibles son `true` y `false`.
 - **dedent** (*false*): Si se habilita, el contenido incluido será dedentado.
 - **exclude**: Expecifica mediante un glob los archivos que deben ser
-ignorados.Sólo es útil pasando globs para incluir múltiples archivos.
+ignorados. Sólo es útil pasando globs para incluir múltiples archivos.
 
 > Nota que las cadenas **start** y **end** pueden contener caracteres usuales
 de secuencias de escape (al estilo Python) como `\n`, lo cual es útil si

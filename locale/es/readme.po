@@ -184,7 +184,7 @@ msgid ""
 "when passing globs to include multiple files."
 msgstr ""
 "**exclude**: Expecifica mediante un glob los archivos que deben ser "
-"ignorados.Sólo es útil pasando globs para incluir múltiples archivos."
+"ignorados. Sólo es útil pasando globs para incluir múltiples archivos."
 
 msgid "Includes the content of a file or a group of files."
 msgstr "Incluye el contenido de un archivo o un grupo de archivos."
