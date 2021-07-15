@@ -217,7 +217,8 @@ def increase_headings_offset(markdown, offset=0):
         lines.append(line)
 
     return ''.join(lines)
-    
+
+
 def filter_paths(filepaths, ignore_paths=[]):
     """Filters a list of paths removing those defined in other list of paths.
 

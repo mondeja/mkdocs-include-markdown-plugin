@@ -1,7 +1,7 @@
 '''Module where the `on_page_markdown` plugin event is defined.'''
 
-import html
 import glob
+import html
 import os
 import re
 import textwrap
@@ -67,15 +67,18 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         filename = match.group('filename')
         _includer_indent = match.group('_includer_indent')
         arguments_string = match.group('arguments')
-        
+
         _page_parent_glob_prefix = str(page_src_path.parent).rstrip('/')
-        
+
         if os.path.isabs(filename):
             file_path_glob = filename
         else:
-            file_path_glob = f"{_page_parent_glob_prefix}{os.sep}{filename}"
+            file_path_glob = f'{_page_parent_glob_prefix}{os.sep}{filename}'
 
-        exclude_match = re.search(ARGUMENT_REGEXES['exclude'], arguments_string)
+        exclude_match = re.search(
+            ARGUMENT_REGEXES['exclude'],
+            arguments_string,
+        )
         if exclude_match is None:
             ignore_paths = []
         else:
@@ -83,10 +86,12 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             if os.path.isabs(exclude_string):
                 exclude_globstr = exclude_string
             else:  # pragma: no cover
-                exclude_globstr = (f'{_page_parent_glob_prefix}'
-                                   f'{os.sep}{exclude_string}')
+                exclude_globstr = (
+                    f'{_page_parent_glob_prefix}'
+                    f'{os.sep}{exclude_string}'
+                )
             ignore_paths = glob.glob(exclude_globstr)
-        
+
         file_paths_to_include = process.filter_paths(
             glob.glob(file_path_glob),
             ignore_paths=ignore_paths,
@@ -94,7 +99,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
 
         if not file_paths_to_include:
             raise FileNotFoundError(
-                f'Any files found using \'{filename}\' at {page_src_path}'
+                f'Any files found using \'{filename}\' at {page_src_path}',
             )
 
         # handle options and regex modifiers
@@ -128,15 +133,15 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         #   string options
         start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
         end_match = re.search(ARGUMENT_REGEXES['end'], arguments_string)
-        
+
         start = None if not start_match else start_match.group(1)
         end = None if not end_match else end_match.group(1)
-        
+
         text_to_include = ''
         for file_path in file_paths_to_include:
             with open(file_path) as f:
                 new_text_to_include = f.read()
-            
+
             new_text_to_include, _, _ = process.filter_inclusions(
                 start,
                 end,
@@ -148,7 +153,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
                 new_text_to_include,
                 file_path,
             )
-            
+
             text_to_include += new_text_to_include
 
         if bool_options['dedent']:
@@ -172,13 +177,16 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         arguments_string = match.group('arguments')
 
         _page_parent_glob_prefix = str(page_src_path.parent).rstrip('/')
-        
+
         if os.path.isabs(filename):
             file_path_glob = filename
         else:
-            file_path_glob = f"{_page_parent_glob_prefix}{os.sep}{filename}"
+            file_path_glob = f'{_page_parent_glob_prefix}{os.sep}{filename}'
 
-        exclude_match = re.search(ARGUMENT_REGEXES['exclude'], arguments_string)
+        exclude_match = re.search(
+            ARGUMENT_REGEXES['exclude'],
+            arguments_string,
+        )
         if exclude_match is None:
             ignore_paths = []
         else:
@@ -186,10 +194,12 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             if os.path.isabs(exclude_string):
                 exclude_globstr = exclude_string
             else:  # pragma: no cover
-                exclude_globstr = (f'{_page_parent_glob_prefix}'
-                                   f'{os.sep}{exclude_string}')
+                exclude_globstr = (
+                    f'{_page_parent_glob_prefix}'
+                    f'{os.sep}{exclude_string}'
+                )
             ignore_paths = glob.glob(exclude_globstr)
-        
+
         file_paths_to_include = process.filter_paths(
             glob.glob(file_path_glob),
             ignore_paths=ignore_paths,
@@ -197,7 +207,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
 
         if not file_paths_to_include:
             raise FileNotFoundError(
-                f'Any files found using \'{filename}\' at {page_src_path}'
+                f'Any files found using \'{filename}\' at {page_src_path}',
             )
 
         # handle options and regex modifiers
@@ -239,10 +249,10 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         #   string options
         start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
         end_match = re.search(ARGUMENT_REGEXES['end'], arguments_string)
-        
+
         start = None if not start_match else start_match.group(1)
         end = None if not end_match else end_match.group(1)
-        
+
         # heading offset
         offset = 0
         offset_match = re.search(
@@ -256,7 +266,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         for file_path in file_paths_to_include:
             with open(file_path) as f:
                 new_text_to_include = f.read()
-            
+
             new_text_to_include, _, _ = process.filter_inclusions(
                 start,
                 end,
@@ -268,7 +278,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
                 new_text_to_include,
                 file_path,
             )
-            
+
             # relative URLs rewriting
             if bool_options['rewrite-relative-urls']['value']:
                 new_text_to_include = process.rewrite_relative_urls(
@@ -276,7 +286,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
                     source_path=Path(file_path),
                     destination_path=page_src_path,
                 )
-                
+
             # dedent
             if bool_options['dedent']:
                 new_text_to_include = textwrap.dedent(new_text_to_include)
@@ -302,8 +312,8 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
                     new_text_to_include,
                     offset=offset + cumulative_heading_offset,
                 )
-            
-            text_to_include += new_text_to_include        
+
+            text_to_include += new_text_to_include
 
         if not bool_options['comments']['value']:
             return text_to_include

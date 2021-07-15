@@ -39,7 +39,7 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
             FileNotFoundError,
             id='exclude-all',
         ),
-    )
+    ),
 )
 def test_exclude_in_include_directive(
     page,
@@ -54,12 +54,12 @@ def test_exclude_in_include_directive(
     content_folder = tmp_path / 'content'
     includer_folder.mkdir()
     content_folder.mkdir()
-    
+
     includer_file = includer_folder / 'main.txt'
     files = {
         filename: content_folder / filename for filename in filenames
     }
-    
+
     exclude_prefix = f'{tmp_path}{os.sep}' if exclude_prefix else ''
     includer_filepath_content = f'''{{%
   {directive} "{tmp_path}{os.sep}content/*"
@@ -69,9 +69,9 @@ def test_exclude_in_include_directive(
 '''
     for basename, file in files.items():
         file.write_text(f'{basename}\n')
-    
+
     includer_file.write_text(includer_filepath_content)
-    
+
     if hasattr(expected_result, '__traceback__'):
         with pytest.raises(expected_result):
             on_page_markdown(

@@ -7,11 +7,11 @@ import pytest
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 
-def test_glob_include(page, tmp_path):
+def test_glob_include_simple(page, tmp_path):
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
     included_02_file = tmp_path / 'included_02.txt'
-    
+
     includer_filepath_content = f'''foo
 
 {{%
@@ -23,14 +23,14 @@ def test_glob_include(page, tmp_path):
   include "{tmp_path}{os.sep}included*.txt"
 %}}
 '''
-    
-    included_01_content = "bar"
-    included_02_content = "baz"
-    
+
+    included_01_content = 'bar'
+    included_02_content = 'baz'
+
     includer_file.write_text(includer_filepath_content)
     included_01_file.write_text(included_01_content)
     included_02_file.write_text(included_02_content)
-    
+
     expected_result = '''foo
 
 bazbar
@@ -38,10 +38,11 @@ bazbar
 <!-- with absolute path -->
 bazbar
 '''
-    
+
     assert on_page_markdown(
         includer_filepath_content, page(includer_file),
     ) == expected_result
+
 
 @pytest.mark.parametrize('directive', ('include', 'include-markdown'))
 @pytest.mark.parametrize(
@@ -93,18 +94,24 @@ baz
 ''',
             id='end',
         ),
-    )
+    ),
 )
-def test_glob_include(page, tmp_path, includer_content, directive, expected_result):
+def test_glob_include(
+    page,
+    tmp_path,
+    includer_content,
+    directive,
+    expected_result,
+):
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
     included_02_file = tmp_path / 'included_02.txt'
-    
+
     includer_filepath_content = f'''foo
 
 {includer_content.replace('include "', directive + ' "')}
 '''
-    
+
     included_01_content = '''This 01 must appear only without specifying start.
 <!-- start-1 -->
 bar
@@ -117,16 +124,16 @@ baz
 <!-- end-2 -->
 This 02 must appear only without specifying end.
 '''
-    
+
     includer_file.write_text(includer_filepath_content)
     included_01_file.write_text(included_01_content)
     included_02_file.write_text(included_02_content)
-    
+
     expected_result = f'''foo
 
 {expected_result}
 '''
-    
+
     assert on_page_markdown(
         includer_filepath_content, page(includer_file),
     ) == expected_result
