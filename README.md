@@ -34,6 +34,9 @@ plugins:
   - include-markdown
 ```
 
+> Make sure that you define `include-markdown` before other plugins that could
+ conflict, like [`mkdocs-macros-plugin`][mkdocs-macros-plugin-link].
+
 ### Reference
 
 This plugin provides two directives, one to include Markdown files and another
@@ -166,5 +169,6 @@ start or end trigger.
 
 [cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
+[mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io
 
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
