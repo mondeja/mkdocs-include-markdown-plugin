@@ -68,12 +68,15 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         _includer_indent = match.group('_includer_indent')
         arguments_string = match.group('arguments')
 
-        _page_parent_glob_prefix = str(page_src_path.parent).rstrip('/')
-
         if os.path.isabs(filename):
             file_path_glob = filename
         else:
-            file_path_glob = f'{_page_parent_glob_prefix}{os.sep}{filename}'
+            file_path_glob = os.path.abspath(
+                os.path.join(
+                    page_src_path.parent,
+                    filename,
+                ),
+            )
 
         exclude_match = re.search(
             ARGUMENT_REGEXES['exclude'],
@@ -178,12 +181,15 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         _includer_indent = match.group('_includer_indent')
         arguments_string = match.group('arguments')
 
-        _page_parent_glob_prefix = str(page_src_path.parent).rstrip('/')
-
         if os.path.isabs(filename):
             file_path_glob = filename
         else:
-            file_path_glob = f'{_page_parent_glob_prefix}{os.sep}{filename}'
+            file_path_glob = os.path.abspath(
+                os.path.join(
+                    page_src_path.parent,
+                    filename,
+                ),
+            )
 
         exclude_match = re.search(
             ARGUMENT_REGEXES['exclude'],
