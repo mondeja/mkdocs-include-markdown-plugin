@@ -24,7 +24,7 @@ msgid "Reference"
 msgstr "Referencia"
 
 msgid ""
-"Includes markdown files content, optionally using two delimiters to filter "
+"Includes Markdown files content, optionally using two delimiters to filter "
 "the content to include."
 msgstr ""
 "Incluye contenido de archivos Markdown, opcionalmente usando dos "

@@ -46,7 +46,7 @@ paths can be ignored using the `exclude` argument:
 <!-- mdpo-disable-next-line -->
 #### **`include-markdown`**
 
-Includes markdown files content, optionally using two delimiters to filter the
+Includes Markdown files content, optionally using two delimiters to filter the
 content to include.
 
 - **start**: Delimiter that marks the beginning of the content to include.
