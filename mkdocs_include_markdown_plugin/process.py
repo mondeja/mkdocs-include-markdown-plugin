@@ -157,28 +157,29 @@ def interpret_escapes(value: str) -> str:
     return value.encode('latin-1', 'backslashreplace').decode('unicode_escape')
 
 
-def filter_inclusions(start_match, end_match, text_to_include):
-    """Manages inclusions from files using ``start`` and ``end`` diective
+def filter_inclusions(new_start, new_end, text_to_include):
+    '''Manages inclusions from files using ``start`` and ``end`` directive
     arguments.
-    """
+    '''
     start = None
     end = None
-    if start_match is not None:
-        start = interpret_escapes(start_match.group(1))
-        if end_match is not None:
-            end = interpret_escapes(end_match.group(1))
+    if new_start is not None:
+        start = interpret_escapes(new_start)
+        if new_end is not None:
+            end = interpret_escapes(new_end)
+
         new_text_to_include = ''
-        if end_match is not None:
+        if new_end is not None:
             for start_text in text_to_include.split(start)[1:]:
                 for i, end_text in enumerate(start_text.split(end)):
                     if not i % 2:
                         new_text_to_include += end_text
         else:
             new_text_to_include = text_to_include.split(start)[1]
-        if new_text_to_include:
-            text_to_include = new_text_to_include
-    elif end_match is not None:
-        end = interpret_escapes(end_match.group(1))
+        text_to_include = new_text_to_include
+
+    elif new_end is not None:
+        end = interpret_escapes(new_end)
         text_to_include, _, _ = text_to_include.partition(end)
 
     return (text_to_include, start, end)
@@ -216,3 +217,33 @@ def increase_headings_offset(markdown, offset=0):
         lines.append(line)
 
     return ''.join(lines)
+    
+def filter_paths(filepaths, ignore_paths=[]):
+    """Filters a list of paths removing those defined in other list of paths.
+
+    The paths to filter can be defined in the list of paths to ignore in
+    several forms:
+
+    - The same string.
+    - Only the file name.
+    - Only their direct directory name.
+    - Their direct directory full path.
+
+    Args:
+        filepaths (list): Set of source paths to filter.
+        ignore_paths (list): Paths that must not be included in the response.
+
+    Returns:
+        list: Non filtered paths ordered alphabetically.
+    """
+    response = []
+    for filepath in filepaths:
+        # ignore by filepath
+        if filepath in ignore_paths:
+            continue
+        # ignore by dirpath (relative or absolute)
+        if (os.sep).join(filepath.split(os.sep)[:-1]) in ignore_paths:
+            continue
+        response.append(filepath)
+    response.sort()
+    return response

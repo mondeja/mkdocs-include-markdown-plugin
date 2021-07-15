@@ -18,15 +18,15 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
             '# Header\n\n{% include "{filepath}" %}\n',
             'This must be included.',
             '# Header\n\nThis must be included.\n',
-            id='simple case',
+            id='simple-case',
         ),
 
         # Newline at the end of the included content
         pytest.param(
             '# Header\n\n{% include "{filepath}" %}\n',
             'This must be included.\n',
-            '# Header\n\nThis must be included.\n',
-            id='newline at end of included',
+            '# Header\n\nThis must be included.\n\n',
+            id='newline-at-end-of-included',
         ),
 
         # Start and end options

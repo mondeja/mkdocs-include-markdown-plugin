@@ -29,7 +29,7 @@ def main():
 
         readme_filepath = os.path.join(language_dir, 'README.md')
         pofile_to_markdown(
-            'README.md', po_filepath, save=readme_filepath, wrapwidth=999,
+            'README.md', po_filepath, save=readme_filepath, wrapwidth=79,
         )
 
     return exitcode
