@@ -12,7 +12,7 @@ Mkdocs Markdown includer plugin.
 [![Coverage status][coverage-image]][coverage-link]
 <!-- mdpo-enable -->
 
-> See this document in other languages:
+> Read this document in other languages:
 >
 > <!-- mdpo-disable-next-line -->
 > - [Español][es-readme-link]
@@ -36,14 +36,17 @@ plugins:
 
 ### Reference
 
-This plugin provides two directives, one to include markdown files and another
-to include files of any type. Paths of included files can be absolute or
-relative to the path of the file that includes them:
+This plugin provides two directives, one to include Markdown files and another
+to include files of any type.
+
+Paths of included files can be absolute or relative to the path of the file
+that includes them. This argument also accept globs, in which case certain
+paths can be ignored using the `exclude` argument:
 
 <!-- mdpo-disable-next-line -->
 #### **`include-markdown`**
 
-Includes markdown file content, optionally using two delimiters to filter the
+Includes Markdown files content, optionally using two delimiters to filter the
 content to include.
 
 - **start**: Delimiter that marks the beginning of the content to include.
@@ -63,8 +66,10 @@ content to include.
  values are `true` and `false`.
 - **heading-offset** (0): Increases the Markdown heading depth by this number.
  Only supports number sign (#) heading syntax. Max offset of 5.
+- **exclude**: Specify with a glob which files should be ignored. Only useful
+ when passing globs to include multiple files.
 
-> Note that the **start** and **end** strings may contain usual (Python-style)
+> Note that **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line
 start or end trigger.
 
@@ -95,10 +100,19 @@ start or end trigger.
 %}
 ```
 
+```jinja
+{%
+   include-markdown "../LICENSE*.md"
+   start="<!--license-start-->"
+   end="<!--license-end-->"
+   exclude="../LICENSE*.rst"
+%}
+```
+
 <!-- mdpo-disable-next-line -->
 #### **`include`**
 
-Includes the content of a file.
+Includes the content of a file or a group of files.
 
 - **start**: Delimiter that marks the beginning of the content to include.
 - **end**: Delimiter that marks the end of the content to include.
@@ -107,8 +121,10 @@ Includes the content of a file.
  spaces used to indent the includer `{% %}` template. Possible values are
  `true` and `false`.
 - **dedent** (*false*): If enabled, the included content will be dedented.
+- **exclude**: Specify with a glob which files should be ignored. Only useful
+ when passing globs to include multiple files.
 
-> Note that the **start** and **end** strings may contain usual (Python-style)
+> Note that **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line
 start or end trigger.
 
@@ -126,6 +142,13 @@ start or end trigger.
       start="~~~yaml"
       end="~~~\n"
     %}
+```
+
+```jinja
+{%
+   include "../LICENSE*.md"
+   exclude="../LICENSE*.rst"
+%}
 ```
 
 ## Acknowledgment
