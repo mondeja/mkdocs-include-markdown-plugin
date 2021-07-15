@@ -46,7 +46,7 @@ repos:
         entry: python scripts/update_translations.py
         language: python
         additional_dependencies:
-          - mdpo
+          - mdpo==0.3.61
         files: (README\.md|locale)
   - repo: https://github.com/mondeja/pre-commit-hooks
     rev: v1.5.2
