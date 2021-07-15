@@ -85,10 +85,12 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             exclude_string = exclude_match.group(1)
             if os.path.isabs(exclude_string):
                 exclude_globstr = exclude_string
-            else:  # pragma: no cover
-                exclude_globstr = (
-                    f'{_page_parent_glob_prefix}'
-                    f'{os.sep}{exclude_string}'
+            else:
+                exclude_globstr = os.path.abspath(
+                    os.path.join(
+                        page_src_path.parent,
+                        exclude_string,
+                    ),
                 )
             ignore_paths = glob.glob(exclude_globstr)
 
@@ -193,10 +195,12 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             exclude_string = exclude_match.group(1)
             if os.path.isabs(exclude_string):
                 exclude_globstr = exclude_string
-            else:  # pragma: no cover
-                exclude_globstr = (
-                    f'{_page_parent_glob_prefix}'
-                    f'{os.sep}{exclude_string}'
+            else:
+                exclude_globstr = os.path.abspath(
+                    os.path.join(
+                        page_src_path.parent,
+                        exclude_string,
+                    ),
                 )
             ignore_paths = glob.glob(exclude_globstr)
 

@@ -30,18 +30,32 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
             '',
             True,
             'bar\nbaz\nfoo\n\n',
-            id='not-exclude',
+            id='not-ignore',
         ),
         pytest.param(
             ('foo', 'bar', 'baz'),
             '*',
             True,
             FileNotFoundError,
-            id='exclude-all',
+            id='ignore-all',
+        ),
+        pytest.param(
+            ('foo', 'bar', 'baz'),
+            f'..{os.sep}content{os.sep}*',
+            False,
+            FileNotFoundError,
+            id='ignore-all-relative',
+        ),
+        pytest.param(
+            ('foo', 'bar', 'baz'),
+            f'..{os.sep}content{os.sep}b*',
+            False,
+            'foo\n\n',
+            id='ignore-relative',
         ),
     ),
 )
-def test_exclude_in_include_directive(
+def test_exclude(
     page,
     tmp_path,
     directive,
