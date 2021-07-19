@@ -144,7 +144,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
 
         text_to_include = ''
         for file_path in file_paths_to_include:
-            with open(file_path) as f:
+            with open(file_path, encoding='utf-8') as f:
                 new_text_to_include = f.read()
 
             new_text_to_include, _, _ = process.filter_inclusions(
@@ -274,7 +274,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
 
         text_to_include = ''
         for file_path in file_paths_to_include:
-            with open(file_path) as f:
+            with open(file_path, encoding='utf-8') as f:
                 new_text_to_include = f.read()
 
             new_text_to_include, _, _ = process.filter_inclusions(
