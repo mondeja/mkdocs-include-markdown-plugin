@@ -39,15 +39,17 @@ repos:
         args:
           - --filter-files
         files: \.py$
-  - repo: local
+  - repo: https://github.com/mondeja/mdpo
+    rev: v0.3.66
     hooks:
-      - id: update-translations
-        name: update-translations
-        entry: python scripts/update_translations.py
-        language: python
-        additional_dependencies:
-          - mdpo==0.3.61
-        files: (README\.md|locale)
+      - id: md2po2md
+        files: ^README\.md
+        args:
+          - -l
+          - es
+          - -o
+          - locale/{lang}
+          - --no-location
   - repo: https://github.com/mondeja/pre-commit-hooks
     rev: v1.5.2
     hooks:

@@ -408,11 +408,58 @@ Example data
 ''',
             id='heading-offset=<str>',
         ),
+        # Custom encoding
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=true
+%}
+''',
+            '''Тест інклуде
+азъ
+два
+Ббэ
+[bɛ]буки
+[ˈbukʲɪ]/bʲbadобаóba
+Вввэ
+vɛвѣди
+ˈvʲedʲɪvʲвот
+Гггэ
+ɡɛглаголь
+ɡɫɐˈɡolʲɡ/ or /gʲЖж	год god
+ДдД д	дэdɐˈbro
+''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath}   -->
+Тест інклуде
+азъ
+два
+Ббэ
+[bɛ]буки
+[ˈbukʲɪ]/bʲbadобаóba
+Вввэ
+vɛвѣди
+ˈvʲedʲɪvʲвот
+Гггэ
+ɡɛглаголь
+ɡɫɐˈɡolʲɡ/ or /gʲЖж	год god
+ДдД д	дэdɐˈbro
+
+<!-- END INCLUDE -->
+''',
+            id='russian-characters',
+        ),
     ),
 )
 def test_include_markdown(
-    includer_schema, content_to_include,
-    expected_result_schema, page, tmp_path,
+    includer_schema,
+    content_to_include,
+    expected_result_schema,
+    page,
+    tmp_path,
 ):
     included_filepath = tmp_path / 'included.md'
     includer_filepath = tmp_path / 'includer.md'
