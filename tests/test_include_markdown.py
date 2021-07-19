@@ -408,24 +408,72 @@ Example data
 ''',
             id='heading-offset=<str>',
         ),
+        # Custom encoding
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=true
+%}
+''',
+            '''Тест інклуде
+азъ
+два
+Ббэ
+[bɛ]буки
+[ˈbukʲɪ]/bʲbadобаóba
+Вввэ
+vɛвѣди
+ˈvʲedʲɪvʲвот
+Гггэ
+ɡɛглаголь
+ɡɫɐˈɡolʲɡ/ or /gʲЖж	год god
+ДдД д	дэdɐˈbro
+''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath}   -->
+Тест інклуде
+азъ
+два
+Ббэ
+[bɛ]буки
+[ˈbukʲɪ]/bʲbadобаóba
+Вввэ
+vɛвѣди
+ˈvʲedʲɪvʲвот
+Гггэ
+ɡɛглаголь
+ɡɫɐˈɡolʲɡ/ or /gʲЖж	год god
+ДдД д	дэdɐˈbro
+
+<!-- END INCLUDE -->
+''',
+            id='russian-characters',
+        ),
     ),
 )
 def test_include_markdown(
-    includer_schema, content_to_include,
-    expected_result_schema, page, tmp_path,
+    includer_schema,
+    content_to_include,
+    expected_result_schema,
+    page,
+    tmp_path,
 ):
     included_filepath = tmp_path / 'included.md'
     includer_filepath = tmp_path / 'includer.md'
 
-    included_filepath.write_text(content_to_include)
+    included_filepath.write_text(content_to_include, encoding='utf-8')
     includer_filepath.write_text(
         content_to_include.replace('{filepath}', included_filepath.as_posix()),
+        encoding='utf-8',
     )
 
     page_content = includer_schema.replace(
         '{filepath}', included_filepath.as_posix(),
     )
-    includer_filepath.write_text(page_content)
+    includer_filepath.write_text(page_content, encoding='utf-8')
 
     expected_result = expected_result_schema.replace(
         '{filepath}', included_filepath.as_posix(),

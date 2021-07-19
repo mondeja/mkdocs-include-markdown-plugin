@@ -6,8 +6,7 @@ Plugin de inclusiones Markdown para Mkdocs.
 
 [![PyPI](https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white)][pypi-link]
 [![Tests](https://img.shields.io/github/workflow/status/mondeja/mkdocs-include-markdown-plugin/CI?logo=github&label=tests)][tests-link]
-[![Coverage
-status](https://img.shields.io/coveralls/github/mondeja/mkdocs-include-markdown-plugin?logo=coveralls)][coverage-link]
+[![Coverage status](https://img.shields.io/coveralls/github/mondeja/mkdocs-include-markdown-plugin?logo=coveralls)][coverage-link]
 
 > Lee este documento en otros idiomas:
 >
@@ -49,27 +48,27 @@ para filtrar el contenido a incluir.
 
 - **start**: Delimitador que marca el comienzo del contenido a incluir.
 - **end**: Delimitador que marca el final del contenido a incluir.
-- **preserve-includer-indent** (*true*): Cuando esta opción está habilitada
-(por defecto), cada línea del contenido a incluir es indentada con el mismo
-número de espacios usados para indentar la plantilla `{% %}` incluidora. Los
-valores posibles son `true` y `false`.
+- **preserve-includer-indent** (*true*): Cuando esta opción está habilitada (por
+defecto), cada línea del contenido a incluir es indentada con el mismo número de
+espacios usados para indentar la plantilla `{% %}` incluidora. Los valores
+posibles son `true` y `false`.
 - **dedent** (*false*): Si se habilita, el contenido incluido será dedentado.
 - **rewrite-relative-urls** (*true*): Cuando esta opción está habilitada (por
 defecto), los enlaces e imágenes Markdown en el contenido que están definidas
-mediante una URL relativa son rescritos para funcionar correctamente en su
-nueva localización. Los valores posibles son `true` y `false`.
+mediante una URL relativa son rescritos para funcionar correctamente en su nueva
+localización. Los valores posibles son `true` y `false`.
 - **comments** (*true*): Cuando esta opción está habilitada (por defecto), el
 contenido a incluir es envuelto por comentarios `<!-- BEGIN INCLUDE -->` y
 `<!-- END INCLUDE -->` que ayudan a identificar que el contenido ha sido
 incluido. Los valores posibles son `true` y `false`.
 - **heading-offset** (0): Incrementa el tamaño de encabezados por este número.
 Sólo soporta sintaxis de encabezado de almohadilla (#). El valor máximo es 5.
-- **exclude**: Expecifica mediante un glob los archivos que deben ser
-ignorados. Sólo es útil pasando globs para incluir múltiples archivos.
+- **exclude**: Expecifica mediante un glob los archivos que deben ser ignorados.
+Sólo es útil pasando globs para incluir múltiples archivos.
 
-> Nota que las cadenas **start** y **end** pueden contener caracteres usuales
-de secuencias de escape (al estilo Python) como `\n`, lo cual es útil si
-necesita hacer coincidir en un disparador de inicio o fin de varias líneas.
+> Nota que las cadenas **start** y **end** pueden contener caracteres usuales de
+secuencias de escape (al estilo Python) como `\n`, lo cual es útil si necesita
+hacer coincidir en un disparador de inicio o fin de varias líneas.
 
 ##### Ejemplo
 
@@ -113,17 +112,17 @@ Incluye el contenido de un archivo o un grupo de archivos.
 
 - **start**: Delimitador que marca el comienzo del contenido a incluir.
 - **end**: Delimitador que marca el final del contenido a incluir.
-- **preserve-includer-indent** (*true*): Cuando esta opción está habilitada
-(por defecto), cada línea del contenido a incluir es indentada con el mismo
-número de espacios usados para indentar la plantilla `{% %}` incluidora. Los
-valores posibles son `true` y `false`.
+- **preserve-includer-indent** (*true*): Cuando esta opción está habilitada (por
+defecto), cada línea del contenido a incluir es indentada con el mismo número de
+espacios usados para indentar la plantilla `{% %}` incluidora. Los valores
+posibles son `true` y `false`.
 - **dedent** (*false*): Si se habilita, el contenido incluido será dedentado.
-- **exclude**: Expecifica mediante un glob los archivos que deben ser
-ignorados. Sólo es útil pasando globs para incluir múltiples archivos.
+- **exclude**: Expecifica mediante un glob los archivos que deben ser ignorados.
+Sólo es útil pasando globs para incluir múltiples archivos.
 
-> Nota que las cadenas **start** y **end** pueden contener caracteres usuales
-de secuencias de escape (al estilo Python) como `\n`, lo cual es útil si
-necesita hacer coincidir en un disparador de inicio o fin de varias líneas.
+> Nota que las cadenas **start** y **end** pueden contener caracteres usuales de
+secuencias de escape (al estilo Python) como `\n`, lo cual es útil si necesita
+hacer coincidir en un disparador de inicio o fin de varias líneas.
 
 ##### Ejemplo
 
