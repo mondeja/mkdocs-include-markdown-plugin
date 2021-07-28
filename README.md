@@ -3,8 +3,6 @@
 
 Mkdocs Markdown includer plugin.
 
-## Status
-
 <!-- mdpo-disable -->
 
 [![PyPI][pypi-version-badge-link]][pypi-link]
@@ -12,10 +10,13 @@ Mkdocs Markdown includer plugin.
 [![Coverage status][coverage-image]][coverage-link]
 <!-- mdpo-enable -->
 
+<!-- mdpo-disable -->
+<!-- mdpo-enable-next-line -->
 > Read this document in other languages:
 >
-> <!-- mdpo-disable-next-line -->
 > - [Español][es-readme-link]
+> - [Français][fr-readme-link]
+<!-- mdpo-enable -->
 
 ## Installation
 
@@ -172,3 +173,4 @@ start or end trigger.
 [mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io
 
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
+[fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md

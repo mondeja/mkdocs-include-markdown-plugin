@@ -2,8 +2,6 @@
 
 Plugin de inclusiones Markdown para Mkdocs.
 
-## Estado
-
 [![PyPI](https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white)][pypi-link]
 [![Tests](https://img.shields.io/github/workflow/status/mondeja/mkdocs-include-markdown-plugin/CI?logo=github&label=tests)][tests-link]
 [![Coverage status](https://img.shields.io/coveralls/github/mondeja/mkdocs-include-markdown-plugin?logo=coveralls)][coverage-link]
@@ -11,6 +9,7 @@ Plugin de inclusiones Markdown para Mkdocs.
 > Lee este documento en otros idiomas:
 >
 > - [Español][es-readme-link]
+> - [Français][fr-readme-link]
 
 ## Instalación
 
@@ -163,3 +162,4 @@ separar este plugin de la documentación de
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
 [mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
+[fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
