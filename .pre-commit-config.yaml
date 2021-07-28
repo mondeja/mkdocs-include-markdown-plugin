@@ -47,6 +47,8 @@ repos:
         args:
           - -l
           - es
+          - -l
+          - fr
           - -o
           - locale/{lang}
           - --no-location
