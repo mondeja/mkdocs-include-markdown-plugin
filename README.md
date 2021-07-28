@@ -3,8 +3,6 @@
 
 Mkdocs Markdown includer plugin.
 
-## Status
-
 <!-- mdpo-disable -->
 
 [![PyPI][pypi-version-badge-link]][pypi-link]

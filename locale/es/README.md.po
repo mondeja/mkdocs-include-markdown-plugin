@@ -5,9 +5,6 @@ msgstr ""
 msgid "Mkdocs Markdown includer plugin."
 msgstr "Plugin de inclusiones Markdown para Mkdocs."
 
-msgid "Status"
-msgstr "Estado"
-
 msgid "Installation"
 msgstr "Instalación"
 
