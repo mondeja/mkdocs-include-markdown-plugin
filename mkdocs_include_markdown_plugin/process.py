@@ -88,6 +88,103 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
 )
 
 
+def transform_p_by_p_skipping_codeblocks(markdown, func):
+    '''Apply a transformation paragraph by paragraph in a Markdown text using
+    a function.
+
+    Skip indented and fenced codeblock lines, where the transformation never is
+    applied.
+    '''
+    _inside_fcodeblock = False            # inside fenced codeblock
+    _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
+    _inside_icodeblock = False            # inside indented codeblock
+
+    lines, current_paragraph = ([], '')
+
+    def process_current_paragraph_lines():
+        lines.extend(func(current_paragraph).splitlines(keepends=True))
+
+    for line in markdown.splitlines(keepends=True):
+        if not _inside_fcodeblock and not _inside_icodeblock:
+            lstripped_line = line.lstrip()
+            if any([
+                lstripped_line.startswith('```'),
+                lstripped_line.startswith('~~~'),
+            ]):
+                _inside_fcodeblock = True
+                _current_fcodeblock_delimiter = line[:3]
+                lines.append(line)
+                if current_paragraph:
+                    process_current_paragraph_lines()
+                    current_paragraph = ''
+            elif (
+                # 5 and 2 including newline character
+                (line.startswith('    ') and len(line) == 5) or
+                (line.startswith('\t') and len(line) == 2)
+            ):
+                _inside_icodeblock = True
+                lines.append(line)
+                if current_paragraph:
+                    process_current_paragraph_lines()
+                    current_paragraph = ''
+            else:
+                current_paragraph += line
+        else:
+            lines.append(line)
+            if _current_fcodeblock_delimiter:
+                if line.lstrip().startswith(_current_fcodeblock_delimiter):
+                    _inside_fcodeblock = False
+                    _current_fcodeblock_delimiter = None
+            else:
+                if not line.startswith('    '):
+                    _inside_icodeblock = False
+
+    process_current_paragraph_lines()
+
+    return ''.join(lines)
+
+
+def transform_line_by_line_skipping_codeblocks(markdown, func):
+    '''Apply a transformation line by line in a Markdown text using a function.
+
+    Skip indented and fenced codeblock lines, where the transformation never is
+    applied.
+    '''
+    _inside_fcodeblock = False            # inside fenced codeblock
+    _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
+    _inside_icodeblock = False            # inside indented codeblock
+
+    lines = []
+    for line in markdown.splitlines(keepends=True):
+        if not _inside_fcodeblock and not _inside_icodeblock:
+            lstripped_line = line.lstrip()
+            if any([
+                lstripped_line.startswith('```'),
+                lstripped_line.startswith('~~~'),
+            ]):
+                _inside_fcodeblock = True
+                _current_fcodeblock_delimiter = line[:3]
+            elif (
+                # 5 and 2 including newline character
+                (line.startswith('    ') and len(line) == 4) or
+                (line.startswith('\t') and len(line) == 1)
+            ):
+                _inside_icodeblock = True
+            else:
+                line = func(line)
+        else:
+            if _current_fcodeblock_delimiter:
+                if line.lstrip().startswith(_current_fcodeblock_delimiter):
+                    _inside_fcodeblock = False
+                    _current_fcodeblock_delimiter = None
+            else:
+                if not line.startswith('    '):
+                    _inside_icodeblock = False
+        lines.append(line)
+
+    return ''.join(lines)
+
+
 def rewrite_relative_urls(
     markdown: str, source_path: Path, destination_path: Path,
 ) -> str:
@@ -131,23 +228,26 @@ def rewrite_relative_urls(
             + m.string[href_end:match_end]
         )
 
-    markdown = re.sub(
-        MARKDOWN_LINK_REGEX,
-        partial(found_href, url_group_index=3),
+    def transform(paragraph):
+        paragraph = re.sub(
+            MARKDOWN_LINK_REGEX,
+            partial(found_href, url_group_index=3),
+            paragraph,
+        )
+        paragraph = re.sub(
+            MARKDOWN_IMAGE_REGEX,
+            partial(found_href, url_group_index=3),
+            paragraph,
+        )
+        return re.sub(
+            MARKDOWN_LINK_DEFINITION_REGEX,
+            partial(found_href, url_group_index=2),
+            paragraph,
+        )
+    return transform_p_by_p_skipping_codeblocks(
         markdown,
+        transform,
     )
-    markdown = re.sub(
-        MARKDOWN_IMAGE_REGEX,
-        partial(found_href, url_group_index=3),
-        markdown,
-    )
-    markdown = re.sub(
-        MARKDOWN_LINK_DEFINITION_REGEX,
-        partial(found_href, url_group_index=2),
-        markdown,
-    )
-
-    return markdown
 
 
 def interpret_escapes(value: str) -> str:
@@ -187,36 +287,10 @@ def filter_inclusions(new_start, new_end, text_to_include):
 
 def increase_headings_offset(markdown, offset=0):
     '''Increases the headings depth of a snippet of Makdown content.'''
-    _inside_fcodeblock = False            # inside fenced codeblock
-    _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
-    _inside_icodeblock = False            # inside indented codeblcok
-
-    lines = []
-    for line in markdown.splitlines(keepends=True):
-        lstripped_line = line.lstrip()
-
-        if not _inside_fcodeblock and not _inside_icodeblock:
-            if any([
-                lstripped_line.startswith('```'),
-                lstripped_line.startswith('~~~'),
-            ]):
-                _inside_fcodeblock = True
-                _current_fcodeblock_delimiter = line[:3]
-            elif line.startswith('    '):
-                _inside_icodeblock = True
-            elif line.startswith('#'):
-                line = '#' * offset + line
-        else:
-            if _current_fcodeblock_delimiter:
-                if lstripped_line.startswith(_current_fcodeblock_delimiter):
-                    _inside_fcodeblock = False
-                    _current_fcodeblock_delimiter = None
-            else:
-                if not line.startswith('    '):
-                    _inside_icodeblock = False
-        lines.append(line)
-
-    return ''.join(lines)
+    return transform_line_by_line_skipping_codeblocks(
+        markdown,
+        lambda line: ('#' * offset + line) if line.startswith('#') else line,
+    )
 
 
 def filter_paths(filepaths, ignore_paths=[]):
