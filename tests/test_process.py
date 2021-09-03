@@ -22,7 +22,7 @@ from mkdocs_include_markdown_plugin.process import (
             '''
         Here's a [link](../CHANGELOG.md) to the changelog.
 ''',
-            id='relative link',
+            id='relative-link',
         ),
         pytest.param(
             '''Here's a [link whose text is really long and so is broken across
@@ -33,7 +33,7 @@ multiple lines](CHANGELOG.md) to the changelog.
             '''Here's a [link whose text is really long and so is broken across
 multiple lines](../CHANGELOG.md) to the changelog.
 ''',
-            id='multiline link',
+            id='multiline-link',
         ),
         pytest.param(
             '''
@@ -44,7 +44,7 @@ Check [this link](foobar.md) for more information
             '''
 Check [this link](includes/feature_a/foobar.md) for more information
 ''',
-            id='relative link down',
+            id='relative-link-down',
         ),
         pytest.param(
             '''Here's a [link](CHANGELOG.md#v1.2.3) to the changelog.
@@ -53,7 +53,7 @@ Check [this link](includes/feature_a/foobar.md) for more information
             'docs/nav.md',
             '''Here's a [link](../CHANGELOG.md#v1.2.3) to the changelog.
 ''',
-            id='link with hash',
+            id='link-with-hash',
         ),
         pytest.param(
             '''Here's a [link][changelog] to the changelog.
@@ -66,7 +66,7 @@ Check [this link](includes/feature_a/foobar.md) for more information
 
 [changelog]: ../CHANGELOG.md
 ''',
-            id='link reference',
+            id='link-reference',
         ),
         pytest.param(
             '''Here's a diagram: ![diagram](assets/diagram.png)''',
@@ -80,7 +80,7 @@ Check [this link](includes/feature_a/foobar.md) for more information
             'README',
             'docs/home.md',
             '''Build status: [![Build Status](../badge.png)](../build/)''',
-            id='image inside link',
+            id='image-inside-link',
         ),
         pytest.param(
             '''[Homepage](/) [Github](https://github.com/user/repo)
@@ -89,14 +89,44 @@ Check [this link](includes/feature_a/foobar.md) for more information
             'docs/nav.md',
             '''[Homepage](/) [Github](https://github.com/user/repo)
 [Privacy policy](/privacy)''',
-            id='absolute urls',
+            id='absolute-urls',
         ),
         pytest.param(
             '''[contact us](mailto:hello@example.com)''',
             'README',
             'docs/nav.md',
             '''[contact us](mailto:hello@example.com)''',
-            id='mailto urls',
+            id='mailto-urls',
+        ),
+        pytest.param(
+            '''```cpp
+// Some code in which rewrites shouldn't be proccessed.
+// https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/78
+const auto lambda = []() { .... };
+```
+''',
+            'README',
+            'examples/lambda.md',
+            '''```cpp
+// Some code in which rewrites shouldn't be proccessed.
+// https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/78
+const auto lambda = []() { .... };
+```
+''',
+            id='cpp-likelink-fenced-codeblock',
+        ),
+        pytest.param(
+            '''\t
+\tconst auto lambda = []() { .... };
+
+''',
+            'README',
+            'examples/lambda.md',
+            '''\t
+\tconst auto lambda = []() { .... };
+
+''',
+            id='cpp-likelink-indented-codeblock',
         ),
     ),
 )
