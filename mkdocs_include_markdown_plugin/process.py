@@ -112,11 +112,11 @@ def transform_p_by_p_skipping_codeblocks(markdown, func):
                 lstripped_line.startswith('~~~'),
             ]):
                 _inside_fcodeblock = True
-                _current_fcodeblock_delimiter = line[:3]
-                lines.append(line)
+                _current_fcodeblock_delimiter = lstripped_line[:3]
                 if current_paragraph:
                     process_current_paragraph_lines()
                     current_paragraph = ''
+                lines.append(line)
             elif (
                 # 5 and 2 including newline character
                 (line.startswith('    ') and len(line) == 5) or
