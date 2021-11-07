@@ -91,10 +91,10 @@ msgstr ""
 "necesita hacer coincidir en un disparador de inicio o fin de varias líneas."
 
 msgid "Examples"
-msgstr "Ejemplo"
+msgstr "Ejemplos"
 
 msgid "Acknowledgment"
-msgstr "Agradecimientos"
+msgstr "Agradecimiento"
 
 msgid ""
 "Joe Rickerby and contributors for [giving me the "

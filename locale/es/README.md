@@ -2,9 +2,9 @@
 
 Plugin de inclusiones Markdown para Mkdocs.
 
-[![PyPI](https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white)][pypi-link]
-[![Tests](https://img.shields.io/github/workflow/status/mondeja/mkdocs-include-markdown-plugin/CI?logo=github&label=tests)][tests-link]
-[![Coverage status](https://img.shields.io/coveralls/github/mondeja/mkdocs-include-markdown-plugin?logo=coveralls)][coverage-link]
+[![PyPI][pypi-version-badge-link]][pypi-link]
+[![Tests][tests-image]][tests-link] [![Coverage
+status][coverage-image]][coverage-link]
 
 > Lee este documento en otros idiomas:
 >
@@ -69,7 +69,7 @@ Sólo es útil pasando globs para incluir múltiples archivos.
 secuencias de escape (al estilo Python) como `\n`, lo cual es útil si necesita
 hacer coincidir en un disparador de inicio o fin de varias líneas.
 
-##### Ejemplo
+##### Ejemplos
 
 ```jinja
 {%
@@ -123,7 +123,7 @@ Sólo es útil pasando globs para incluir múltiples archivos.
 secuencias de escape (al estilo Python) como `\n`, lo cual es útil si necesita
 hacer coincidir en un disparador de inicio o fin de varias líneas.
 
-##### Ejemplo
+##### Ejemplos
 
 ```jinja
 ~~~yaml
@@ -146,7 +146,7 @@ hacer coincidir en un disparador de inicio o fin de varias líneas.
 %}
 ```
 
-## Agradecimientos
+## Agradecimiento
 
 - Joe Rickerby y contribuidores por [darme los permisos][cibuildwheel-470] para
 separar este plugin de la documentación de

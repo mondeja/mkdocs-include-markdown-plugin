@@ -40,7 +40,7 @@ repos:
           - --filter-files
         files: \.py$
   - repo: https://github.com/mondeja/mdpo
-    rev: v0.3.66
+    rev: v0.3.72
     hooks:
       - id: md2po2md
         files: ^README\.md

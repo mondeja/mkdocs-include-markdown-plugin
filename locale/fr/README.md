@@ -2,9 +2,9 @@
 
 Plugin d'inclusion de Markdown pour Mkdocs.
 
-[![PyPI](https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white)][pypi-link]
-[![Tests](https://img.shields.io/github/workflow/status/mondeja/mkdocs-include-markdown-plugin/CI?logo=github&label=tests)][tests-link]
-[![Coverage status](https://img.shields.io/coveralls/github/mondeja/mkdocs-include-markdown-plugin?logo=coveralls)][coverage-link]
+[![PyPI][pypi-version-badge-link]][pypi-link]
+[![Tests][tests-image]][tests-link] [![Coverage
+status][coverage-image]][coverage-link]
 
 > Lire ce document dans d'autres langues:
 >
