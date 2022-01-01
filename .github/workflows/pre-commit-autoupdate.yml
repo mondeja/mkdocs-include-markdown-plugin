@@ -20,6 +20,7 @@ jobs:
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3.10.0
         with:
+          token: ${{ secrets.PRECOMMIT_AUTOUPDATE_TOKEN }}
           branch: update/pre-commit-autoupdate
           title: Update pre-commit hooks
           commit-message: Update pre-commit hooks versions
