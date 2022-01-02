@@ -1,12 +1,12 @@
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.19.4
+    rev: v2.31.0
     hooks:
       - id: pyupgrade
         args:
           - --py36-plus
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
       - id: trailing-whitespace
         name: trailing-whitespace
@@ -15,32 +15,32 @@ repos:
       - id: double-quote-string-fixer
         name: double-quote-string-fixer
   - repo: https://github.com/asottile/add-trailing-comma
-    rev: v2.1.0
+    rev: v2.2.1
     hooks:
       - id: add-trailing-comma
         name: add-trailing-comma
         args:
           - --py36-plus
   - repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v1.18.0
+    rev: v1.20.0
     hooks:
       - id: setup-cfg-fmt
   - repo: https://github.com/PyCQA/flake8
-    rev: 3.9.2
+    rev: 4.0.1
     hooks:
       - id: flake8
         additional_dependencies:
           - flake8-print
           - flake8-implicit-str-concat
   - repo: https://github.com/PyCQA/isort
-    rev: 5.9.2
+    rev: 5.10.1
     hooks:
       - id: isort
         args:
           - --filter-files
         files: \.py$
   - repo: https://github.com/mondeja/mdpo
-    rev: v0.3.72
+    rev: v0.3.84
     hooks:
       - id: md2po2md
         files: ^README\.md
@@ -57,13 +57,13 @@ repos:
     hooks:
       - id: dev-extras-required
   - repo: https://github.com/mondeja/pre-commit-po-hooks
-    rev: v1.6.0
+    rev: v1.6.1
     hooks:
       - id: obsolete-messages
       - id: untranslated-messages
       - id: remove-metadata
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.26.1
+    rev: v1.26.3
     hooks:
       - id: yamllint
         files: .+\.(yml|yaml)
@@ -71,7 +71,7 @@ repos:
           - -c
           - .yamllint
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.1.3
+    rev: v0.3.2
     hooks:
       - id: markdownlint-cli2
         name: markdownlint-readme
