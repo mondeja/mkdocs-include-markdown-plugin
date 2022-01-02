@@ -9,6 +9,9 @@ jobs:
   action-update-license-year:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: FantasticFiasco/action-update-license-year@v2.1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
