@@ -386,6 +386,7 @@ Example data
 ''',
             id='heading-offset=0',
         ),
+
         # Markdown heading offset string
         pytest.param(
             '''# Header
@@ -408,6 +409,76 @@ Example data
 ''',
             id='heading-offset=<str>',
         ),
+
+        # Markdown heading negative offset
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=-2
+%}
+''',
+            '''#### This should be a second level heading.
+
+Example data''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath}   -->
+## This should be a second level heading.
+
+Example data
+<!-- END INCLUDE -->
+''',
+            id='heading-offset=-2',
+        ),
+
+        # Markdown heading positive offset beyond rational limits
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=90
+%}
+''',
+            '''#### This should be a 94th level heading.
+
+Example data''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath}   -->
+''' + '#' * 94 + ''' This should be a 94th level heading.
+
+Example data
+<!-- END INCLUDE -->
+''',
+            id='heading-offset=90',
+        ),
+
+        # Markdown heading negative offset beyond rational limits
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=-90
+%}
+''',
+            '''#### This should be a first level heading.
+
+Example data''',
+            '''# Header
+
+<!-- BEGIN INCLUDE {filepath}   -->
+# This should be a first level heading.
+
+Example data
+<!-- END INCLUDE -->
+''',
+            id='heading-offset=-90',
+        ),
+
         # Custom encoding
         pytest.param(
             '''# Header

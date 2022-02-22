@@ -68,8 +68,9 @@ content to include.
  include is wrapped by `<!-- BEGIN INCLUDE -->` and `<!-- END INCLUDE -->`
  comments which help to identify that the content has been included. Possible
  values are `true` and `false`.
-- **heading-offset** (0): Increases the Markdown heading depth by this number.
- Only supports number sign (#) heading syntax. Max offset of 5.
+- **heading-offset** (0): Increases or decreases the Markdown headings depth
+ by this number. Only supports number sign (`#`) heading syntax. Accepts
+ negative values to drop leading `#` characters.
 - **exclude**: Specify with a glob which files should be ignored. Only useful
  when passing globs to include multiple files.
 
@@ -106,7 +107,7 @@ start or end trigger.
 
 ```jinja
 {%
-   include-markdown "../LICENSE*.md"
+   include-markdown "../LICENSE*"
    start="<!--license-start-->"
    end="<!--license-end-->"
    exclude="../LICENSE*.rst"
@@ -150,7 +151,7 @@ start or end trigger.
 
 ```jinja
 {%
-   include "../LICENSE*.md"
+   include "../LICENSE*"
    exclude="../LICENSE*.rst"
 %}
 ```

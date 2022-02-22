@@ -287,9 +287,20 @@ def filter_inclusions(new_start, new_end, text_to_include):
 
 def increase_headings_offset(markdown, offset=0):
     '''Increases the headings depth of a snippet of Makdown content.'''
+    if not offset:
+        return markdown
     return transform_line_by_line_skipping_codeblocks(
         markdown,
-        lambda line: ('#' * offset + line) if line.startswith('#') else line,
+        (
+            lambda line: ('#' * offset + line)
+            if line.startswith('#') else line
+        ) if offset > 0 else (
+            lambda line: line if not line.startswith('#') else (
+                re.sub('^' + '#' * abs(offset), '', line)
+                if line.startswith('#' * abs(offset)) else
+                '#' + line.lstrip('#')
+            )
+        ),
     )
 
 
