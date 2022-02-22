@@ -59,9 +59,10 @@ emplacement. Les valeurs possibles sont `true` et `false`.
 contenu à inclure est entouré de `<!-- BEGIN INCLUDE -->` et
 `<!-- END INCLUDE -->` commentaires qui aident à identifier que le contenu a été
 inclus. Les valeurs possibles sont `true` et `false`.
-- **heading-offset** (0): Augmente la profondeur de cap Markdown de ce nombre.
-Prend uniquement en charge la syntaxe d'en-tête du signe dièse (#). Décalage
-maximum de 5.
+- **heading-offset** (0): Augmente ou diminue la profondeur des en-têtes
+Markdown de ce nombre. Ne prend en charge que la syntaxe d'en-tête du signe
+dièse (`#`). Cet argument accepte les valeurs négatives pour supprimer les
+caractères `#` de tête.
 - Spécifiez avec un glob quels fichiers doivent être ignorés. Uniquement utile
 lors du passage de globs pour inclure plusieurs fichiers.
 
@@ -98,7 +99,7 @@ si vous devez faire correspondre un déclencheur de début ou de fin multiligne.
 
 ```jinja
 {%
-   include-markdown "../LICENSE*.md"
+   include-markdown "../LICENSE*"
    start="<!--license-start-->"
    end="<!--license-end-->"
    exclude="../LICENSE*.rst"
@@ -140,7 +141,7 @@ si vous devez faire correspondre un déclencheur de début ou de fin multiligne.
 
 ```jinja
 {%
-   include "../LICENSE*.md"
+   include "../LICENSE*"
    exclude="../LICENSE*.rst"
 %}
 ```

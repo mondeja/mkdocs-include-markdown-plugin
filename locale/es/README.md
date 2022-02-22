@@ -60,8 +60,10 @@ localización. Los valores posibles son `true` y `false`.
 contenido a incluir es envuelto por comentarios `<!-- BEGIN INCLUDE -->` y
 `<!-- END INCLUDE -->` que ayudan a identificar que el contenido ha sido
 incluido. Los valores posibles son `true` y `false`.
-- **heading-offset** (0): Incrementa el tamaño de encabezados por este número.
-Sólo soporta sintaxis de encabezado de almohadilla (#). El valor máximo es 5.
+- **heading-offset** (0): Incrementa o disminuye la profundidad de encabezados
+Markdown por el número especificado. Sólo soporta la sintaxis de encabezado de
+caracteres de hash (`#`). Acepta valores negativos para eliminar caracteres `#`
+a la izquierda.
 - **exclude**: Expecifica mediante un glob los archivos que deben ser ignorados.
 Sólo es útil pasando globs para incluir múltiples archivos.
 
@@ -98,7 +100,7 @@ hacer coincidir en un disparador de inicio o fin de varias líneas.
 
 ```jinja
 {%
-   include-markdown "../LICENSE*.md"
+   include-markdown "../LICENSE*"
    start="<!--license-start-->"
    end="<!--license-end-->"
    exclude="../LICENSE*.rst"
@@ -141,7 +143,7 @@ hacer coincidir en un disparador de inicio o fin de varias líneas.
 
 ```jinja
 {%
-   include "../LICENSE*.md"
+   include "../LICENSE*"
    exclude="../LICENSE*.rst"
 %}
 ```
