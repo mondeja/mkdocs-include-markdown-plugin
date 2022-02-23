@@ -60,7 +60,12 @@ ARGUMENT_REGEXES = {
 }
 
 
-def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
+def get_file_content(
+        markdown,
+        abs_src_path,
+        cumulative_heading_offset=0,
+        build=None,
+):
     page_src_path = Path(abs_src_path)
 
     def found_include_tag(match):
@@ -106,6 +111,8 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             raise FileNotFoundError(
                 f'Any files found using \'{filename}\' at {page_src_path}',
             )
+        else:
+            build.included_files.extend(file_paths_to_include)
 
         # handle options and regex modifiers
 
@@ -157,6 +164,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
+                build=build,
             )
 
             text_to_include += new_text_to_include
@@ -219,6 +227,8 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             raise FileNotFoundError(
                 f'Any files found using \'{filename}\' at {page_src_path}',
             )
+        else:
+            build.included_files.extend(file_paths_to_include)
 
         # handle options and regex modifiers
 
@@ -287,6 +297,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
+                build=build,
             )
 
             # relative URLs rewriting
@@ -315,6 +326,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
                 new_text_to_include,
                 file_path,
                 cumulative_heading_offset=cumulative_heading_offset,
+                build=build,
             )
 
             if offset_match:
@@ -351,4 +363,8 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
 
 
 def on_page_markdown(markdown, page, **kwargs):
-    return get_file_content(markdown, page.file.abs_src_path)
+    return get_file_content(
+        markdown,
+        page.file.abs_src_path,
+        build=kwargs['build'],
+    )
