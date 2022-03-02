@@ -53,25 +53,33 @@ paths can be ignored using the `exclude` argument:
 Includes Markdown files content, optionally using two delimiters to filter the
 content to include.
 
-- **start**: Delimiter that marks the beginning of the content to include.
-- **end**: Delimiter that marks the end of the content to include.
-- **preserve-includer-indent** (*true*): When this option is enabled (default),
+- <a name="include-markdown_start" href="#include-markdown_start">#</a>
+ **start**: Delimiter that marks the beginning of the content to include.
+- <a name="include-markdown_end" href="#include-markdown_end">#</a>
+ **end**: Delimiter that marks the end of the content to include.
+- <a name="include-markdown_preserve-includer-indent" href="#include-markdown_preserve-includer-indent">#</a>
+ **preserve-includer-indent** (*true*): When this option is enabled (default),
  every line of the content to include is indented with the same number of
  spaces used to indent the includer `{% %}` template. Possible values are
  `true` and `false`.
-- **dedent** (*false*): If enabled, the included content will be dedented.
-- **rewrite-relative-urls** (*true*): When this option is enabled (default),
+- <a name="include-markdown_dedent" href="#include-markdown_dedent">#</a>
+ **dedent** (*false*): If enabled, the included content will be dedented.
+- <a name="include-markdown_rewrite-relative-urls" href="#include-markdown_rewrite-relative-urls">#</a>
+ **rewrite-relative-urls** (*true*): When this option is enabled (default),
  Markdown links and images in the content that are specified by a relative URL
  are rewritten to work correctly in their new location. Possible values are
  `true` and `false`.
-- **comments** (*true*): When this option is enabled (default), the content to
+- <a name="include-markdown_comments" href="#include-markdown_comments">#</a>
+ **comments** (*true*): When this option is enabled (default), the content to
  include is wrapped by `<!-- BEGIN INCLUDE -->` and `<!-- END INCLUDE -->`
  comments which help to identify that the content has been included. Possible
  values are `true` and `false`.
-- **heading-offset** (0): Increases or decreases the Markdown headings depth
+- <a name="include-markdown_heading-offset" href="#include-markdown_heading-offset">#</a>
+ **heading-offset** (0): Increases or decreases the Markdown headings depth
  by this number. Only supports number sign (`#`) heading syntax. Accepts
  negative values to drop leading `#` characters.
-- **exclude**: Specify with a glob which files should be ignored. Only useful
+- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a>
+ **exclude**: Specify with a glob which files should be ignored. Only useful
  when passing globs to include multiple files.
 
 > Note that **start** and **end** strings may contain usual (Python-style)
@@ -119,14 +127,19 @@ start or end trigger.
 
 Includes the content of a file or a group of files.
 
-- **start**: Delimiter that marks the beginning of the content to include.
-- **end**: Delimiter that marks the end of the content to include.
-- **preserve-includer-indent** (*true*): When this option is enabled (default),
+- <a name="include_start" href="#include_start">#</a>
+ **start**: Delimiter that marks the beginning of the content to include.
+- <a name="include_end" href="#include_end">#</a>
+ **end**: Delimiter that marks the end of the content to include.
+- <a name="include_preserve-includer-indent" href="#include_preserve-includer-indent">#</a>
+ **preserve-includer-indent** (*true*): When this option is enabled (default),
  every line of the content to include is indented with the same number of
  spaces used to indent the includer `{% %}` template. Possible values are
  `true` and `false`.
-- **dedent** (*false*): If enabled, the included content will be dedented.
-- **exclude**: Specify with a glob which files should be ignored. Only useful
+- <a name="include_dedent" href="#include_dedent">#</a>
+ **dedent** (*false*): If enabled, the included content will be dedented.
+- <a name="include_exclude" href="#include_exclude">#</a>
+ **exclude**: Specify with a glob which files should be ignored. Only useful
  when passing globs to include multiple files.
 
 > Note that **start** and **end** strings may contain usual (Python-style)

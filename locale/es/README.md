@@ -45,27 +45,37 @@ ciertas rutas pueden ser ignoradas usando el argumento `exclude`:
 Incluye contenido de archivos Markdown, opcionalmente usando dos delimitadores
 para filtrar el contenido a incluir.
 
-- **start**: Delimitador que marca el comienzo del contenido a incluir.
-- **end**: Delimitador que marca el final del contenido a incluir.
-- **preserve-includer-indent** (*true*): Cuando esta opción está habilitada (por
-defecto), cada línea del contenido a incluir es indentada con el mismo número de
-espacios usados para indentar la plantilla `{% %}` incluidora. Los valores
+- <a name="include-markdown_start" href="#include-markdown_start">#</a> **start**:
+Delimitador que marca el comienzo del contenido a incluir.
+- <a name="include-markdown_end" href="#include-markdown_end">#</a> **end**:
+Delimitador que marca el final del contenido a incluir.
+- <a name="include-markdown_preserve-includer-indent"
+href="#include-markdown_preserve-includer-indent">#</a> **preserve-includer-indent**
+(*true*): Cuando esta opción está habilitada (por defecto), cada línea del
+contenido a incluir es indentada con el mismo número de espacios usados para
+indentar la plantilla `{% %}` incluidora. Los valores posibles son `true` y
+`false`.
+- <a name="include-markdown_dedent" href="#include-markdown_dedent">#</a> **dedent**
+(*false*): Si se habilita, el contenido incluido será dedentado.
+- <a name="include-markdown_rewrite-relative-urls"
+href="#include-markdown_rewrite-relative-urls">#</a> **rewrite-relative-urls** (*true*):
+Cuando esta opción está habilitada (por defecto), los enlaces e imágenes
+Markdown en el contenido que están definidas mediante una URL relativa son
+rescritos para funcionar correctamente en su nueva localización. Los valores
 posibles son `true` y `false`.
-- **dedent** (*false*): Si se habilita, el contenido incluido será dedentado.
-- **rewrite-relative-urls** (*true*): Cuando esta opción está habilitada (por
-defecto), los enlaces e imágenes Markdown en el contenido que están definidas
-mediante una URL relativa son rescritos para funcionar correctamente en su nueva
-localización. Los valores posibles son `true` y `false`.
-- **comments** (*true*): Cuando esta opción está habilitada (por defecto), el
-contenido a incluir es envuelto por comentarios `<!-- BEGIN INCLUDE -->` y
+- <a name="include-markdown_comments" href="#include-markdown_comments">#</a> **comments**
+(*true*): Cuando esta opción está habilitada (por defecto), el contenido a
+incluir es envuelto por comentarios `<!-- BEGIN INCLUDE -->` y
 `<!-- END INCLUDE -->` que ayudan a identificar que el contenido ha sido
 incluido. Los valores posibles son `true` y `false`.
-- **heading-offset** (0): Incrementa o disminuye la profundidad de encabezados
-Markdown por el número especificado. Sólo soporta la sintaxis de encabezado de
-caracteres de hash (`#`). Acepta valores negativos para eliminar caracteres `#`
-a la izquierda.
-- **exclude**: Expecifica mediante un glob los archivos que deben ser ignorados.
-Sólo es útil pasando globs para incluir múltiples archivos.
+- <a name="include-markdown_heading-offset"
+href="#include-markdown_heading-offset">#</a> **heading-offset** (0): Incrementa
+o disminuye la profundidad de encabezados Markdown por el número especificado.
+Sólo soporta la sintaxis de encabezado de caracteres de hash (`#`). Acepta
+valores negativos para eliminar caracteres `#` a la izquierda.
+- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a> **exclude**:
+Expecifica mediante un glob los archivos que deben ser ignorados. Sólo es útil
+pasando globs para incluir múltiples archivos.
 
 > Nota que las cadenas **start** y **end** pueden contener caracteres usuales de
 secuencias de escape (al estilo Python) como `\n`, lo cual es útil si necesita
@@ -111,15 +121,20 @@ hacer coincidir en un disparador de inicio o fin de varias líneas.
 
 Incluye el contenido de un archivo o un grupo de archivos.
 
-- **start**: Delimitador que marca el comienzo del contenido a incluir.
-- **end**: Delimitador que marca el final del contenido a incluir.
-- **preserve-includer-indent** (*true*): Cuando esta opción está habilitada (por
-defecto), cada línea del contenido a incluir es indentada con el mismo número de
-espacios usados para indentar la plantilla `{% %}` incluidora. Los valores
-posibles son `true` y `false`.
-- **dedent** (*false*): Si se habilita, el contenido incluido será dedentado.
-- **exclude**: Expecifica mediante un glob los archivos que deben ser ignorados.
-Sólo es útil pasando globs para incluir múltiples archivos.
+- <a name="include_start" href="#include_start">#</a> **start**: Delimitador que
+marca el comienzo del contenido a incluir.
+- <a name="include_end" href="#include_end">#</a> **end**: Delimitador que marca
+el final del contenido a incluir.
+- <a name="include_preserve-includer-indent"
+href="#include_preserve-includer-indent">#</a> **preserve-includer-indent** (*true*):
+Cuando esta opción está habilitada (por defecto), cada línea del contenido a
+incluir es indentada con el mismo número de espacios usados para indentar la
+plantilla `{% %}` incluidora. Los valores posibles son `true` y `false`.
+- <a name="include_dedent" href="#include_dedent">#</a> **dedent** (*false*): Si
+se habilita, el contenido incluido será dedentado.
+- <a name="include_exclude" href="#include_exclude">#</a> **exclude**:
+Especifica mediante un glob los archivos que deben ser ignorados. Sólo es útil
+pasando globs para incluir múltiples archivos.
 
 > Nota que las cadenas **start** y **end** pueden contener caracteres usuales de
 secuencias de escape (al estilo Python) como `\n`, lo cual es útil si necesita

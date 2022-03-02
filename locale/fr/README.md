@@ -45,25 +45,35 @@ certains paths peuvent être ignorés à l'aide de l'argument `exclude` :
 Inclut contenu des Markdown fichiers, en utilisant éventuellement deux
 délimiteurs pour filtrer le contenu à inclure.
 
-- **start**: Délimiteur qui marque le début du contenu à inclure.
-- **end**: Délimiteur qui marque la fin du contenu à inclure.
-- **preserve-includer-indent** (*true*): Lorsque cette option est activée (par
-défaut), chaque ligne du contenu à inclure est indentée avec le même nombre
-d'espaces utilisé pour indenter l'incluseur modèle `{% %}`.
-- **dedent** (*false*): Lorsque est activée, le contenu inclus sera déchiqueté.
-- **rewrite-relative-urls** (*true*): Lorsque cette option est activée (par
-défaut), liens et images Markdown dans le contenu qui sont spécifiés par une URL
-relative sont réécrits pour fonctionner correctement dans leur nouvel
-emplacement. Les valeurs possibles sont `true` et `false`.
-- **comments** (*true*): Lorsque cette option est activée (par défaut), le
-contenu à inclure est entouré de `<!-- BEGIN INCLUDE -->` et
-`<!-- END INCLUDE -->` commentaires qui aident à identifier que le contenu a été
-inclus. Les valeurs possibles sont `true` et `false`.
-- **heading-offset** (0): Augmente ou diminue la profondeur des en-têtes
-Markdown de ce nombre. Ne prend en charge que la syntaxe d'en-tête du signe
-dièse (`#`). Cet argument accepte les valeurs négatives pour supprimer les
-caractères `#` de tête.
-- Spécifiez avec un glob quels fichiers doivent être ignorés. Uniquement utile
+- <a name="include-markdown_start" href="#include-markdown_start">#</a> **start**:
+Délimiteur qui marque le début du contenu à inclure.
+- <a name="include-markdown_end" href="#include-markdown_end">#</a> **end**:
+Délimiteur qui marque la fin du contenu à inclure.
+- <a name="include-markdown_preserve-includer-indent"
+href="#include-markdown_preserve-includer-indent">#</a> **preserve-includer-indent**
+(*true*): Lorsque cette option est activée (par défaut), chaque ligne du contenu
+à inclure est indentée avec le même nombre d'espaces utilisé pour indenter
+l'incluseur modèle `{% %}`.
+- <a name="include-markdown_dedent" href="#include-markdown_dedent">#</a> **dedent**
+(*false*): Lorsque est activée, le contenu inclus sera déchiqueté.
+- <a name="include-markdown_rewrite-relative-urls"
+href="#include-markdown_rewrite-relative-urls">#</a> **rewrite-relative-urls** (*true*):
+Lorsque cette option est activée (par défaut), liens et images Markdown dans le
+contenu qui sont spécifiés par une URL relative sont réécrits pour fonctionner
+correctement dans leur nouvel emplacement. Les valeurs possibles sont `true` et
+`false`.
+- <a name="include-markdown_comments" href="#include-markdown_comments">#</a> **comments**
+(*true*): Lorsque cette option est activée (par défaut), le contenu à inclure
+est entouré de `<!-- BEGIN INCLUDE -->` et `<!-- END INCLUDE -->` commentaires
+qui aident à identifier que le contenu a été inclus. Les valeurs possibles sont
+`true` et `false`.
+- <a name="include-markdown_heading-offset"
+href="#include-markdown_heading-offset">#</a> **heading-offset** (0): Augmente
+ou diminue la profondeur des en-têtes Markdown de ce nombre. Ne prend en charge
+que la syntaxe d'en-tête du signe dièse (`#`). Cet argument accepte les valeurs
+négatives pour supprimer les caractères `#` de tête.
+- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a> **exclude**:
+Spécifiez avec un glob quels fichiers doivent être ignorés. Uniquement utile
 lors du passage de globs pour inclure plusieurs fichiers.
 
 > Notez que les chaînes **start** et **end** peuvent contenir des séquences
@@ -110,14 +120,20 @@ si vous devez faire correspondre un déclencheur de début ou de fin multiligne.
 
 Inclus le contenu d'un fichier ou d'un groupe de fichiers.
 
-- **start**: Délimiteur qui marque le début du contenu à inclure.
-- **end**: Délimiteur qui marque la fin du contenu à inclure.
-- **preserve-includer-indent** (*true*): Lorsque cette option est activée (par
-défaut), chaque ligne du contenu à inclure est indentée avec le même nombre
-d'espaces utilisé pour indenter l'incluseur modèle `{% %}`.
-- **dedent** (*false*): Lorsque est activée, le contenu inclus sera déchiqueté.
-- Spécifiez avec un glob quels fichiers doivent être ignorés. Uniquement utile
-lors du passage de globs pour inclure plusieurs fichiers.
+- <a name="include_start" href="#include_start">#</a> **start**: Délimiteur qui
+marque le début du contenu à inclure.
+- <a name="include_end" href="#include_end">#</a> **end**: Délimiteur qui marque
+la fin du contenu à inclure.
+- <a name="include_preserve-includer-indent"
+href="#include_preserve-includer-indent">#</a> **preserve-includer-indent** (*true*):
+Lorsque cette option est activée (par défaut), chaque ligne du contenu à inclure
+est indentée avec le même nombre d'espaces utilisé pour indenter l'incluseur
+modèle `{% %}`.
+- <a name="include_dedent" href="#include_dedent">#</a> **dedent** (*false*):
+Lorsque est activée, le contenu inclus sera déchiqueté.
+- <a name="include_exclude" href="#include_exclude">#</a> **exclude**: Spécifiez
+avec un glob quels fichiers doivent être ignorés. Uniquement utile lors du
+passage de globs pour inclure plusieurs fichiers.
 
 > Notez que les chaînes **start** et **end** peuvent contenir des séquences
 d'échappement habituelles (de style Python) telles que `\n`, ce qui est pratique
