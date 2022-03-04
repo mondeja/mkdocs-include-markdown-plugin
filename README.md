@@ -156,7 +156,7 @@ start or end trigger.
 
 ```jinja
     {%
-      include "../examples/__main__.py"
+      include "../examples.md"
       start="~~~yaml"
       end="~~~\n"
     %}

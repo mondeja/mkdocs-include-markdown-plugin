@@ -149,7 +149,7 @@ si vous devez faire correspondre un déclencheur de début ou de fin multiligne.
 
 ```jinja
     {%
-      include "../examples/__main__.py"
+      include "../examples.md"
       start="~~~yaml"
       end="~~~\n"
     %}

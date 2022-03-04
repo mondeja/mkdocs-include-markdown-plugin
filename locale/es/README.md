@@ -150,7 +150,7 @@ hacer coincidir en un disparador de inicio o fin de varias líneas.
 
 ```jinja
     {%
-      include "../examples/__main__.py"
+      include "../examples.md"
       start="~~~yaml"
       end="~~~\n"
     %}
