@@ -46,7 +46,11 @@ barbaz
 
 @pytest.mark.parametrize('directive', ('include', 'include-markdown'))
 @pytest.mark.parametrize(
-    ('includer_content', 'expected_result'),
+    (
+        'includer_content',
+        'expected_result',
+        'expected_warnings_schemas',
+    ),
     (
         pytest.param(
             '''{%
@@ -71,6 +75,7 @@ baz
 bar
 
 ''',
+            [],
             id='start-end',
         ),
         pytest.param(
@@ -92,16 +97,65 @@ This 02 must appear only without specifying start.
 baz
 
 ''',
+            [],
             id='end',
+        ),
+
+        # both start and end specified but not found in files to include
+        pytest.param(
+            '''{%
+  directive "./included*.txt"
+  start="<!-- start-not-found-2 -->"
+  end="<!-- end-not-found-2 -->"
+  comments=false
+%}
+
+{%
+  directive "./included*.txt"
+  start="<!-- start-not-found-1 -->"
+  end="<!-- end-not-found-1 -->"
+  comments=false
+%}
+''',
+            '\n\n\n',
+            [
+                (
+                    "No end delimiter '<!-- end-not-found-1 -->'"
+                    ' detected inside the files'
+                    " '{included_file_01}', '{included_file_02}'"
+                    " (defined at '{includer_file}')"
+                ),
+                (
+                    "No end delimiter '<!-- end-not-found-2 -->'"
+                    ' detected inside the files'
+                    " '{included_file_01}', '{included_file_02}'"
+                    " (defined at '{includer_file}')"
+                ),
+                (
+                    "No start delimiter '<!-- start-not-found-1 -->'"
+                    ' detected inside the files'
+                    " '{included_file_01}', '{included_file_02}'"
+                    " (defined at '{includer_file}')"
+                ),
+                (
+                    "No start delimiter '<!-- start-not-found-2 -->'"
+                    ' detected inside the files'
+                    " '{included_file_01}', '{included_file_02}'"
+                    " (defined at '{includer_file}')"
+                ),
+            ],
+            id='start-end-not-found',
         ),
     ),
 )
 def test_glob_include(
-    page,
-    tmp_path,
     includer_content,
     directive,
     expected_result,
+    expected_warnings_schemas,
+    page,
+    caplog,
+    tmp_path,
 ):
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
@@ -129,6 +183,7 @@ This 02 must appear only without specifying end.
     included_01_file.write_text(included_01_content)
     included_02_file.write_text(included_02_content)
 
+    # assert content
     expected_result = f'''foo
 
 {expected_result}
@@ -137,3 +192,21 @@ This 02 must appear only without specifying end.
     assert on_page_markdown(
         includer_filepath_content, page(includer_file),
     ) == expected_result
+
+    # assert warnings
+    expected_warnings = [
+        msg_schema.replace(
+            '{includer_file}',
+            str(includer_file),
+        ).replace(
+            '{included_file_01}',
+            str(included_01_file),
+        ).replace(
+            '{included_file_02}',
+            str(included_02_file),
+        ) for msg_schema in expected_warnings_schemas or []
+    ]
+
+    for record in caplog.records:
+        assert record.msg in expected_warnings
+    assert len(expected_warnings_schemas) == len(caplog.records)
