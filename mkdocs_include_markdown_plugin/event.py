@@ -411,5 +411,5 @@ def on_page_markdown(markdown, page, **kwargs):
     return get_file_content(
         markdown,
         page.file.abs_src_path,
-        includer_page_path=page.file.abs_src_path,
+        includer_page_path=Path(page.file.abs_src_path),
     )
