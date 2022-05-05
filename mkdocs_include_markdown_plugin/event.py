@@ -182,7 +182,7 @@ def get_file_content(
             if expected_but_any_found[i]:
                 value = locals()[argname]
                 readable_files_to_include = ', '.join([
-                    '\'' + f + '\'' for f in file_paths_to_include
+                    '\'' + str(Path(f)) + '\'' for f in file_paths_to_include
                 ])
                 logger.warning(
                     f"No {argname} delimiter '{value}' detected inside"
@@ -374,7 +374,7 @@ def get_file_content(
             if expected_but_any_found[i]:
                 value = locals()[argname]
                 readable_files_to_include = ', '.join([
-                    '\'' + f + '\'' for f in file_paths_to_include
+                    '\'' + str(Path(f)) + '\'' for f in file_paths_to_include
                 ])
                 logger.warning(
                     f"No {argname} delimiter '{value}' detected inside"
