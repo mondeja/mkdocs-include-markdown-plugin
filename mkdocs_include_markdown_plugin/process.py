@@ -2,6 +2,7 @@ import os
 import re
 from functools import partial
 from pathlib import Path
+from typing import Optional, Tuple
 from urllib.parse import urlparse, urlunparse
 
 
@@ -257,35 +258,60 @@ def interpret_escapes(value: str) -> str:
     return value.encode('latin-1', 'backslashreplace').decode('unicode_escape')
 
 
-def filter_inclusions(new_start, new_end, text_to_include):
+def filter_inclusions(
+    new_start: Optional[str],
+    new_end: Optional[str],
+    text_to_include: str,
+) -> Tuple[str, bool, bool]:
     '''Manages inclusions from files using ``start`` and ``end`` directive
     arguments.
     '''
-    start = None
-    end = None
+
+    expected_not_found = [False, False]  # start, end
+
     if new_start is not None:
         start = interpret_escapes(new_start)
-        if new_end is not None:
-            end = interpret_escapes(new_end)
+        end = interpret_escapes(new_end) if new_end is not None else None
 
         new_text_to_include = ''
-        if new_end is not None:
-            for start_text in text_to_include.split(start)[1:]:
-                for i, end_text in enumerate(start_text.split(end)):
-                    if not i % 2:
-                        new_text_to_include += end_text
+
+        if end is not None:
+            end_found = False
+            start_split = text_to_include.split(start)[1:]
+            if not start_split:
+                expected_not_found[0] = True
+            else:
+                for start_text in start_split:
+                    for i, end_text in enumerate(start_text.split(end)):
+                        if not i % 2:
+                            new_text_to_include += end_text
+                            end_found = True
+            if not end_found:
+                expected_not_found[1] = True
         else:
-            new_text_to_include = text_to_include.split(start)[1]
+            if start in text_to_include:
+                new_text_to_include = text_to_include.split(
+                    start,
+                    maxsplit=1,
+                )[1]
+            else:
+                expected_not_found[0] = True
         text_to_include = new_text_to_include
 
     elif new_end is not None:
         end = interpret_escapes(new_end)
-        text_to_include, _, _ = text_to_include.partition(end)
+        if end in text_to_include:
+            text_to_include = text_to_include.split(
+                end,
+                maxsplit=1,
+            )[0]
+        else:
+            expected_not_found[1] = True
 
-    return (text_to_include, start, end)
+    return (text_to_include, *expected_not_found)
 
 
-def increase_headings_offset(markdown, offset=0):
+def increase_headings_offset(markdown: str, offset: int = 0):
     '''Increases the headings depth of a snippet of Makdown content.'''
     if not offset:
         return markdown
@@ -304,7 +330,7 @@ def increase_headings_offset(markdown, offset=0):
     )
 
 
-def filter_paths(filepaths, ignore_paths=[]):
+def filter_paths(filepaths: list, ignore_paths: list = []):
     """Filters a list of paths removing those defined in other list of paths.
 
     The paths to filter can be defined in the list of paths to ignore in

@@ -1,7 +1,8 @@
-'''Module where the `on_page_markdown` plugin event is defined.'''
+'''Module where the `on_page_markdown` plugin event is processed.'''
 
 import glob
 import html
+import logging
 import os
 import re
 import textwrap
@@ -59,8 +60,16 @@ ARGUMENT_REGEXES = {
     'exclude': re.compile(r'exclude="([^"]+)"'),
 }
 
+logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
 
-def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
+
+def get_file_content(
+    markdown,
+    abs_src_path,
+    docs_dir,
+    includer_page_path,
+    cumulative_heading_offset=0,
+):
     page_src_path = Path(abs_src_path)
 
     def found_include_tag(match):
@@ -104,7 +113,8 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
 
         if not file_paths_to_include:
             raise FileNotFoundError(
-                f'Any files found using \'{filename}\' at {page_src_path}',
+                f'No files found including with \'{filename}\''
+                f' at {page_src_path}',
             )
 
         # handle options and regex modifiers
@@ -143,23 +153,47 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         end = None if not end_match else end_match.group(1)
 
         text_to_include = ''
+        expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
             with open(file_path, encoding='utf-8') as f:
                 new_text_to_include = f.read()
 
-            new_text_to_include, _, _ = process.filter_inclusions(
-                start,
-                end,
-                new_text_to_include,
-            )
+            if start is not None or end is not None:
+                new_text_to_include, *expected_not_found = (
+                    process.filter_inclusions(
+                        start,
+                        end,
+                        new_text_to_include,
+                    )
+                )
+                for i in range(2):
+                    if expected_but_any_found[i] and not expected_not_found[i]:
+                        expected_but_any_found[i] = False
 
             # nested includes
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
+                docs_dir,
+                Path(file_path),
             )
 
             text_to_include += new_text_to_include
+
+        # warn if expected start or ends haven't been found in included content
+        for i, argname in enumerate(['start', 'end']):
+            if expected_but_any_found[i]:
+                value = locals()[argname]
+                readable_files_to_include = ', '.join([
+                    str(Path(f).relative_to(docs_dir))
+                    for f in file_paths_to_include
+                ])
+                plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
+                logger.warning(
+                    f"Delimiter {argname} '{value}' defined at"
+                    f' {includer_page_path.relative_to(docs_dir)} not detected'
+                    f' in the file{plural_suffix} {readable_files_to_include}',
+                )
 
         if bool_options['dedent']:
             text_to_include = textwrap.dedent(text_to_include)
@@ -217,7 +251,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
 
         if not file_paths_to_include:
             raise FileNotFoundError(
-                f'Any files found using \'{filename}\' at {page_src_path}',
+                f'No files found using \'{filename}\' at {page_src_path}',
             )
 
         # handle options and regex modifiers
@@ -273,20 +307,35 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             offset += int(offset_match.group(1))
 
         text_to_include = ''
+
+        # if any start or end strings are found in the included content
+        # but the arguments are specified, we must raise a warning
+        #
+        # `True` means that no start/end strings have been found in content
+        # but they have been specified, so the warning(s) must be raised
+        expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
             with open(file_path, encoding='utf-8') as f:
                 new_text_to_include = f.read()
 
-            new_text_to_include, _, _ = process.filter_inclusions(
-                start,
-                end,
-                new_text_to_include,
-            )
+            if start is not None or end is not None:
+                new_text_to_include, *expected_not_found = (
+                    process.filter_inclusions(
+                        start,
+                        end,
+                        new_text_to_include,
+                    )
+                )
+                for i in range(2):
+                    if expected_but_any_found[i] and not expected_not_found[i]:
+                        expected_but_any_found[i] = False
 
             # nested includes
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
+                docs_dir,
+                Path(file_path),
             )
 
             # relative URLs rewriting
@@ -314,6 +363,8 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
+                docs_dir,
+                Path(file_path),
                 cumulative_heading_offset=cumulative_heading_offset,
             )
 
@@ -325,13 +376,30 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
 
             text_to_include += new_text_to_include
 
+        # warn if expected start or ends haven't been found in included content
+        for i, argname in enumerate(['start', 'end']):
+            if expected_but_any_found[i]:
+                value = locals()[argname]
+                readable_files_to_include = ', '.join([
+                    str(Path(f).relative_to(docs_dir))
+                    for f in file_paths_to_include
+                ])
+                plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
+                logger.warning(
+                    f"Delimiter {argname} '{value}' defined at"
+                    f' {includer_page_path.relative_to(docs_dir)} not detected'
+                    f' in the file{plural_suffix} {readable_files_to_include}',
+                )
+
         if not bool_options['comments']['value']:
             return text_to_include
 
         return (
             _includer_indent
             + '<!-- BEGIN INCLUDE {} {} {} -->\n'.format(
-                filename, html.escape(start or ''), html.escape(end or ''),
+                filename,
+                html.escape(start or ''),
+                html.escape(end or ''),
             )
             + text_to_include
             + '\n' + _includer_indent + '<!-- END INCLUDE -->'
@@ -342,13 +410,17 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         found_include_tag,
         markdown,
     )
-    markdown = re.sub(
+    return re.sub(
         INCLUDE_MARKDOWN_TAG_REGEX,
         found_include_markdown_tag,
         markdown,
     )
-    return markdown
 
 
-def on_page_markdown(markdown, page, **kwargs):
-    return get_file_content(markdown, page.file.abs_src_path)
+def on_page_markdown(markdown, page, docs_dir):
+    return get_file_content(
+        markdown,
+        page.file.abs_src_path,
+        Path(docs_dir),
+        Path(page.file.abs_src_path),
+    )

@@ -89,9 +89,13 @@ def test_exclude(
     if hasattr(expected_result, '__traceback__'):
         with pytest.raises(expected_result):
             on_page_markdown(
-                includer_filepath_content, page(includer_file),
+                includer_filepath_content,
+                page(includer_file),
+                includer_folder,
             )
     else:
         assert on_page_markdown(
-            includer_filepath_content, page(includer_file),
+            includer_filepath_content,
+            page(includer_file),
+            includer_folder,
         ) == expected_result

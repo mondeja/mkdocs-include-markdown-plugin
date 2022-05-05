@@ -40,24 +40,28 @@ barbaz
 '''
 
     assert on_page_markdown(
-        includer_filepath_content, page(includer_file),
+        includer_filepath_content, page(includer_file), tmp_path,
     ) == expected_result
 
 
 @pytest.mark.parametrize('directive', ('include', 'include-markdown'))
 @pytest.mark.parametrize(
-    ('includer_content', 'expected_result'),
+    (
+        'includer_content',
+        'expected_result',
+        'expected_warnings_schemas',
+    ),
     (
         pytest.param(
             '''{%
-  include "./included*.txt"
+  directive "./included*.txt"
   start="<!-- start-2 -->"
   end="<!-- end-2 -->"
   comments=false
 %}
 
 {%
-  include "./included*.txt"
+  directive "./included*.txt"
   start="<!-- start-1 -->"
   end="<!-- end-1 -->"
   comments=false
@@ -71,11 +75,12 @@ baz
 bar
 
 ''',
+            [],
             id='start-end',
         ),
         pytest.param(
             '''{%
-  include "./included*.txt"
+  directive "./included*.txt"
   end="<!-- end-2 -->"
   comments=false
 %}
@@ -92,16 +97,61 @@ This 02 must appear only without specifying start.
 baz
 
 ''',
+            [],
             id='end',
+        ),
+
+        # both start and end specified but not found in files to include
+        pytest.param(
+            '''{%
+  directive "./included*.txt"
+  start="<!-- start-not-found-2 -->"
+  end="<!-- end-not-found-2 -->"
+  comments=false
+%}
+
+{%
+  directive "./included*.txt"
+  start="<!-- start-not-found-1 -->"
+  end="<!-- end-not-found-1 -->"
+  comments=false
+%}
+''',
+            '\n\n\n',
+            [
+                (
+                    "Delimiter end '<!-- end-not-found-1 -->'"
+                    ' defined at {includer_file} not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
+                ),
+                (
+                    "Delimiter end '<!-- end-not-found-2 -->'"
+                    ' defined at {includer_file} not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
+                ),
+                (
+                    "Delimiter start '<!-- start-not-found-1 -->'"
+                    ' defined at {includer_file} not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
+                ),
+                (
+                    "Delimiter start '<!-- start-not-found-2 -->'"
+                    ' defined at {includer_file} not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
+                ),
+            ],
+            id='start-end-not-found',
         ),
     ),
 )
 def test_glob_include(
-    page,
-    tmp_path,
     includer_content,
     directive,
     expected_result,
+    expected_warnings_schemas,
+    page,
+    caplog,
+    tmp_path,
 ):
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
@@ -109,7 +159,7 @@ def test_glob_include(
 
     includer_filepath_content = f'''foo
 
-{includer_content.replace('include "', directive + ' "')}
+{includer_content.replace('directive "', directive + ' "')}
 '''
 
     included_01_content = '''This 01 must appear only without specifying start.
@@ -129,11 +179,31 @@ This 02 must appear only without specifying end.
     included_01_file.write_text(included_01_content)
     included_02_file.write_text(included_02_content)
 
+    # assert content
     expected_result = f'''foo
 
 {expected_result}
 '''
 
     assert on_page_markdown(
-        includer_filepath_content, page(includer_file),
+        includer_filepath_content, page(includer_file), tmp_path,
     ) == expected_result
+
+    # assert warnings
+    expected_warnings_schemas = expected_warnings_schemas or []
+    expected_warnings = [
+        msg_schema.replace(
+            '{includer_file}',
+            str(includer_file.relative_to(tmp_path)),
+        ).replace(
+            '{included_file_01}',
+            str(included_01_file.relative_to(tmp_path)),
+        ).replace(
+            '{included_file_02}',
+            str(included_02_file.relative_to(tmp_path)),
+        ) for msg_schema in expected_warnings_schemas
+    ]
+
+    for record in caplog.records:
+        assert record.msg in expected_warnings
+    assert len(expected_warnings_schemas) == len(caplog.records)

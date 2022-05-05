@@ -1,7 +1,5 @@
 '''``include-markdown`` directive tests'''
 
-import textwrap
-
 import pytest
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
@@ -9,7 +7,10 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 @pytest.mark.parametrize(
     (
-        'includer_schema', 'content_to_include', 'expected_result_schema',
+        'includer_schema',
+        'content_to_include',
+        'expected_result_schema',
+        'expected_warnings_schemas',
     ),
     (
         # Simple case
@@ -22,6 +23,7 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
 This must be included.
 <!-- END INCLUDE -->
 ''',
+            [],
             id='simple case',
         ),
 
@@ -44,6 +46,7 @@ This must be included.''',
 This must be included.
 <!-- END INCLUDE -->
 ''',
+            [],
             id='start',
         ),
 
@@ -66,6 +69,7 @@ This must be included.
 
 <!-- END INCLUDE -->
 ''',
+            [],
             id='end',
         ),
 
@@ -92,6 +96,7 @@ This must be included.
 
 <!-- END INCLUDE -->
 ''',
+            [],
             id='start/end',
         ),
 
@@ -118,6 +123,7 @@ This must be included.
 
 <!-- END INCLUDE -->
 ''',
+            [],
             id='start/end (escaped special characters)',
         ),
 
@@ -146,6 +152,7 @@ This must be included.
 
 <!-- END INCLUDE -->
 ''',
+            [],
             id='start/end (unescaped special characters)',
         ),
 
@@ -157,6 +164,7 @@ This must be included.
 %}''',
             '''Foo''',
             '''Foo''',
+            [],
             id='comments=false',
         ),
 
@@ -197,6 +205,7 @@ This should be included also.
 
 This should be included even if hasn't defined after end tag.
 ''',
+            [],
             id='multiple-start-end-matchs',
         ),
 
@@ -213,7 +222,95 @@ This should be included even if hasn't defined after end tag.
             '''1. Ordered list item
     - Unordered sublist item
     - Other unordered sublist item''',
+            [],
             id='preserve-includer-indent=false',
+        ),
+
+        # Don't specify end and finds start in included content
+        pytest.param(
+            '''# Header
+{%
+    include-markdown "{filepath}"
+    start="<!--start-->"
+    comments=false
+%}''',
+            '''Some text
+
+<!--start-->
+More text
+''',
+            '''# Header
+
+More text
+''',
+            [],
+            id='start=foo-end=None',
+        ),
+
+        # Don't specify start and finds end in included content
+        pytest.param(
+            '''# Header
+{%
+    include-markdown "{filepath}"
+    end="<!--end-->"
+    comments=false
+%}''',
+            '''
+Some text
+<!--end-->
+More text
+''',
+            '''# Header
+
+Some text
+''',
+            [],
+            id='start=None-end=foo',
+        ),
+
+        # Don't specify end but not finds start in included content
+        pytest.param(
+            '''# Header
+{%
+    include-markdown "{filepath}"
+    start="<!--start-->"
+    comments=false
+%}''',
+            '''Some text
+''',
+            '''# Header
+''',
+            [
+                (
+                    "Delimiter start '<!--start-->' defined at {filepath}"
+                    ' not detected in the file {included_filepath}'
+                ),
+            ],
+            id='start=foo (not found)-end=None',
+        ),
+
+        # Don't specify start but not finds end in included content
+        pytest.param(
+            '''# Header
+{%
+    include-markdown "{filepath}"
+    end="<!--end-->"
+    comments=false
+%}''',
+            '''
+Some text
+''',
+            '''# Header
+
+Some text
+''',
+            [
+                (
+                    "Delimiter end '<!--end-->' defined at {filepath}"
+                    ' not detected in the file {included_filepath}'
+                ),
+            ],
+            id='start=None-end=foo (not found)',
         ),
 
         # Preserve includer indent
@@ -230,6 +327,7 @@ This should be included even if hasn't defined after end tag.
     - First unordered sublist item
     - Second unordered sublist item
     - Third unordered sublist item''',
+            [],
             id='preserve-includer-indent=true (default)',
         ),
 
@@ -249,6 +347,7 @@ This should be included even if hasn't defined after end tag.
             '''1. Ordered list item
     - First unordered sublist item
     - Second unordered sublist item''',
+            [],
             id='custom options ordering',
         ),
 
@@ -271,6 +370,7 @@ This should be included even if hasn't defined after end tag.
 - Bar
     - Baz
 ''',
+            [],
             id='dedent=true',
         ),
 
@@ -294,6 +394,7 @@ This should be included even if hasn't defined after end tag.
     - Bar
         - Baz
 ''',
+            [],
             id='dedent=true,preserve-includer-indent=true',
         ),
 
@@ -317,6 +418,7 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            [],
             id='heading-offset=1',
         ),
         # Markdown heading offset 2
@@ -339,6 +441,7 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            [],
             id='heading-offset=2',
         ),
 
@@ -361,6 +464,7 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            [],
             id='no heading-offset (default)',
         ),
 
@@ -384,6 +488,7 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            [],
             id='heading-offset=0',
         ),
 
@@ -407,6 +512,7 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            [],
             id='heading-offset=<str>',
         ),
 
@@ -430,6 +536,7 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            [],
             id='heading-offset=-2',
         ),
 
@@ -453,6 +560,7 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            [],
             id='heading-offset=90',
         ),
 
@@ -476,6 +584,7 @@ Example data''',
 Example data
 <!-- END INCLUDE -->
 ''',
+            [],
             id='heading-offset=-90',
         ),
 
@@ -521,6 +630,7 @@ vɛвѣди
 
 <!-- END INCLUDE -->
 ''',
+            [],
             id='russian-characters',
         ),
     ),
@@ -529,7 +639,9 @@ def test_include_markdown(
     includer_schema,
     content_to_include,
     expected_result_schema,
+    expected_warnings_schemas,
     page,
+    caplog,
     tmp_path,
 ):
     included_filepath = tmp_path / 'included.md'
@@ -546,12 +658,32 @@ def test_include_markdown(
     )
     includer_filepath.write_text(page_content, encoding='utf-8')
 
+    # assert content
     expected_result = expected_result_schema.replace(
         '{filepath}', included_filepath.as_posix(),
     )
+
     assert on_page_markdown(
-        page_content, page(included_filepath),
+        page_content,
+        page(includer_filepath),
+        tmp_path,
     ) == expected_result
+
+    # assert warnings
+    expected_warnings_schemas = expected_warnings_schemas or []
+    expected_warnings = [
+        msg_schema.replace(
+            '{filepath}',
+            str(includer_filepath.relative_to(tmp_path)),
+        ).replace(
+            '{included_filepath}',
+            str(included_filepath.relative_to(tmp_path)),
+        ) for msg_schema in expected_warnings_schemas
+    ]
+
+    for record in caplog.records:
+        assert record.msg in expected_warnings
+    assert len(expected_warnings_schemas) == len(caplog.records)
 
 
 def test_include_markdown_filepath_error(page, tmp_path):
@@ -565,81 +697,85 @@ def test_include_markdown_filepath_error(page, tmp_path):
     page_filepath.write_text(page_content)
 
     with pytest.raises(FileNotFoundError):
-        on_page_markdown(page_content, page(page_filepath))
+        on_page_markdown(page_content, page(page_filepath), tmp_path)
 
 
 @pytest.mark.parametrize('rewrite_relative_urls', ['true', 'false', None])
 def test_include_markdown_relative_rewrite(
-    page, tmp_path,
+    page,
+    tmp_path,
     rewrite_relative_urls,
 ):
     option_value = '' if rewrite_relative_urls is None else (
         'rewrite-relative-urls=' + rewrite_relative_urls
     )
 
+    docs_dir = tmp_path / 'docs'
+    docs_dir.mkdir()
+
     includer_path = tmp_path / 'includer.md'
     includer_path.write_text(
-        textwrap.dedent(f'''
-        # Heading
+        f'''
+# Heading
 
-        {{%
-            include-markdown "docs/page.md"
-            start="<!--start-here-->"
-            end="<!--end-here-->"
-            {option_value}
-        %}}
-    '''),
+{{%
+    include-markdown "docs/page.md"
+    start="<!--start-->"
+    end="<!--end-->"
+    {option_value}
+%}}
+''',
     )
 
-    (tmp_path / 'docs').mkdir()
-    included_file_path = tmp_path / 'docs' / 'page.md'
+    included_file_path = docs_dir / 'page.md'
     included_file_path.write_text(
-        textwrap.dedent('''
-        # Subpage Heading
-        <!--start-here-->
-        Here's [a link](page2.md) and here's an image: ![](image.png)
+        '''
+# Subpage Heading
+<!--start-->
+Here's [a link](page2.md) and here's an image: ![](image.png)
 
-        Here's a [reference link][ref-link].
+Here's a [reference link][ref-link].
 
-        [ref-link]: page3.md
-        <!--end-here-->
-    '''),
+[ref-link]: page3.md
+<!--end-->
+''',
     )
 
     output = on_page_markdown(
         includer_path.read_text(),
         page(str(includer_path)),
+        docs_dir,
     )
 
     if rewrite_relative_urls in ['true', None]:
-        assert output == textwrap.dedent('''
-            # Heading
+        assert output == '''
+# Heading
 
-            <!-- BEGIN INCLUDE docs/page.md &lt;!--start-here--&gt; &lt;!--end-here--&gt; -->
+<!-- BEGIN INCLUDE docs/page.md &lt;!--start--&gt; &lt;!--end--&gt; -->
 
-            Here's [a link](docs/page2.md) and here's an image: ![](docs/image.png)
+Here's [a link](docs/page2.md) and here's an image: ![](docs/image.png)
 
-            Here's a [reference link][ref-link].
+Here's a [reference link][ref-link].
 
-            [ref-link]: docs/page3.md
+[ref-link]: docs/page3.md
 
-            <!-- END INCLUDE -->
-        ''')  # noqa: E501
+<!-- END INCLUDE -->
+'''
     else:
         # include without rewriting
-        assert output == textwrap.dedent('''
-            # Heading
+        assert output == '''
+# Heading
 
-            <!-- BEGIN INCLUDE docs/page.md &lt;!--start-here--&gt; &lt;!--end-here--&gt; -->
+<!-- BEGIN INCLUDE docs/page.md &lt;!--start--&gt; &lt;!--end--&gt; -->
 
-            Here's [a link](page2.md) and here's an image: ![](image.png)
+Here's [a link](page2.md) and here's an image: ![](image.png)
 
-            Here's a [reference link][ref-link].
+Here's a [reference link][ref-link].
 
-            [ref-link]: page3.md
+[ref-link]: page3.md
 
-            <!-- END INCLUDE -->
-        ''')  # noqa: E501
+<!-- END INCLUDE -->
+'''
 
 
 @pytest.mark.parametrize(
@@ -653,14 +789,14 @@ def test_include_markdown_relative_rewrite(
 )
 def test_include_markdown_invalid_bool_option(opt_name, page, tmp_path):
     page_filepath = tmp_path / 'example.md'
-    page_content = textwrap.dedent(f'''{{%
-        include-markdown "{page_filepath}"
-        {opt_name}=invalidoption
-    %}}''')
+    page_content = f'''{{%
+    include-markdown "{page_filepath}"
+    {opt_name}=invalidoption
+%}}'''
     page_filepath.write_text(page_content)
 
     with pytest.raises(ValueError) as excinfo:
-        on_page_markdown(page_content, page(page_filepath))
+        on_page_markdown(page_content, page(page_filepath), tmp_path)
 
     expected_exc_message = (
         f'Unknown value for \'{opt_name}\'.'
@@ -712,5 +848,5 @@ Another
 Another
 '''
     assert on_page_markdown(
-        includer_content, page(includer_filepath),
+        includer_content, page(includer_filepath), tmp_path,
     ) == expected_result
