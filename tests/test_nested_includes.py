@@ -11,6 +11,7 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
         'second_includer_content',
         'included_content',
         'expected_result',
+        'expected_warnings_schemas',
     ),
     (
         # Includer -> Markdown -> Markdown
@@ -35,6 +36,7 @@ Some text from second includer.
 
 Some test from final included.
 ''',
+            [],
             id='includer -> markdown -> markdown',
         ),
 
@@ -59,6 +61,7 @@ Some text from second includer.
 
 Some test from final included.
 ''',
+            [],
             id='includer -> markdown -> file',
         ),
 
@@ -82,6 +85,7 @@ Some text from second includer.
 
 Some test from final included.
 ''',
+            [],
             id='includer -> file -> file',
         ),
 
@@ -112,6 +116,7 @@ Some text from second includer.
 
 Some test from final included.
 ''',
+            [],
             id='includer -> file -> markdown',
         ),
 
@@ -141,7 +146,81 @@ Some test from final included.
 ### Header 3
 
 ''',
+            [],
             id='cumulative_heading_offset',
+        ),
+
+        # start and end defined in second inclusion but not found
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  comments=false
+%}''',
+            '''# Header 2
+
+{%
+  include-markdown "{filepath}"
+  comments=false
+  start="<!--start-->"
+  end="<!--end-->"
+%}
+''',
+            '''# Header 3
+''',
+            '''# Header
+
+# Header 2
+
+
+''',
+            [
+                (
+                    "No start delimiter '<!--start-->' detected inside the"
+                    " file '{included_filepath}' (defined at"
+                    " '{second_includer_filepath}')"
+                ),
+                (
+                    "No end delimiter '<!--end-->' detected inside the"
+                    " file '{included_filepath}' (defined at"
+                    " '{second_includer_filepath}')"
+                ),
+            ],
+            id='start-end-not-found (second-level)',
+        ),
+
+        # start and end defined in first inclusion but not found
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  comments=false
+  start="<!--start-->"
+  end="<!--end-->"
+%}''',
+            '''# Header 2
+
+''',
+            '''# Header 3
+''',
+            '''# Header
+
+''',
+            [
+                (
+                    "No start delimiter '<!--start-->' detected inside the"
+                    " file '{second_includer_filepath}' (defined at"
+                    " '{first_includer_filepath}')"
+                ),
+                (
+                    "No end delimiter '<!--end-->' detected inside the"
+                    " file '{second_includer_filepath}' (defined at"
+                    " '{first_includer_filepath}')"
+                ),
+            ],
+            id='start-end-not-found (first-level)',
         ),
     ),
 )
@@ -150,7 +229,9 @@ def test_nested_include(
     second_includer_content,
     included_content,
     expected_result,
+    expected_warnings_schemas,
     page,
+    caplog,
     tmp_path,
 ):
     first_includer_filepath = tmp_path / 'first-includer.txt'
@@ -168,9 +249,28 @@ def test_nested_include(
     second_includer_filepath.write_text(second_includer_content)
     included_filepath.write_text(included_content)
 
+    # assert content
     assert on_page_markdown(
         first_includer_content, page(first_includer_filepath),
     ) == expected_result
+
+    # assert warnings
+    expected_warnings = [
+        msg_schema.replace(
+            '{first_includer_filepath}',
+            str(first_includer_filepath),
+        ).replace(
+            '{second_includer_filepath}',
+            str(second_includer_filepath),
+        ).replace(
+            '{included_filepath}',
+            str(included_filepath),
+        ) for msg_schema in expected_warnings_schemas or []
+    ]
+
+    for record in caplog.records:
+        assert record.msg in expected_warnings
+    assert len(expected_warnings_schemas) == len(caplog.records)
 
 
 def test_nested_include_relpath(page, tmp_path):

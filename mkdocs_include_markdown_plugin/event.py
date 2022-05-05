@@ -112,7 +112,8 @@ def get_file_content(
 
         if not file_paths_to_include:
             raise FileNotFoundError(
-                f'No files found using \'{filename}\' at {page_src_path}',
+                f'No files found including with \'{filename}\''
+                f' at {page_src_path}',
             )
 
         # handle options and regex modifiers
@@ -172,7 +173,7 @@ def get_file_content(
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
-                includer_page_path=page_src_path,
+                includer_page_path=file_path,
             )
 
             text_to_include += new_text_to_include
@@ -329,7 +330,7 @@ def get_file_content(
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
-                includer_page_path=page_src_path,
+                includer_page_path=file_path,
             )
 
             # relative URLs rewriting
@@ -358,7 +359,7 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 cumulative_heading_offset=cumulative_heading_offset,
-                includer_page_path=page_src_path,
+                includer_page_path=file_path,
             )
 
             if offset_match:
@@ -389,7 +390,9 @@ def get_file_content(
         return (
             _includer_indent
             + '<!-- BEGIN INCLUDE {} {} {} -->\n'.format(
-                filename, html.escape(start or ''), html.escape(end or ''),
+                filename,
+                html.escape(start or ''),
+                html.escape(end or ''),
             )
             + text_to_include
             + '\n' + _includer_indent + '<!-- END INCLUDE -->'
