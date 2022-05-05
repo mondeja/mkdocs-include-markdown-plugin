@@ -173,7 +173,7 @@ def get_file_content(
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
-                includer_page_path=file_path,
+                includer_page_path=Path(file_path),
             )
 
             text_to_include += new_text_to_include
@@ -330,7 +330,7 @@ def get_file_content(
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
-                includer_page_path=file_path,
+                includer_page_path=Path(file_path),
             )
 
             # relative URLs rewriting
@@ -359,7 +359,7 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 cumulative_heading_offset=cumulative_heading_offset,
-                includer_page_path=file_path,
+                includer_page_path=Path(file_path),
             )
 
             if offset_match:
