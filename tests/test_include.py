@@ -348,6 +348,7 @@ def test_include(
     ) == expected_result
 
     # assert warnings
+    expected_warnings_schemas = expected_warnings_schemas or []
     expected_warnings = [
         msg_schema.replace(
             '{filepath}',
@@ -355,7 +356,7 @@ def test_include(
         ).replace(
             '{included_filepath}',
             str(included_filepath.relative_to(tmp_path)),
-        ) for msg_schema in expected_warnings_schemas or []
+        ) for msg_schema in expected_warnings_schemas
     ]
 
     for record in caplog.records:

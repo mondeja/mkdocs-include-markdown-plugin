@@ -190,6 +190,7 @@ This 02 must appear only without specifying end.
     ) == expected_result
 
     # assert warnings
+    expected_warnings_schemas = expected_warnings_schemas or []
     expected_warnings = [
         msg_schema.replace(
             '{includer_file}',
@@ -200,7 +201,7 @@ This 02 must appear only without specifying end.
         ).replace(
             '{included_file_02}',
             str(included_02_file.relative_to(tmp_path)),
-        ) for msg_schema in expected_warnings_schemas or []
+        ) for msg_schema in expected_warnings_schemas
     ]
 
     for record in caplog.records:
