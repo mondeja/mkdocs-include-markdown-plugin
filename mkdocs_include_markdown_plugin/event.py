@@ -67,8 +67,8 @@ def get_file_content(
     markdown,
     abs_src_path,
     docs_dir,
+    includer_page_path,
     cumulative_heading_offset=0,
-    includer_page_path=None,
 ):
     page_src_path = Path(abs_src_path)
 
@@ -175,7 +175,7 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
-                includer_page_path=Path(file_path),
+                Path(file_path),
             )
 
             text_to_include += new_text_to_include
@@ -335,7 +335,7 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
-                includer_page_path=Path(file_path),
+                Path(file_path),
             )
 
             # relative URLs rewriting
@@ -364,8 +364,8 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
+                Path(file_path),
                 cumulative_heading_offset=cumulative_heading_offset,
-                includer_page_path=Path(file_path),
             )
 
             if offset_match:
@@ -422,5 +422,5 @@ def on_page_markdown(markdown, page, docs_dir):
         markdown,
         page.file.abs_src_path,
         Path(docs_dir),
-        includer_page_path=Path(page.file.abs_src_path),
+        Path(page.file.abs_src_path),
     )
