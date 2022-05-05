@@ -50,14 +50,14 @@ barbaz
     (
         pytest.param(
             '''{%
-  include "./included*.txt"
+  directive "./included*.txt"
   start="<!-- start-2 -->"
   end="<!-- end-2 -->"
   comments=false
 %}
 
 {%
-  include "./included*.txt"
+  directive "./included*.txt"
   start="<!-- start-1 -->"
   end="<!-- end-1 -->"
   comments=false
@@ -75,7 +75,7 @@ bar
         ),
         pytest.param(
             '''{%
-  include "./included*.txt"
+  directive "./included*.txt"
   end="<!-- end-2 -->"
   comments=false
 %}
@@ -109,7 +109,7 @@ def test_glob_include(
 
     includer_filepath_content = f'''foo
 
-{includer_content.replace('include "', directive + ' "')}
+{includer_content.replace('directive "', directive + ' "')}
 '''
 
     included_01_content = '''This 01 must appear only without specifying start.

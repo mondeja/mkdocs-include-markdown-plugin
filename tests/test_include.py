@@ -1,7 +1,5 @@
 '''``include`` directive tests.'''
 
-import textwrap
-
 import pytest
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
@@ -12,12 +10,14 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
         'includer_schema',
         'content_to_include',
         'expected_result',
+        'expected_warnings_schemas',
     ),
     (
         pytest.param(
             '# Header\n\n{% include "{filepath}" %}\n',
             'This must be included.',
             '# Header\n\nThis must be included.\n',
+            [],
             id='simple-case',
         ),
 
@@ -26,6 +26,7 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
             '# Header\n\n{% include "{filepath}" %}\n',
             'This must be included.\n',
             '# Header\n\nThis must be included.\n\n',
+            [],
             id='newline-at-end-of-included',
         ),
 
@@ -47,6 +48,7 @@ This must be ignored also.
 
 This must be included.
 ''',
+            [],
             id='start/end',
         ),
 
@@ -68,6 +70,7 @@ This must be ignored also.
 
 This must be included.
 ''',
+            [],
             id='start/end (escaped special characters)',
         ),
 
@@ -89,6 +92,7 @@ This must be ignored also.
 
 This must be included.
 ''',
+            [],
             id='start/end (unescaped special characters)',
         ),
 
@@ -129,7 +133,93 @@ This should be included also.
 
 This should be included even if hasn't defined after end tag.
 ''',
+            [],
             id='multiple-start-end-matchs',
+        ),
+
+        # Don't specify end and finds start in included content
+        pytest.param(
+            '''Foo
+{%
+    include "{filepath}"
+    start="<!--start-->"
+%}''',
+            '''Some text
+
+<!--start-->
+More text
+''',
+            '''Foo
+
+More text
+''',
+            [],
+            id='start=foo-end=None',
+        ),
+
+        # Don't specify start and finds end in included content
+        pytest.param(
+            '''Foo
+{%
+    include "{filepath}"
+    end="<!--end-->"
+%}''',
+            '''
+Some text
+<!--end-->
+More text
+''',
+            '''Foo
+
+Some text
+''',
+            [],
+            id='start=None-end=foo',
+        ),
+
+        # Don't specify end but not finds start in included content
+        pytest.param(
+            '''Foo
+{%
+    include-markdown "{filepath}"
+    start="<!--start-->"
+    comments=false
+%}''',
+            '''Some text
+''',
+            '''Foo
+''',
+            [
+                (
+                    "Any start delimiter '<!--start-->' detected inside the"
+                    " file '{included_filepath}' (defined at '{filepath}')"
+                ),
+            ],
+            id='start=foo (not found)-end=None',
+        ),
+
+        # Don't specify start but not finds end in included content
+        pytest.param(
+            '''Foo
+{%
+    include-markdown "{filepath}"
+    end="<!--end-->"
+    comments=false
+%}''',
+            '''
+Some text
+''',
+            '''Foo
+
+Some text
+''',
+            [
+                (
+                    "Any end delimiter '<!--end-->' detected inside the file"
+                    " '{included_filepath}' (defined at '{filepath}')"
+                ),
+            ],
+            id='start=None-end=foo (not found)',
         ),
 
         # Preserve included indent
@@ -144,6 +234,7 @@ This should be included even if hasn't defined after end tag.
             '''1. Ordered list item
     - Unordered sublist item
     - Other unordered sublist item''',
+            [],
             id='preserve included indent',
         ),
 
@@ -160,6 +251,7 @@ This should be included even if hasn't defined after end tag.
     - First unordered sublist item
     - Second unordered sublist item
     - Third unordered sublist item''',
+            [],
             id='preserve includer indent',
         ),
 
@@ -178,6 +270,7 @@ This should be included even if hasn't defined after end tag.
             '''1. Ordered list item
     - First unordered sublist item
     - Second unordered sublist item''',
+            [],
             id='custom options ordering',
         ),
 
@@ -199,6 +292,7 @@ This should be included even if hasn't defined after end tag.
 - Bar
     - Baz
 ''',
+            [],
             id='dedent=true',
         ),
 
@@ -221,13 +315,19 @@ This should be included even if hasn't defined after end tag.
     - Bar
         - Baz
 ''',
+            [],
             id='dedent=true,preserve-includer-indent=true',
         ),
     ),
 )
 def test_include(
-    includer_schema, content_to_include, expected_result,
-    page, tmp_path,
+    includer_schema,
+    content_to_include,
+    expected_result,
+    expected_warnings_schemas,
+    page,
+    caplog,
+    tmp_path,
 ):
     included_filepath = tmp_path / 'included.md'
     includer_filepath = tmp_path / 'includer.md'
@@ -237,14 +337,30 @@ def test_include(
         content_to_include.replace('{filepath}', included_filepath.as_posix()),
     )
 
+    # assert content
     page_content = includer_schema.replace(
         '{filepath}', included_filepath.as_posix(),
     )
     includer_filepath.write_text(page_content)
 
     assert on_page_markdown(
-        page_content, page(included_filepath),
+        page_content, page(includer_filepath),
     ) == expected_result
+
+    # assert warnings
+    expected_warnings = [
+        msg_schema.replace(
+            '{filepath}',
+            includer_filepath.as_posix(),
+        ).replace(
+            '{included_filepath}',
+            included_filepath.as_posix(),
+        ) for msg_schema in expected_warnings_schemas or []
+    ]
+
+    for record in caplog.records:
+        assert record.msg in expected_warnings
+    assert len(expected_warnings_schemas) == len(caplog.records)
 
 
 def test_include_filepath_error(page, tmp_path):
@@ -269,10 +385,10 @@ def test_include_filepath_error(page, tmp_path):
 )
 def test_include_invalid_bool_option(opt_name, page, tmp_path):
     page_filepath = tmp_path / 'example.md'
-    page_content = textwrap.dedent(f'''{{%
-        include "{page_filepath}"
-        {opt_name}=invalidoption
-    %}}''')
+    page_content = f'''{{%
+    include "{page_filepath}"
+    {opt_name}=invalidoption
+%}}'''
     page_filepath.write_text(page_content)
 
     with pytest.raises(ValueError) as excinfo:

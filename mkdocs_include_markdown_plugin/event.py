@@ -2,6 +2,7 @@
 
 import glob
 import html
+import logging
 import os
 import re
 import textwrap
@@ -59,8 +60,15 @@ ARGUMENT_REGEXES = {
     'exclude': re.compile(r'exclude="([^"]+)"'),
 }
 
+logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
 
-def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
+
+def get_file_content(
+    markdown,
+    abs_src_path,
+    cumulative_heading_offset=0,
+    includer_page_path=None,
+):
     page_src_path = Path(abs_src_path)
 
     def found_include_tag(match):
@@ -143,23 +151,45 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         end = None if not end_match else end_match.group(1)
 
         text_to_include = ''
+        expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
             with open(file_path, encoding='utf-8') as f:
                 new_text_to_include = f.read()
 
-            new_text_to_include, _, _ = process.filter_inclusions(
-                start,
-                end,
-                new_text_to_include,
-            )
+            if start is not None or end is not None:
+                new_text_to_include, *expected_not_found = (
+                    process.filter_inclusions(
+                        start,
+                        end,
+                        new_text_to_include,
+                    )
+                )
+                for i in range(2):
+                    if expected_but_any_found[i] and not expected_not_found[i]:
+                        expected_but_any_found[i] = False
 
             # nested includes
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
+                includer_page_path=page_src_path,
             )
 
             text_to_include += new_text_to_include
+
+        # warn if expected start or ends haven't been found in included content
+        for i, argname in enumerate(['start', 'end']):
+            if expected_but_any_found[i]:
+                value = locals()[argname]
+                readable_files_to_include = ', '.join([
+                    '\'' + f + '\'' for f in file_paths_to_include
+                ])
+                logger.warning(
+                    f"Any {argname} delimiter '{value}' detected inside"
+                    f" the file{'s' if len(file_paths_to_include) > 1 else ''}"
+                    f' {readable_files_to_include}'
+                    f" (defined at '{includer_page_path}')",
+                )
 
         if bool_options['dedent']:
             text_to_include = textwrap.dedent(text_to_include)
@@ -273,20 +303,33 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
             offset += int(offset_match.group(1))
 
         text_to_include = ''
+
+        # if any start or end strings are found in the included content
+        # but the arguments are specified, we must raise a warning
+        #
+        # `True` means that any start/end strings have been found in content
+        expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
             with open(file_path, encoding='utf-8') as f:
                 new_text_to_include = f.read()
 
-            new_text_to_include, _, _ = process.filter_inclusions(
-                start,
-                end,
-                new_text_to_include,
-            )
+            if start is not None or end is not None:
+                new_text_to_include, *expected_not_found = (
+                    process.filter_inclusions(
+                        start,
+                        end,
+                        new_text_to_include,
+                    )
+                )
+                for i in range(2):
+                    if expected_but_any_found[i] and not expected_not_found[i]:
+                        expected_but_any_found[i] = False
 
             # nested includes
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
+                includer_page_path=page_src_path,
             )
 
             # relative URLs rewriting
@@ -315,6 +358,7 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
                 new_text_to_include,
                 file_path,
                 cumulative_heading_offset=cumulative_heading_offset,
+                includer_page_path=page_src_path,
             )
 
             if offset_match:
@@ -324,6 +368,20 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
                 )
 
             text_to_include += new_text_to_include
+
+        # warn if expected start or ends haven't been found in included content
+        for i, argname in enumerate(['start', 'end']):
+            if expected_but_any_found[i]:
+                value = locals()[argname]
+                readable_files_to_include = ', '.join([
+                    '\'' + f + '\'' for f in file_paths_to_include
+                ])
+                logger.warning(
+                    f"Any {argname} delimiter '{value}' detected inside"
+                    f" the file{'s' if len(file_paths_to_include) > 1 else ''}"
+                    f' {readable_files_to_include}'
+                    f" (defined at '{includer_page_path}')",
+                )
 
         if not bool_options['comments']['value']:
             return text_to_include
@@ -342,13 +400,16 @@ def get_file_content(markdown, abs_src_path, cumulative_heading_offset=0):
         found_include_tag,
         markdown,
     )
-    markdown = re.sub(
+    return re.sub(
         INCLUDE_MARKDOWN_TAG_REGEX,
         found_include_markdown_tag,
         markdown,
     )
-    return markdown
 
 
 def on_page_markdown(markdown, page, **kwargs):
-    return get_file_content(markdown, page.file.abs_src_path)
+    return get_file_content(
+        markdown,
+        page.file.abs_src_path,
+        includer_page_path=page.file.abs_src_path,
+    )
