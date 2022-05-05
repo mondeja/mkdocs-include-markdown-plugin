@@ -351,10 +351,10 @@ def test_include(
     expected_warnings = [
         msg_schema.replace(
             '{filepath}',
-            includer_filepath,
+            str(includer_filepath),
         ).replace(
             '{included_filepath}',
-            included_filepath,
+            str(included_filepath),
         ) for msg_schema in expected_warnings_schemas or []
     ]
 
