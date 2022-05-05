@@ -40,7 +40,7 @@ barbaz
 '''
 
     assert on_page_markdown(
-        includer_filepath_content, page(includer_file),
+        includer_filepath_content, page(includer_file), tmp_path,
     ) == expected_result
 
 
@@ -120,28 +120,24 @@ baz
             '\n\n\n',
             [
                 (
-                    "No end delimiter '<!-- end-not-found-1 -->'"
-                    ' detected inside the files'
-                    " '{included_file_01}', '{included_file_02}'"
-                    " (defined at '{includer_file}')"
+                    "Delimiter end '<!-- end-not-found-1 -->'"
+                    ' defined at {includer_file} not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
                 ),
                 (
-                    "No end delimiter '<!-- end-not-found-2 -->'"
-                    ' detected inside the files'
-                    " '{included_file_01}', '{included_file_02}'"
-                    " (defined at '{includer_file}')"
+                    "Delimiter end '<!-- end-not-found-2 -->'"
+                    ' defined at {includer_file} not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
                 ),
                 (
-                    "No start delimiter '<!-- start-not-found-1 -->'"
-                    ' detected inside the files'
-                    " '{included_file_01}', '{included_file_02}'"
-                    " (defined at '{includer_file}')"
+                    "Delimiter start '<!-- start-not-found-1 -->'"
+                    ' defined at {includer_file} not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
                 ),
                 (
-                    "No start delimiter '<!-- start-not-found-2 -->'"
-                    ' detected inside the files'
-                    " '{included_file_01}', '{included_file_02}'"
-                    " (defined at '{includer_file}')"
+                    "Delimiter start '<!-- start-not-found-2 -->'"
+                    ' defined at {includer_file} not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
                 ),
             ],
             id='start-end-not-found',
@@ -190,20 +186,20 @@ This 02 must appear only without specifying end.
 '''
 
     assert on_page_markdown(
-        includer_filepath_content, page(includer_file),
+        includer_filepath_content, page(includer_file), tmp_path,
     ) == expected_result
 
     # assert warnings
     expected_warnings = [
         msg_schema.replace(
             '{includer_file}',
-            str(includer_file),
+            str(includer_file.relative_to(tmp_path)),
         ).replace(
             '{included_file_01}',
-            str(included_01_file),
+            str(included_01_file.relative_to(tmp_path)),
         ).replace(
             '{included_file_02}',
-            str(included_02_file),
+            str(included_02_file.relative_to(tmp_path)),
         ) for msg_schema in expected_warnings_schemas or []
     ]
 

@@ -282,8 +282,8 @@ Some text
 ''',
             [
                 (
-                    "No start delimiter '<!--start-->' detected inside the"
-                    " file '{included_filepath}' (defined at '{filepath}')"
+                    "Delimiter start '<!--start-->' defined at {filepath}"
+                    ' not detected in the file {included_filepath}'
                 ),
             ],
             id='start=foo (not found)-end=None',
@@ -306,8 +306,8 @@ Some text
 ''',
             [
                 (
-                    "No end delimiter '<!--end-->' detected inside the file"
-                    " '{included_filepath}' (defined at '{filepath}')"
+                    "Delimiter end '<!--end-->' defined at {filepath}"
+                    ' not detected in the file {included_filepath}'
                 ),
             ],
             id='start=None-end=foo (not found)',
@@ -664,17 +664,19 @@ def test_include_markdown(
     )
 
     assert on_page_markdown(
-        page_content, page(includer_filepath),
+        page_content,
+        page(includer_filepath),
+        tmp_path,
     ) == expected_result
 
     # assert warnings
     expected_warnings = [
         msg_schema.replace(
             '{filepath}',
-            str(includer_filepath),
+            str(includer_filepath.relative_to(tmp_path)),
         ).replace(
             '{included_filepath}',
-            str(included_filepath),
+            str(included_filepath.relative_to(tmp_path)),
         ) for msg_schema in expected_warnings_schemas or []
     ]
 
@@ -694,7 +696,7 @@ def test_include_markdown_filepath_error(page, tmp_path):
     page_filepath.write_text(page_content)
 
     with pytest.raises(FileNotFoundError):
-        on_page_markdown(page_content, page(page_filepath))
+        on_page_markdown(page_content, page(page_filepath), tmp_path)
 
 
 @pytest.mark.parametrize('rewrite_relative_urls', ['true', 'false', None])
@@ -706,6 +708,9 @@ def test_include_markdown_relative_rewrite(
     option_value = '' if rewrite_relative_urls is None else (
         'rewrite-relative-urls=' + rewrite_relative_urls
     )
+
+    docs_dir = tmp_path / 'docs'
+    docs_dir.mkdir()
 
     includer_path = tmp_path / 'includer.md'
     includer_path.write_text(
@@ -721,8 +726,7 @@ def test_include_markdown_relative_rewrite(
 ''',
     )
 
-    (tmp_path / 'docs').mkdir()
-    included_file_path = tmp_path / 'docs' / 'page.md'
+    included_file_path = docs_dir / 'page.md'
     included_file_path.write_text(
         '''
 # Subpage Heading
@@ -739,6 +743,7 @@ Here's a [reference link][ref-link].
     output = on_page_markdown(
         includer_path.read_text(),
         page(str(includer_path)),
+        docs_dir,
     )
 
     if rewrite_relative_urls in ['true', None]:
@@ -790,7 +795,7 @@ def test_include_markdown_invalid_bool_option(opt_name, page, tmp_path):
     page_filepath.write_text(page_content)
 
     with pytest.raises(ValueError) as excinfo:
-        on_page_markdown(page_content, page(page_filepath))
+        on_page_markdown(page_content, page(page_filepath), tmp_path)
 
     expected_exc_message = (
         f'Unknown value for \'{opt_name}\'.'
@@ -842,5 +847,5 @@ Another
 Another
 '''
     assert on_page_markdown(
-        includer_content, page(includer_filepath),
+        includer_content, page(includer_filepath), tmp_path,
     ) == expected_result

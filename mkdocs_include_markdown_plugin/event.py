@@ -1,4 +1,4 @@
-'''Module where the `on_page_markdown` plugin event is defined.'''
+'''Module where the `on_page_markdown` plugin event is processed.'''
 
 import glob
 import html
@@ -66,6 +66,7 @@ logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
 def get_file_content(
     markdown,
     abs_src_path,
+    docs_dir,
     cumulative_heading_offset=0,
     includer_page_path=None,
 ):
@@ -173,6 +174,7 @@ def get_file_content(
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
+                docs_dir,
                 includer_page_path=Path(file_path),
             )
 
@@ -183,13 +185,14 @@ def get_file_content(
             if expected_but_any_found[i]:
                 value = locals()[argname]
                 readable_files_to_include = ', '.join([
-                    '\'' + str(Path(f)) + '\'' for f in file_paths_to_include
+                    str(Path(f).relative_to(docs_dir))
+                    for f in file_paths_to_include
                 ])
+                plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
                 logger.warning(
-                    f"No {argname} delimiter '{value}' detected inside"
-                    f" the file{'s' if len(file_paths_to_include) > 1 else ''}"
-                    f' {readable_files_to_include}'
-                    f" (defined at '{includer_page_path}')",
+                    f"Delimiter {argname} '{value}' defined at"
+                    f' {includer_page_path.relative_to(docs_dir)} not detected'
+                    f' in the file{plural_suffix} {readable_files_to_include}',
                 )
 
         if bool_options['dedent']:
@@ -330,6 +333,7 @@ def get_file_content(
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
+                docs_dir,
                 includer_page_path=Path(file_path),
             )
 
@@ -358,6 +362,7 @@ def get_file_content(
             new_text_to_include = get_file_content(
                 new_text_to_include,
                 file_path,
+                docs_dir,
                 cumulative_heading_offset=cumulative_heading_offset,
                 includer_page_path=Path(file_path),
             )
@@ -375,13 +380,14 @@ def get_file_content(
             if expected_but_any_found[i]:
                 value = locals()[argname]
                 readable_files_to_include = ', '.join([
-                    '\'' + str(Path(f)) + '\'' for f in file_paths_to_include
+                    str(Path(f).relative_to(docs_dir))
+                    for f in file_paths_to_include
                 ])
+                plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
                 logger.warning(
-                    f"No {argname} delimiter '{value}' detected inside"
-                    f" the file{'s' if len(file_paths_to_include) > 1 else ''}"
-                    f' {readable_files_to_include}'
-                    f" (defined at '{includer_page_path}')",
+                    f"Delimiter {argname} '{value}' defined at"
+                    f' {includer_page_path.relative_to(docs_dir)} not detected'
+                    f' in the file{plural_suffix} {readable_files_to_include}',
                 )
 
         if not bool_options['comments']['value']:
@@ -410,9 +416,10 @@ def get_file_content(
     )
 
 
-def on_page_markdown(markdown, page, **kwargs):
+def on_page_markdown(markdown, page, docs_dir):
     return get_file_content(
         markdown,
         page.file.abs_src_path,
+        Path(docs_dir),
         includer_page_path=Path(page.file.abs_src_path),
     )

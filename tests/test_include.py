@@ -191,8 +191,8 @@ Some text
 ''',
             [
                 (
-                    "No start delimiter '<!--start-->' detected inside the"
-                    " file '{included_filepath}' (defined at '{filepath}')"
+                    "Delimiter start '<!--start-->' defined at {filepath}"
+                    ' not detected in the file {included_filepath}'
                 ),
             ],
             id='start=foo (not found)-end=None',
@@ -215,8 +215,8 @@ Some text
 ''',
             [
                 (
-                    "No end delimiter '<!--end-->' detected inside the file"
-                    " '{included_filepath}' (defined at '{filepath}')"
+                    "Delimiter end '<!--end-->' defined at {filepath}"
+                    ' not detected in the file {included_filepath}'
                 ),
             ],
             id='start=None-end=foo (not found)',
@@ -344,17 +344,17 @@ def test_include(
     includer_filepath.write_text(page_content)
 
     assert on_page_markdown(
-        page_content, page(includer_filepath),
+        page_content, page(includer_filepath), tmp_path,
     ) == expected_result
 
     # assert warnings
     expected_warnings = [
         msg_schema.replace(
             '{filepath}',
-            str(includer_filepath),
+            str(includer_filepath.relative_to(tmp_path)),
         ).replace(
             '{included_filepath}',
-            str(included_filepath),
+            str(included_filepath.relative_to(tmp_path)),
         ) for msg_schema in expected_warnings_schemas or []
     ]
 
@@ -373,7 +373,7 @@ def test_include_filepath_error(page, tmp_path):
     page_filepath.write_text(page_content)
 
     with pytest.raises(FileNotFoundError):
-        on_page_markdown(page_content, page(page_filepath))
+        on_page_markdown(page_content, page(page_filepath), tmp_path)
 
 
 @pytest.mark.parametrize(
@@ -392,7 +392,7 @@ def test_include_invalid_bool_option(opt_name, page, tmp_path):
     page_filepath.write_text(page_content)
 
     with pytest.raises(ValueError) as excinfo:
-        on_page_markdown(page_content, page(page_filepath))
+        on_page_markdown(page_content, page(page_filepath), tmp_path)
 
     expected_exc_message = (
         f'Unknown value for \'{opt_name}\'.'

@@ -177,14 +177,14 @@ Some test from final included.
 ''',
             [
                 (
-                    "No start delimiter '<!--start-->' detected inside the"
-                    " file '{included_filepath}' (defined at"
-                    " '{second_includer_filepath}')"
+                    "Delimiter start '<!--start-->' defined at"
+                    ' {second_includer_filepath} not detected in the'
+                    ' file {included_filepath}'
                 ),
                 (
-                    "No end delimiter '<!--end-->' detected inside the"
-                    " file '{included_filepath}' (defined at"
-                    " '{second_includer_filepath}')"
+                    "Delimiter end '<!--end-->' defined at"
+                    ' {second_includer_filepath} not detected in the'
+                    ' file {included_filepath}'
                 ),
             ],
             id='start-end-not-found (second-level)',
@@ -210,14 +210,14 @@ Some test from final included.
 ''',
             [
                 (
-                    "No start delimiter '<!--start-->' detected inside the"
-                    " file '{second_includer_filepath}' (defined at"
-                    " '{first_includer_filepath}')"
+                    "Delimiter start '<!--start-->' defined at"
+                    ' {first_includer_filepath} not detected in the file'
+                    ' {second_includer_filepath}'
                 ),
                 (
-                    "No end delimiter '<!--end-->' detected inside the"
-                    " file '{second_includer_filepath}' (defined at"
-                    " '{first_includer_filepath}')"
+                    "Delimiter end '<!--end-->' defined at"
+                    ' {first_includer_filepath} not detected in the file'
+                    ' {second_includer_filepath}'
                 ),
             ],
             id='start-end-not-found (first-level)',
@@ -251,20 +251,20 @@ def test_nested_include(
 
     # assert content
     assert on_page_markdown(
-        first_includer_content, page(first_includer_filepath),
+        first_includer_content, page(first_includer_filepath), tmp_path,
     ) == expected_result
 
     # assert warnings
     expected_warnings = [
         msg_schema.replace(
             '{first_includer_filepath}',
-            str(first_includer_filepath),
+            str(first_includer_filepath.relative_to(tmp_path)),
         ).replace(
             '{second_includer_filepath}',
-            str(second_includer_filepath),
+            str(second_includer_filepath.relative_to(tmp_path)),
         ).replace(
             '{included_filepath}',
-            str(included_filepath),
+            str(included_filepath.relative_to(tmp_path)),
         ) for msg_schema in expected_warnings_schemas or []
     ]
 
@@ -274,10 +274,11 @@ def test_nested_include(
 
 
 def test_nested_include_relpath(page, tmp_path):
+    docs_dir = tmp_path / 'docs'
+    docs_dir.mkdir()
+
     first_includer_filepath = tmp_path / 'first-includer.txt'
-    docs_path = tmp_path / 'docs'
-    docs_path.mkdir()
-    second_includer_filepath = docs_path / 'second-includer.txt'
+    second_includer_filepath = docs_dir / 'second-includer.txt'
     included_filepath = tmp_path / 'included.txt'
 
     first_includer_content = '''# Header
@@ -309,5 +310,7 @@ Included content.
 '''
 
     assert on_page_markdown(
-        first_includer_content, page(first_includer_filepath),
+        first_includer_content,
+        page(first_includer_filepath),
+        docs_dir,
     ) == expected_result

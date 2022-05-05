@@ -7,4 +7,4 @@ from mkdocs_include_markdown_plugin.event import (
 
 class IncludeMarkdownPlugin(mkdocs.plugins.BasePlugin):
     def on_page_markdown(self, markdown, page, **kwargs):
-        return _on_page_markdown(markdown, page, **kwargs)
+        return _on_page_markdown(markdown, page, kwargs['config']['docs_dir'])
