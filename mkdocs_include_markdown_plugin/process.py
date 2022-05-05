@@ -276,7 +276,7 @@ def filter_inclusions(
         new_text_to_include = ''
 
         if end is not None:
-            some_end_found = False
+            end_found = False
             start_split = text_to_include.split(start)[1:]
             if not start_split:
                 expected_not_found[0] = True
@@ -285,8 +285,8 @@ def filter_inclusions(
                     for i, end_text in enumerate(start_text.split(end)):
                         if not i % 2:
                             new_text_to_include += end_text
-                            some_end_found = True
-            if not some_end_found:
+                            end_found = True
+            if not end_found:
                 expected_not_found[1] = True
         else:
             if start in text_to_include:

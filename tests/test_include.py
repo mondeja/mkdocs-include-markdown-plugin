@@ -191,7 +191,7 @@ Some text
 ''',
             [
                 (
-                    "Any start delimiter '<!--start-->' detected inside the"
+                    "No start delimiter '<!--start-->' detected inside the"
                     " file '{included_filepath}' (defined at '{filepath}')"
                 ),
             ],
@@ -215,7 +215,7 @@ Some text
 ''',
             [
                 (
-                    "Any end delimiter '<!--end-->' detected inside the file"
+                    "No end delimiter '<!--end-->' detected inside the file"
                     " '{included_filepath}' (defined at '{filepath}')"
                 ),
             ],
@@ -351,10 +351,10 @@ def test_include(
     expected_warnings = [
         msg_schema.replace(
             '{filepath}',
-            includer_filepath.as_posix(),
+            includer_filepath,
         ).replace(
             '{included_filepath}',
-            included_filepath.as_posix(),
+            included_filepath,
         ) for msg_schema in expected_warnings_schemas or []
     ]
 

@@ -112,7 +112,7 @@ def get_file_content(
 
         if not file_paths_to_include:
             raise FileNotFoundError(
-                f'Any files found using \'{filename}\' at {page_src_path}',
+                f'No files found using \'{filename}\' at {page_src_path}',
             )
 
         # handle options and regex modifiers
@@ -185,7 +185,7 @@ def get_file_content(
                     '\'' + f + '\'' for f in file_paths_to_include
                 ])
                 logger.warning(
-                    f"Any {argname} delimiter '{value}' detected inside"
+                    f"No {argname} delimiter '{value}' detected inside"
                     f" the file{'s' if len(file_paths_to_include) > 1 else ''}"
                     f' {readable_files_to_include}'
                     f" (defined at '{includer_page_path}')",
@@ -247,7 +247,7 @@ def get_file_content(
 
         if not file_paths_to_include:
             raise FileNotFoundError(
-                f'Any files found using \'{filename}\' at {page_src_path}',
+                f'No files found using \'{filename}\' at {page_src_path}',
             )
 
         # handle options and regex modifiers
@@ -377,7 +377,7 @@ def get_file_content(
                     '\'' + f + '\'' for f in file_paths_to_include
                 ])
                 logger.warning(
-                    f"Any {argname} delimiter '{value}' detected inside"
+                    f"No {argname} delimiter '{value}' detected inside"
                     f" the file{'s' if len(file_paths_to_include) > 1 else ''}"
                     f' {readable_files_to_include}'
                     f" (defined at '{includer_page_path}')",
