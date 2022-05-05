@@ -269,6 +269,7 @@ def test_nested_include(
     ]
 
     for record in caplog.records:
+        print(record.msg)
         assert record.msg in expected_warnings
     assert len(expected_warnings_schemas) == len(caplog.records)
 
