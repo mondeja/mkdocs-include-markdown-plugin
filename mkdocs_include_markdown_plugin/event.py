@@ -311,7 +311,8 @@ def get_file_content(
         # if any start or end strings are found in the included content
         # but the arguments are specified, we must raise a warning
         #
-        # `True` means that any start/end strings have been found in content
+        # `True` means that no start/end strings have been found in content
+        # but they have been specified, so the warning(s) must be raised
         expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
             with open(file_path, encoding='utf-8') as f:
