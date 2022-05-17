@@ -1,7 +1,5 @@
 '''String processing tests.'''
 
-from pathlib import Path
-
 import pytest
 
 from mkdocs_include_markdown_plugin.process import (
@@ -138,8 +136,8 @@ def test_rewrite_relative_urls(
 ):
     assert rewrite_relative_urls(
         markdown,
-        Path(source_path),
-        Path(destination_path),
+        source_path,
+        destination_path,
     ) == expected_result
 
 
