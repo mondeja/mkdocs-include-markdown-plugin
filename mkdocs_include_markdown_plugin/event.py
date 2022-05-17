@@ -6,7 +6,6 @@ import logging
 import os
 import re
 import textwrap
-from pathlib import Path
 
 from mkdocs_include_markdown_plugin import process
 
@@ -65,12 +64,11 @@ logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
 
 def get_file_content(
     markdown,
-    abs_src_path,
+    page_src_path,
     docs_dir,
     includer_page_path,
     cumulative_heading_offset=0,
 ):
-    page_src_path = Path(abs_src_path)
 
     def found_include_tag(match):
         filename = match.group('filename')
@@ -80,11 +78,9 @@ def get_file_content(
         if os.path.isabs(filename):
             file_path_glob = filename
         else:
-            file_path_glob = os.path.abspath(
-                os.path.join(
-                    page_src_path.parent,
-                    filename,
-                ),
+            file_path_glob = os.path.join(
+                os.path.abspath(os.path.dirname(page_src_path)),
+                filename,
             )
 
         exclude_match = re.search(
@@ -98,9 +94,9 @@ def get_file_content(
             if os.path.isabs(exclude_string):
                 exclude_globstr = exclude_string
             else:
-                exclude_globstr = os.path.abspath(
+                exclude_globstr = os.path.realpath(
                     os.path.join(
-                        page_src_path.parent,
+                        os.path.abspath(os.path.dirname(page_src_path)),
                         exclude_string,
                     ),
                 )
@@ -175,7 +171,7 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
-                Path(file_path),
+                file_path,
             )
 
             text_to_include += new_text_to_include
@@ -185,14 +181,15 @@ def get_file_content(
             if expected_but_any_found[i]:
                 value = locals()[argname]
                 readable_files_to_include = ', '.join([
-                    str(Path(f).relative_to(docs_dir))
-                    for f in file_paths_to_include
+                    os.path.relpath(fpath, docs_dir)
+                    for fpath in file_paths_to_include
                 ])
                 plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
                 logger.warning(
                     f"Delimiter {argname} '{value}' defined at"
-                    f' {includer_page_path.relative_to(docs_dir)} not detected'
-                    f' in the file{plural_suffix} {readable_files_to_include}',
+                    f' {os.path.relpath(includer_page_path, docs_dir)}'
+                    f' not detected in the file{plural_suffix}'
+                    f' {readable_files_to_include}',
                 )
 
         if bool_options['dedent']:
@@ -218,11 +215,9 @@ def get_file_content(
         if os.path.isabs(filename):
             file_path_glob = filename
         else:
-            file_path_glob = os.path.abspath(
-                os.path.join(
-                    page_src_path.parent,
-                    filename,
-                ),
+            file_path_glob = os.path.join(
+                os.path.abspath(os.path.dirname(page_src_path)),
+                filename,
             )
 
         exclude_match = re.search(
@@ -236,9 +231,9 @@ def get_file_content(
             if os.path.isabs(exclude_string):
                 exclude_globstr = exclude_string
             else:
-                exclude_globstr = os.path.abspath(
+                exclude_globstr = os.path.realpath(
                     os.path.join(
-                        page_src_path.parent,
+                        os.path.abspath(os.path.dirname(page_src_path)),
                         exclude_string,
                     ),
                 )
@@ -335,14 +330,14 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
-                Path(file_path),
+                file_path,
             )
 
             # relative URLs rewriting
             if bool_options['rewrite-relative-urls']['value']:
                 new_text_to_include = process.rewrite_relative_urls(
                     new_text_to_include,
-                    source_path=Path(file_path),
+                    source_path=file_path,
                     destination_path=page_src_path,
                 )
 
@@ -364,7 +359,7 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
-                Path(file_path),
+                file_path,
                 cumulative_heading_offset=cumulative_heading_offset,
             )
 
@@ -381,14 +376,15 @@ def get_file_content(
             if expected_but_any_found[i]:
                 value = locals()[argname]
                 readable_files_to_include = ', '.join([
-                    str(Path(f).relative_to(docs_dir))
-                    for f in file_paths_to_include
+                    os.path.relpath(fpath, docs_dir)
+                    for fpath in file_paths_to_include
                 ])
                 plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
                 logger.warning(
                     f"Delimiter {argname} '{value}' defined at"
-                    f' {includer_page_path.relative_to(docs_dir)} not detected'
-                    f' in the file{plural_suffix} {readable_files_to_include}',
+                    f' {os.path.relpath(includer_page_path, docs_dir)}'
+                    f' not detected in the file{plural_suffix}'
+                    f' {readable_files_to_include}',
                 )
 
         if not bool_options['comments']['value']:
@@ -421,6 +417,6 @@ def on_page_markdown(markdown, page, docs_dir):
     return get_file_content(
         markdown,
         page.file.abs_src_path,
-        Path(docs_dir),
-        Path(page.file.abs_src_path),
+        docs_dir,
+        page.file.abs_src_path,
     )

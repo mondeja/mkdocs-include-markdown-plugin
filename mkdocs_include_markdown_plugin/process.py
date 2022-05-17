@@ -1,7 +1,6 @@
 import os
 import re
 from functools import partial
-from pathlib import Path
 from typing import Optional, Tuple
 from urllib.parse import urlparse, urlunparse
 
@@ -187,7 +186,7 @@ def transform_line_by_line_skipping_codeblocks(markdown, func):
 
 
 def rewrite_relative_urls(
-    markdown: str, source_path: Path, destination_path: Path,
+    markdown: str, source_path: str, destination_path: str,
 ) -> str:
     '''Rewrites markdown so that relative links that were written at
     ``source_path`` will still work when inserted into a file at
@@ -204,12 +203,12 @@ def rewrite_relative_urls(
         trailing_slash = path.endswith('/')
 
         path = os.path.relpath(
-            source_path.parent / path,
-            destination_path.parent,
+            os.path.join(os.path.dirname(source_path), path),
+            os.path.dirname(destination_path),
         )
 
         # ensure forward slashes are used, on Windows
-        path = Path(path).as_posix()
+        path = path.replace('\\', '/').replace('//', '/')
 
         if trailing_slash:
             # the above operation removes a trailing slash. Add it back if it
