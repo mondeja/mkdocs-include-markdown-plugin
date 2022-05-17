@@ -147,39 +147,31 @@ def transform_p_by_p_skipping_codeblocks(markdown, func):
 def transform_line_by_line_skipping_codeblocks(markdown, func):
     '''Apply a transformation line by line in a Markdown text using a function.
 
-    Skip indented and fenced codeblock lines, where the transformation never is
-    applied.
+    Skip fenced codeblock lines, where the transformation never is applied.
+
+    Indented codeblocks are not taken into account because in the practice
+    this function is never used for transformations on indented lines. See
+    the PR https://github.com/mondeja/mkdocs-include-markdown-plugin/pull/95
+    to recover the implementation handling indented codeblocks.
     '''
     _inside_fcodeblock = False            # inside fenced codeblock
     _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
-    _inside_icodeblock = False            # inside indented codeblock
 
     lines = []
     for line in markdown.splitlines(keepends=True):
-        if not _inside_fcodeblock and not _inside_icodeblock:
+        if not _inside_fcodeblock:
             lstripped_line = line.lstrip()
-            if any([
-                lstripped_line.startswith('```'),
-                lstripped_line.startswith('~~~'),
-            ]):
-                _inside_fcodeblock = True
-                _current_fcodeblock_delimiter = line[:3]
-            elif (
-                # 5 and 2 including newline character
-                (line.startswith('    ') and len(line) == 4) or
-                (line.startswith('\t') and len(line) == 1)
+            if (
+                lstripped_line.startswith('```') or
+                lstripped_line.startswith('~~~')
             ):
-                _inside_icodeblock = True
+                _inside_fcodeblock = True
+                _current_fcodeblock_delimiter = lstripped_line[:3]
             else:
                 line = func(line)
-        else:
-            if _current_fcodeblock_delimiter:
-                if line.lstrip().startswith(_current_fcodeblock_delimiter):
-                    _inside_fcodeblock = False
-                    _current_fcodeblock_delimiter = None
-            else:
-                if not line.startswith('    '):
-                    _inside_icodeblock = False
+        elif line.lstrip().startswith(_current_fcodeblock_delimiter):
+            _inside_fcodeblock = False
+            _current_fcodeblock_delimiter = None
         lines.append(line)
 
     return ''.join(lines)
@@ -321,7 +313,7 @@ def increase_headings_offset(markdown: str, offset: int = 0):
             if line.startswith('#') else line
         ) if offset > 0 else (
             lambda line: line if not line.startswith('#') else (
-                re.sub('^' + '#' * abs(offset), '', line)
+                re.sub(f'^{"#" * abs(offset)}', '', line)
                 if line.startswith('#' * abs(offset)) else
                 '#' + line.lstrip('#')
             )

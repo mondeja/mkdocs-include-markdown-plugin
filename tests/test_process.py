@@ -152,6 +152,15 @@ def test_rewrite_relative_urls(
 hello = "world"
 ```
 
+    # this is an indented
+    codeblock
+
+- This list item has an indented codeblock inside:
+
+   ```
+   # fenced codeblock inside list item
+   ```
+
 # Bar
 
 Some text
@@ -165,6 +174,15 @@ Some text
 # this is a comment
 hello = "world"
 ```
+
+    # this is an indented
+    codeblock
+
+- This list item has an indented codeblock inside:
+
+   ```
+   # fenced codeblock inside list item
+   ```
 
 ### Bar
 
