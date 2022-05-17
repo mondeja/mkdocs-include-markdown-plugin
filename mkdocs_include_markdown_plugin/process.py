@@ -1,6 +1,6 @@
+import functools
 import os
 import re
-from functools import partial
 from typing import Optional, Tuple
 from urllib.parse import urlparse, urlunparse
 
@@ -223,17 +223,17 @@ def rewrite_relative_urls(
     def transform(paragraph):
         paragraph = re.sub(
             MARKDOWN_LINK_REGEX,
-            partial(found_href, url_group_index=3),
+            functools.partial(found_href, url_group_index=3),
             paragraph,
         )
         paragraph = re.sub(
             MARKDOWN_IMAGE_REGEX,
-            partial(found_href, url_group_index=3),
+            functools.partial(found_href, url_group_index=3),
             paragraph,
         )
         return re.sub(
             MARKDOWN_LINK_DEFINITION_REGEX,
-            partial(found_href, url_group_index=2),
+            functools.partial(found_href, url_group_index=2),
             paragraph,
         )
     return transform_p_by_p_skipping_codeblocks(
@@ -302,22 +302,30 @@ def filter_inclusions(
     return (text_to_include, *expected_not_found)
 
 
+def _transform_negative_offset_func_factory(offset):
+    heading_prefix = '#' * abs(offset)
+    return lambda line: line if not line.startswith('#') else (
+        heading_prefix + line.lstrip('#')
+        if line.startswith(heading_prefix)
+        else '#' + line.lstrip('#')
+    )
+
+
+def _transform_positive_offset_func_factory(offset):
+    heading_prefix = '#' * offset
+    return lambda line: (
+        heading_prefix + line if line.startswith('#') else line
+    )
+
+
 def increase_headings_offset(markdown: str, offset: int = 0):
     '''Increases the headings depth of a snippet of Makdown content.'''
     if not offset:
         return markdown
     return transform_line_by_line_skipping_codeblocks(
         markdown,
-        (
-            lambda line: ('#' * offset + line)
-            if line.startswith('#') else line
-        ) if offset > 0 else (
-            lambda line: line if not line.startswith('#') else (
-                re.sub(f'^{"#" * abs(offset)}', '', line)
-                if line.startswith('#' * abs(offset)) else
-                '#' + line.lstrip('#')
-            )
-        ),
+        _transform_positive_offset_func_factory(offset) if offset > 0
+        else _transform_negative_offset_func_factory(offset),
     )
 
 
