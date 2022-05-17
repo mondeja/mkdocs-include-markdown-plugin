@@ -122,6 +122,7 @@ const auto lambda = []() { .... };
 \t
 \tconst auto lambda = []() { .... };
 
+Some text after
 ''',
             'README',
             'examples/lambda.md',
@@ -129,6 +130,7 @@ const auto lambda = []() { .... };
 \t
 \tconst auto lambda = []() { .... };
 
+Some text after
 ''',
             id='cpp-likelink-indented-codeblock',
         ),
