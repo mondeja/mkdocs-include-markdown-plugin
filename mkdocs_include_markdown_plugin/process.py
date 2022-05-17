@@ -95,51 +95,50 @@ def transform_p_by_p_skipping_codeblocks(markdown, func):
     Skip indented and fenced codeblock lines, where the transformation never is
     applied.
     '''
-    _inside_fcodeblock = False            # inside fenced codeblock
     _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
     _inside_icodeblock = False            # inside indented codeblock
 
     lines, current_paragraph = ([], '')
 
-    def process_current_paragraph_lines():
+    def process_current_paragraph():
         lines.extend(func(current_paragraph).splitlines(keepends=True))
 
     for line in markdown.splitlines(keepends=True):
-        if not _inside_fcodeblock and not _inside_icodeblock:
+        if not _current_fcodeblock_delimiter and not _inside_icodeblock:
             lstripped_line = line.lstrip()
-            if any([
-                lstripped_line.startswith('```'),
-                lstripped_line.startswith('~~~'),
-            ]):
-                _inside_fcodeblock = True
+            if (
+                lstripped_line.startswith('```') or
+                lstripped_line.startswith('~~~')
+            ):
                 _current_fcodeblock_delimiter = lstripped_line[:3]
                 if current_paragraph:
-                    process_current_paragraph_lines()
+                    process_current_paragraph()
                     current_paragraph = ''
                 lines.append(line)
             elif (
                 # 5 and 2 including newline character
+                #
+                # TODO: Windows endlines has the same length?
                 (line.startswith('    ') and len(line) == 5) or
                 (line.startswith('\t') and len(line) == 2)
             ):
                 _inside_icodeblock = True
-                lines.append(line)
                 if current_paragraph:
-                    process_current_paragraph_lines()
+                    process_current_paragraph()
                     current_paragraph = ''
+                lines.append(line)
             else:
                 current_paragraph += line
         else:
             lines.append(line)
             if _current_fcodeblock_delimiter:
                 if line.lstrip().startswith(_current_fcodeblock_delimiter):
-                    _inside_fcodeblock = False
                     _current_fcodeblock_delimiter = None
             else:
-                if not line.startswith('    '):
+                if not line.startswith('    ') and not line.startswith('\t'):
                     _inside_icodeblock = False
 
-    process_current_paragraph_lines()
+    process_current_paragraph()
 
     return ''.join(lines)
 
@@ -154,23 +153,20 @@ def transform_line_by_line_skipping_codeblocks(markdown, func):
     the PR https://github.com/mondeja/mkdocs-include-markdown-plugin/pull/95
     to recover the implementation handling indented codeblocks.
     '''
-    _inside_fcodeblock = False            # inside fenced codeblock
     _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
 
     lines = []
     for line in markdown.splitlines(keepends=True):
-        if not _inside_fcodeblock:
+        if not _current_fcodeblock_delimiter:
             lstripped_line = line.lstrip()
             if (
                 lstripped_line.startswith('```') or
                 lstripped_line.startswith('~~~')
             ):
-                _inside_fcodeblock = True
                 _current_fcodeblock_delimiter = lstripped_line[:3]
             else:
                 line = func(line)
         elif line.lstrip().startswith(_current_fcodeblock_delimiter):
-            _inside_fcodeblock = False
             _current_fcodeblock_delimiter = None
         lines.append(line)
 
@@ -220,15 +216,20 @@ def rewrite_relative_urls(
             + m.string[href_end:match_end]
         )
 
+    found_href_url_group_index_3 = functools.partial(
+        found_href,
+        url_group_index=3,
+    )
+
     def transform(paragraph):
         paragraph = re.sub(
             MARKDOWN_LINK_REGEX,
-            functools.partial(found_href, url_group_index=3),
+            found_href_url_group_index_3,
             paragraph,
         )
         paragraph = re.sub(
             MARKDOWN_IMAGE_REGEX,
-            functools.partial(found_href, url_group_index=3),
+            found_href_url_group_index_3,
             paragraph,
         )
         return re.sub(

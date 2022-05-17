@@ -97,7 +97,9 @@ Check [this link](includes/feature_a/foobar.md) for more information
             id='mailto-urls',
         ),
         pytest.param(
-            '''```cpp
+            '''Some text before
+
+```cpp
 // Some code in which rewrites shouldn't be proccessed.
 // https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/78
 const auto lambda = []() { .... };
@@ -105,7 +107,9 @@ const auto lambda = []() { .... };
 ''',
             'README',
             'examples/lambda.md',
-            '''```cpp
+            '''Some text before
+
+```cpp
 // Some code in which rewrites shouldn't be proccessed.
 // https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/78
 const auto lambda = []() { .... };
@@ -114,13 +118,15 @@ const auto lambda = []() { .... };
             id='cpp-likelink-fenced-codeblock',
         ),
         pytest.param(
-            '''\t
+            '''Some text before
+\t
 \tconst auto lambda = []() { .... };
 
 ''',
             'README',
             'examples/lambda.md',
-            '''\t
+            '''Some text before
+\t
 \tconst auto lambda = []() { .... };
 
 ''',
