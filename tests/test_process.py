@@ -97,7 +97,9 @@ Check [this link](includes/feature_a/foobar.md) for more information
             id='mailto-urls',
         ),
         pytest.param(
-            '''```cpp
+            '''Some text before
+
+```cpp
 // Some code in which rewrites shouldn't be proccessed.
 // https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/78
 const auto lambda = []() { .... };
@@ -105,7 +107,9 @@ const auto lambda = []() { .... };
 ''',
             'README',
             'examples/lambda.md',
-            '''```cpp
+            '''Some text before
+
+```cpp
 // Some code in which rewrites shouldn't be proccessed.
 // https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/78
 const auto lambda = []() { .... };
@@ -114,15 +118,19 @@ const auto lambda = []() { .... };
             id='cpp-likelink-fenced-codeblock',
         ),
         pytest.param(
-            '''\t
+            '''Some text before
+\t
 \tconst auto lambda = []() { .... };
 
+Some text after
 ''',
             'README',
             'examples/lambda.md',
-            '''\t
+            '''Some text before
+\t
 \tconst auto lambda = []() { .... };
 
+Some text after
 ''',
             id='cpp-likelink-indented-codeblock',
         ),
@@ -152,6 +160,15 @@ def test_rewrite_relative_urls(
 hello = "world"
 ```
 
+    # this is an indented
+    codeblock
+
+- This list item has an indented codeblock inside:
+
+   ```
+   # fenced codeblock inside list item
+   ```
+
 # Bar
 
 Some text
@@ -165,6 +182,15 @@ Some text
 # this is a comment
 hello = "world"
 ```
+
+    # this is an indented
+    codeblock
+
+- This list item has an indented codeblock inside:
+
+   ```
+   # fenced codeblock inside list item
+   ```
 
 ### Bar
 
