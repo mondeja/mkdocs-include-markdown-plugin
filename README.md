@@ -45,7 +45,7 @@ to include files of any type.
 
 Paths of included files can be absolute or relative to the path of the file
 that includes them. This argument also accept globs, in which case certain
-paths can be ignored using the `exclude` argument:
+paths can be ignored using the `exclude` argument.
 
 <!-- mdpo-disable-next-line -->
 #### **`include-markdown`**
@@ -85,10 +85,6 @@ content to include.
  **trailing-newlines** (*true*): When this option is disabled, the trailing newlines
  found in the content to include are stripped. Possible values are `true` and `false`.
 
-> Note that **start** and **end** strings may contain usual (Python-style)
-escape sequences like `\n`, which is handy if you need to match on a multi-line
-start or end trigger.
-
 ##### Examples
 
 ```jinja
@@ -119,8 +115,8 @@ start or end trigger.
 ```jinja
 {%
    include-markdown "../LICENSE*"
-   start="<!--license-start-->"
-   end="<!--license-end-->"
+   start="<!--license \"start\" -->"
+   end="<!--license \"end\" -->"
    exclude="../LICENSE*.rst"
 %}
 ```
@@ -151,10 +147,6 @@ Includes the content of a file or a group of files.
 - <a name="include_trailing-newlines" href="#include_trailing-newlines">#</a>
  **trailing-newlines** (*true*): When this option is disabled, the trailing newlines
  found in the content to include are stripped. Possible values are `true` and `false`.
-
-> Note that **start** and **end** strings may contain usual (Python-style)
-escape sequences like `\n`, which is handy if you need to match on a multi-line
-start or end trigger.
 
 ##### Examples
 

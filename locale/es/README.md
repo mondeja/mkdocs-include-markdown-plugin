@@ -38,7 +38,7 @@ para incluir archivos de cualquier tipo.
 
 Las rutas de los archivos incluidos pueden ser absolutas o relativas a la ruta
 del archivo que las incluye. Este argumento también acepta globs, en cuyo caso
-ciertas rutas pueden ser ignoradas usando el argumento `exclude`:
+ciertas rutas pueden ser ignoradas usando el argumento `exclude`.
 
 #### **`include-markdown`**
 
@@ -82,10 +82,6 @@ Cuando esta opción está deshabilitada, los saltos de línea finales que se
 encuentran en el contenido a incluir se eliminan. Los valores posibles son
 `true` y `false`.
 
-> Nota que las cadenas **start** y **end** pueden contener caracteres usuales de
-secuencias de escape (al estilo Python) como `\n`, lo cual es útil si necesita
-hacer coincidir en un disparador de inicio o fin de varias líneas.
-
 ##### Ejemplos
 
 ```jinja
@@ -116,8 +112,8 @@ hacer coincidir en un disparador de inicio o fin de varias líneas.
 ```jinja
 {%
    include-markdown "../LICENSE*"
-   start="<!--license-start-->"
-   end="<!--license-end-->"
+   start="<!--license \"start\" -->"
+   end="<!--license \"end\" -->"
    exclude="../LICENSE*.rst"
 %}
 ```
@@ -148,10 +144,6 @@ pasando globs para incluir múltiples archivos.
 (*true*): Cuando esta opción está deshabilitada, los saltos de línea finales que
 se encuentran en el contenido a incluir se eliminan. Los valores posibles son
 `true` y `false`.
-
-> Nota que las cadenas **start** y **end** pueden contener caracteres usuales de
-secuencias de escape (al estilo Python) como `\n`, lo cual es útil si necesita
-hacer coincidir en un disparador de inicio o fin de varias líneas.
 
 ##### Ejemplos
 
