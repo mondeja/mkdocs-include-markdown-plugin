@@ -359,9 +359,13 @@ def filter_paths(filepaths: list, ignore_paths: list = []):
         # ignore by filepath
         if filepath in ignore_paths:
             continue
+
         # ignore by dirpath (relative or absolute)
         if (os.sep).join(filepath.split(os.sep)[:-1]) in ignore_paths:
             continue
-        response.append(filepath)
+
+        # ignore if is a directory
+        if not os.path.isdir(filepath):
+            response.append(filepath)
     response.sort()
     return response

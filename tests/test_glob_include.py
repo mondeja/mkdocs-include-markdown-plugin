@@ -3,6 +3,7 @@
 import os
 
 import pytest
+from testing_utils import parametrize_directives
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
@@ -44,7 +45,7 @@ barbaz
     ) == expected_result
 
 
-@pytest.mark.parametrize('directive', ('include', 'include-markdown'))
+@parametrize_directives
 @pytest.mark.parametrize(
     (
         'includer_content',
@@ -54,14 +55,14 @@ barbaz
     (
         pytest.param(
             '''{%
-  directive "./included*.txt"
+  {directive} "./included*.txt"
   start="<!-- start-2 -->"
   end="<!-- end-2 -->"
   comments=false
 %}
 
 {%
-  directive "./included*.txt"
+  {directive} "./included*.txt"
   start="<!-- start-1 -->"
   end="<!-- end-1 -->"
   comments=false
@@ -80,7 +81,7 @@ bar
         ),
         pytest.param(
             '''{%
-  directive "./included*.txt"
+  {directive} "./included*.txt"
   end="<!-- end-2 -->"
   comments=false
 %}
@@ -104,14 +105,14 @@ baz
         # both start and end specified but not found in files to include
         pytest.param(
             '''{%
-  directive "./included*.txt"
+  {directive} "./included*.txt"
   start="<!-- start-not-found-2 -->"
   end="<!-- end-not-found-2 -->"
   comments=false
 %}
 
 {%
-  directive "./included*.txt"
+  {directive} "./included*.txt"
   start="<!-- start-not-found-1 -->"
   end="<!-- end-not-found-1 -->"
   comments=false
@@ -159,7 +160,7 @@ def test_glob_include(
 
     includer_filepath_content = f'''foo
 
-{includer_content.replace('directive "', directive + ' "')}
+{includer_content.replace('{directive}', directive)}
 '''
 
     included_01_content = '''This 01 must appear only without specifying start.

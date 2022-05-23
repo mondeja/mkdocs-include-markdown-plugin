@@ -3,11 +3,12 @@
 import os
 
 import pytest
+from testing_utils import parametrize_directives
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 
-@pytest.mark.parametrize('directive', ('include', 'include-markdown'))
+@parametrize_directives
 @pytest.mark.parametrize(
     ('filenames', 'exclude', 'exclude_prefix', 'expected_result'),
     (

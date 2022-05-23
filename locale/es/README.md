@@ -122,6 +122,10 @@ hacer coincidir en un disparador de inicio o fin de varias líneas.
 %}
 ```
 
+```jinja
+{% include-markdown "/escap\"ed/double-quotes/in/file\"/name.md" %}
+```
+
 #### **`include`**
 
 Incluye el contenido de un archivo o un grupo de archivos.

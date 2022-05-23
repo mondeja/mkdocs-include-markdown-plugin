@@ -125,6 +125,10 @@ start or end trigger.
 %}
 ```
 
+```jinja
+{% include-markdown "/escap\"ed/double-quotes/in/file\"/name.md" %}
+```
+
 <!-- mdpo-disable-next-line -->
 #### **`include`**
 
