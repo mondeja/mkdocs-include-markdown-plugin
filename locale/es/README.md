@@ -76,6 +76,11 @@ valores negativos para eliminar caracteres `#` a la izquierda.
 - <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a> **exclude**:
 Expecifica mediante un glob los archivos que deben ser ignorados. Sólo es útil
 pasando globs para incluir múltiples archivos.
+- <a name="include-markdown_trailing-newlines"
+href="#include-markdown_trailing-newlines">#</a> **trailing-newlines** (*true*):
+Cuando esta opción está deshabilitada, los saltos de línea finales que se
+encuentran en el contenido a incluir se eliminan. Los valores posibles son
+`true` y `false`.
 
 > Nota que las cadenas **start** y **end** pueden contener caracteres usuales de
 secuencias de escape (al estilo Python) como `\n`, lo cual es útil si necesita
@@ -135,6 +140,10 @@ se habilita, el contenido incluido será dedentado.
 - <a name="include_exclude" href="#include_exclude">#</a> **exclude**:
 Especifica mediante un glob los archivos que deben ser ignorados. Sólo es útil
 pasando globs para incluir múltiples archivos.
+- <a name="include_trailing-newlines" href="#include_trailing-newlines">#</a> **trailing-newlines**
+(*true*): Cuando esta opción está deshabilitada, los saltos de línea finales que
+se encuentran en el contenido a incluir se eliminan. Los valores posibles son
+`true` y `false`.
 
 > Nota que las cadenas **start** y **end** pueden contener caracteres usuales de
 secuencias de escape (al estilo Python) como `\n`, lo cual es útil si necesita

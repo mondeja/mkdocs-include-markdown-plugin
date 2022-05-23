@@ -57,6 +57,7 @@ ARGUMENT_REGEXES = {
     'dedent': re.compile(r'dedent=(\w*)'),
     'heading-offset': re.compile(r'heading-offset=(-?\d+)'),
     'exclude': re.compile(r'exclude="([^"]+)"'),
+    'trailing-newlines': re.compile(r'trailing-newlines=(\w*)'),
 }
 
 logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
@@ -71,8 +72,8 @@ def get_file_content(
 ):
 
     def found_include_tag(match):
-        filename = match.group('filename')
         _includer_indent = match.group('_includer_indent')
+        filename = match.group('filename')
         arguments_string = match.group('arguments')
 
         if os.path.isabs(filename):
@@ -125,6 +126,10 @@ def get_file_content(
                 'value': False,
                 'regex': ARGUMENT_REGEXES['dedent'],
             },
+            'trailing-newlines': {
+                'value': True,
+                'regex': ARGUMENT_REGEXES['trailing-newlines'],
+            },
         }
 
         for opt_name, opt_data in bool_options.items():
@@ -174,6 +179,24 @@ def get_file_content(
                 file_path,
             )
 
+            # trailing newlines right stripping
+            if not bool_options['trailing-newlines']['value']:
+                new_text_to_include = process.rstrip_trailing_newlines(
+                    new_text_to_include,
+                )
+
+            if bool_options['dedent']:
+                new_text_to_include = textwrap.dedent(new_text_to_include)
+
+            # Includer indentation preservation
+            if bool_options['preserve-includer-indent']['value']:
+                new_text_to_include = ''.join(
+                    _includer_indent + line
+                    for line in new_text_to_include.splitlines(keepends=True)
+                )
+            else:
+                new_text_to_include = _includer_indent + new_text_to_include
+
             text_to_include += new_text_to_include
 
         # warn if expected start or ends haven't been found in included content
@@ -192,24 +215,11 @@ def get_file_content(
                     f' {readable_files_to_include}',
                 )
 
-        if bool_options['dedent']:
-            text_to_include = textwrap.dedent(text_to_include)
-
-        # Includer indentation preservation
-        if bool_options['preserve-includer-indent']['value']:
-            text_to_include = ''.join(
-                _includer_indent + line
-                for line in text_to_include.splitlines(keepends=True)
-            )
-        else:
-            text_to_include = _includer_indent + text_to_include
-
         return text_to_include
 
     def found_include_markdown_tag(match):
-        # handle filename parameter and read content
-        filename = match.group('filename')
         _includer_indent = match.group('_includer_indent')
+        filename = match.group('filename')
         arguments_string = match.group('arguments')
 
         if os.path.isabs(filename):
@@ -268,6 +278,10 @@ def get_file_content(
             'dedent': {
                 'value': False,
                 'regex': ARGUMENT_REGEXES['dedent'],
+            },
+            'trailing-newlines': {
+                'value': True,
+                'regex': ARGUMENT_REGEXES['trailing-newlines'],
             },
         }
 
@@ -333,6 +347,12 @@ def get_file_content(
                 file_path,
             )
 
+            # trailing newlines right stripping
+            if not bool_options['trailing-newlines']['value']:
+                new_text_to_include = process.rstrip_trailing_newlines(
+                    new_text_to_include,
+                )
+
             # relative URLs rewriting
             if bool_options['rewrite-relative-urls']['value']:
                 new_text_to_include = process.rewrite_relative_urls(
@@ -353,15 +373,6 @@ def get_file_content(
                 )
             else:
                 new_text_to_include = _includer_indent + new_text_to_include
-
-            # nested includes
-            new_text_to_include = get_file_content(
-                new_text_to_include,
-                file_path,
-                docs_dir,
-                file_path,
-                cumulative_heading_offset=cumulative_heading_offset,
-            )
 
             if offset_match:
                 new_text_to_include = process.increase_headings_offset(
