@@ -134,6 +134,21 @@ Some text after
 ''',
             id='cpp-likelink-indented-codeblock',
         ),
+        pytest.param(
+            '''Some text before
+\t
+\tconst auto lambda = []() { .... };\r\n
+Some text after
+''',
+            'README',
+            'examples/lambda.md',
+            '''Some text before
+\t
+\tconst auto lambda = []() { .... };\r\n
+Some text after
+''',
+            id='cpp-likelink-indented-codeblock-windows-newlines',
+        ),
     ),
 )
 def test_rewrite_relative_urls(
@@ -163,7 +178,7 @@ hello = "world"
     # this is an indented
     codeblock
 
-- This list item has an indented codeblock inside:
+- This list item has a fenced codeblock inside:
 
    ```
    # fenced codeblock inside list item
@@ -186,7 +201,7 @@ hello = "world"
     # this is an indented
     codeblock
 
-- This list item has an indented codeblock inside:
+- This list item has a fenced codeblock inside:
 
    ```
    # fenced codeblock inside list item
@@ -282,6 +297,7 @@ Some text
 
     # another comment
 
+\t# comment in tabbed indented codeblock\r\n
 ## Qux
 ''',
             1,
@@ -294,6 +310,7 @@ Some text
 
     # another comment
 
+\t# comment in tabbed indented codeblock\r\n
 ### Qux
 ''',
             id='indented-codeblocks',
