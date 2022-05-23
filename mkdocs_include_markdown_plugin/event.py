@@ -109,7 +109,7 @@ def get_file_content(
             ignore_paths = glob.glob(exclude_globstr)
 
         file_paths_to_include = process.filter_paths(
-            glob.glob(file_path_glob),
+            glob.iglob(file_path_glob, recursive=True),
             ignore_paths=ignore_paths,
         )
 
@@ -257,7 +257,7 @@ def get_file_content(
             ignore_paths = glob.glob(exclude_globstr)
 
         file_paths_to_include = process.filter_paths(
-            glob.glob(file_path_glob),
+            glob.iglob(file_path_glob, recursive=True),
             ignore_paths=ignore_paths,
         )
 
