@@ -38,7 +38,7 @@ autre pour inclure des fichiers de tout type.
 
 Les paths des fichiers inclus peuvent être absolus ou relatifs au le path du
 fichier qui les inclut. Cet argument accepte également des globs, auquel cas
-certains paths peuvent être ignorés à l'aide de l'argument `exclude` :
+certains paths peuvent être ignorés à l'aide de l'argument `exclude`.
 
 #### **`include-markdown`**
 
@@ -81,10 +81,6 @@ Lorsque cette option est désactivée, les nouvelles lignes de fin trouvées dan
 le contenu à inclure sont supprimées. Les valeurs possibles sont `true` et
 `false`.
 
-> Notez que les chaînes **start** et **end** peuvent contenir des séquences
-d'échappement habituelles (de style Python) telles que `\n`, ce qui est pratique
-si vous devez faire correspondre un déclencheur de début ou de fin multiligne.
-
 ##### Exemples
 
 ```jinja
@@ -115,8 +111,8 @@ si vous devez faire correspondre un déclencheur de début ou de fin multiligne.
 ```jinja
 {%
    include-markdown "../LICENSE*"
-   start="<!--license-start-->"
-   end="<!--license-end-->"
+   start="<!--license \"start\" -->"
+   end="<!--license \"end\" -->"
    exclude="../LICENSE*.rst"
 %}
 ```
@@ -147,10 +143,6 @@ passage de globs pour inclure plusieurs fichiers.
 (*true*): Lorsque cette option est désactivée, les nouvelles lignes de fin
 trouvées dans le contenu à inclure sont supprimées. Les valeurs possibles sont
 `true` et `false`.
-
-> Notez que les chaînes **start** et **end** peuvent contenir des séquences
-d'échappement habituelles (de style Python) telles que `\n`, ce qui est pratique
-si vous devez faire correspondre un déclencheur de début ou de fin multiligne.
 
 ##### Exemples
 

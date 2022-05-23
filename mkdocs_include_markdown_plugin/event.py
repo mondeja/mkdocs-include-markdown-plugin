@@ -217,7 +217,7 @@ def get_file_content(
                 plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
                 logger.warning(
                     f"Delimiter {argname} '{value}' defined at"
-                    f' {os.path.relpath(includer_page_path, docs_dir)}'
+                    f' {os.path.relpath(page_src_path, docs_dir)}'
                     f' not detected in the file{plural_suffix}'
                     f' {readable_files_to_include}',
                 )
@@ -402,7 +402,7 @@ def get_file_content(
                 plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
                 logger.warning(
                     f"Delimiter {argname} '{value}' defined at"
-                    f' {os.path.relpath(includer_page_path, docs_dir)}'
+                    f' {os.path.relpath(page_src_path, docs_dir)}'
                     f' not detected in the file{plural_suffix}'
                     f' {readable_files_to_include}',
                 )

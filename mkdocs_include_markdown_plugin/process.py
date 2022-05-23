@@ -116,11 +116,8 @@ def transform_p_by_p_skipping_codeblocks(markdown, func):
                     current_paragraph = ''
                 lines.append(line)
             elif (
-                # 5 and 2 including newline character
-                #
-                # TODO: Windows endlines has the same length?
-                (line.startswith('    ') and len(line) == 5) or
-                (line.startswith('\t') and len(line) == 2)
+                line.replace('\t', '    ').replace('\r\n', '\n')
+                == '    \n'
             ):
                 _inside_icodeblock = True
                 if current_paragraph:
