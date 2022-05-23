@@ -121,6 +121,10 @@ si vous devez faire correspondre un déclencheur de début ou de fin multiligne.
 %}
 ```
 
+```jinja
+{% include-markdown "/escap\"ed/double-quotes/in/file\"/name.md" %}
+```
+
 #### **`include`**
 
 Inclus le contenu d'un fichier ou d'un groupe de fichiers.

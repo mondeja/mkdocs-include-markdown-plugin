@@ -20,44 +20,49 @@ TRUE_FALSE_BOOL_STR = {
     False: 'false',
 }
 
+BOOL_ARGUMENT_PATTERN = r'\w+'
+STR_ARGUMENT_PATTERN = r'([^"]|(?<=\\)")+'
+
 INCLUDE_TAG_REGEX = re.compile(
-    r'''
-        (?P<_includer_indent>[^\S\r\n]*){%
+    rf'''
+        (?P<_includer_indent>[^\S\r\n]*){{%
         \s*
         include
         \s+
-        "(?P<filename>[^"]+)"
+        "(?P<filename>{STR_ARGUMENT_PATTERN})"
         (?P<arguments>.*?)
         \s*
-        %}
+        %}}
     ''',
     flags=re.VERBOSE | re.DOTALL,
 )
 
 INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
-    r'''
-        (?P<_includer_indent>[^\S\r\n]*){%
-        \s*
-        include\-markdown
-        \s+
-        "(?P<filename>[^"]+)"
-        (?P<arguments>.*?)
-        \s*
-        %}
-    ''',
-    flags=re.VERBOSE | re.DOTALL,
+    INCLUDE_TAG_REGEX.pattern.replace(' include', ' include-markdown'),
+    flags=INCLUDE_TAG_REGEX.flags,
 )
 
 ARGUMENT_REGEXES = {
-    'start': re.compile(r'start="([^"]+)"'),
-    'end': re.compile(r'end="([^"]+)"'),
-    'rewrite-relative-urls': re.compile(r'rewrite-relative-urls=(\w*)'),
-    'comments': re.compile(r'comments=(\w*)'),
-    'preserve-includer-indent': re.compile(r'preserve-includer-indent=(\w*)'),
-    'dedent': re.compile(r'dedent=(\w*)'),
+    # str
+    'start': re.compile(rf'start="({STR_ARGUMENT_PATTERN})"'),
+    'end': re.compile(rf'end="({STR_ARGUMENT_PATTERN})"'),
+    'exclude': re.compile(rf'exclude="({STR_ARGUMENT_PATTERN})"'),
+
+    # bool
+    'rewrite-relative-urls': re.compile(
+        rf'rewrite-relative-urls=({BOOL_ARGUMENT_PATTERN})',
+    ),
+    'comments': re.compile(rf'comments=({BOOL_ARGUMENT_PATTERN})'),
+    'preserve-includer-indent': re.compile(
+        rf'preserve-includer-indent=({BOOL_ARGUMENT_PATTERN})',
+    ),
+    'dedent': re.compile(rf'dedent=({BOOL_ARGUMENT_PATTERN})'),
+    'trailing-newlines': re.compile(
+        rf'trailing-newlines=({BOOL_ARGUMENT_PATTERN})',
+    ),
+
+    # int
     'heading-offset': re.compile(r'heading-offset=(-?\d+)'),
-    'exclude': re.compile(r'exclude="([^"]+)"'),
-    'trailing-newlines': re.compile(r'trailing-newlines=(\w*)'),
 }
 
 logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
@@ -73,7 +78,7 @@ def get_file_content(
 
     def found_include_tag(match):
         _includer_indent = match.group('_includer_indent')
-        filename = match.group('filename')
+        filename = match.group('filename').replace('\\"', '"')
         arguments_string = match.group('arguments')
 
         if os.path.isabs(filename):
@@ -91,7 +96,7 @@ def get_file_content(
         if exclude_match is None:
             ignore_paths = []
         else:
-            exclude_string = exclude_match.group(1)
+            exclude_string = exclude_match.group(1).replace('\\"', '"')
             if os.path.isabs(exclude_string):
                 exclude_globstr = exclude_string
             else:
@@ -104,7 +109,7 @@ def get_file_content(
             ignore_paths = glob.glob(exclude_globstr)
 
         file_paths_to_include = process.filter_paths(
-            glob.glob(file_path_glob),
+            glob.iglob(file_path_glob, recursive=True),
             ignore_paths=ignore_paths,
         )
 
@@ -150,8 +155,10 @@ def get_file_content(
         start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
         end_match = re.search(ARGUMENT_REGEXES['end'], arguments_string)
 
-        start = None if not start_match else start_match.group(1)
-        end = None if not end_match else end_match.group(1)
+        start = None if not start_match else (
+            start_match.group(1).replace('\\"', '"')
+        )
+        end = None if not end_match else end_match.group(1).replace('\\"', '"')
 
         text_to_include = ''
         expected_but_any_found = [start is not None, end is not None]
@@ -176,7 +183,7 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
-                file_path,
+                page_src_path,
             )
 
             # trailing newlines right stripping
@@ -219,7 +226,7 @@ def get_file_content(
 
     def found_include_markdown_tag(match):
         _includer_indent = match.group('_includer_indent')
-        filename = match.group('filename')
+        filename = match.group('filename').replace('\\"', '"')
         arguments_string = match.group('arguments')
 
         if os.path.isabs(filename):
@@ -237,7 +244,7 @@ def get_file_content(
         if exclude_match is None:
             ignore_paths = []
         else:
-            exclude_string = exclude_match.group(1)
+            exclude_string = exclude_match.group(1).replace('\\"', '"')
             if os.path.isabs(exclude_string):
                 exclude_globstr = exclude_string
             else:
@@ -250,7 +257,7 @@ def get_file_content(
             ignore_paths = glob.glob(exclude_globstr)
 
         file_paths_to_include = process.filter_paths(
-            glob.glob(file_path_glob),
+            glob.iglob(file_path_glob, recursive=True),
             ignore_paths=ignore_paths,
         )
 
@@ -303,8 +310,10 @@ def get_file_content(
         start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
         end_match = re.search(ARGUMENT_REGEXES['end'], arguments_string)
 
-        start = None if not start_match else start_match.group(1)
-        end = None if not end_match else end_match.group(1)
+        start = None if not start_match else (
+            start_match.group(1).replace('\\"', '"')
+        )
+        end = None if not end_match else end_match.group(1).replace('\\"', '"')
 
         # heading offset
         offset = 0
@@ -344,7 +353,7 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
-                file_path,
+                page_src_path,
             )
 
             # trailing newlines right stripping
