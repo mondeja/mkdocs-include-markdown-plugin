@@ -81,6 +81,9 @@ content to include.
 - <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a>
  **exclude**: Specify with a glob which files should be ignored. Only useful
  when passing globs to include multiple files.
+- <a name="include-markdown_trailing-newlines" href="#include-markdown_trailing-newlines">#</a>
+ **trailing-newlines** (*true*): When this option is disabled, the trailing newlines
+ found in the content to include are stripped. Possible values are `true` and `false`.
 
 > Note that **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line
@@ -141,6 +144,9 @@ Includes the content of a file or a group of files.
 - <a name="include_exclude" href="#include_exclude">#</a>
  **exclude**: Specify with a glob which files should be ignored. Only useful
  when passing globs to include multiple files.
+- <a name="include_trailing-newlines" href="#include_trailing-newlines">#</a>
+ **trailing-newlines** (*true*): When this option is disabled, the trailing newlines
+ found in the content to include are stripped. Possible values are `true` and `false`.
 
 > Note that **start** and **end** strings may contain usual (Python-style)
 escape sequences like `\n`, which is handy if you need to match on a multi-line

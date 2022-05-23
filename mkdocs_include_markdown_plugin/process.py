@@ -330,6 +330,12 @@ def increase_headings_offset(markdown: str, offset: int = 0):
     )
 
 
+def rstrip_trailing_newlines(content):
+    while content.endswith('\n') or content.endswith('\r'):
+        content = content.rstrip('\r\n')
+    return content
+
+
 def filter_paths(filepaths: list, ignore_paths: list = []):
     """Filters a list of paths removing those defined in other list of paths.
 

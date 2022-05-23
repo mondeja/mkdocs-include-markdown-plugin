@@ -318,6 +318,20 @@ Some text
             [],
             id='dedent=true,preserve-includer-indent=true',
         ),
+        pytest.param(
+            'Foo{% include "{filepath}" trailing-newlines=false %}',
+            '\n',
+            'Foo',
+            [],
+            id='rstrip-unix-trailing-newlines',
+        ),
+        pytest.param(
+            'Foo{% include "{filepath}" trailing-newlines=false %}',
+            '\r\n\r\n',
+            'Foo',
+            [],
+            id='rstrip-windows-trailing-newlines',
+        ),
     ),
 )
 def test_include(

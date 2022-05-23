@@ -633,6 +633,36 @@ vɛвѣди
             [],
             id='russian-characters',
         ),
+        pytest.param(
+            '''1. List item number 1
+1. {% include-markdown "{filepath}" comments=false trailing-newlines=false %}
+1. List item number 3
+''',
+            'Content to include\n',
+            '''1. List item number 1
+1. Content to include
+1. List item number 3
+''',
+            [],
+            id='rstrip-unix-trailing-newlines',
+        ),
+        pytest.param(
+            '''1. List item number 1
+1. {%
+  include-markdown "{filepath}"
+  comments=false
+  trailing-newlines=false
+%}
+1. List item number 3
+''',
+            'Content to include\r\n\r\n\r',
+            '''1. List item number 1
+1. Content to include
+1. List item number 3
+''',
+            [],
+            id='rstrip-windows-trailing-newlines',
+        ),
     ),
 )
 def test_include_markdown(

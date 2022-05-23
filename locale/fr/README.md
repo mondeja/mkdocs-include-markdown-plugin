@@ -53,7 +53,7 @@ Délimiteur qui marque la fin du contenu à inclure.
 href="#include-markdown_preserve-includer-indent">#</a> **preserve-includer-indent**
 (*true*): Lorsque cette option est activée (par défaut), chaque ligne du contenu
 à inclure est indentée avec le même nombre d'espaces utilisé pour indenter
-l'incluseur modèle `{% %}`.
+l'incluseur modèle `{% %}`. Les valeurs possibles sont `true` et `false`.
 - <a name="include-markdown_dedent" href="#include-markdown_dedent">#</a> **dedent**
 (*false*): Lorsque est activée, le contenu inclus sera déchiqueté.
 - <a name="include-markdown_rewrite-relative-urls"
@@ -75,6 +75,11 @@ négatives pour supprimer les caractères `#` de tête.
 - <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a> **exclude**:
 Spécifiez avec un glob quels fichiers doivent être ignorés. Uniquement utile
 lors du passage de globs pour inclure plusieurs fichiers.
+- <a name="include-markdown_trailing-newlines"
+href="#include-markdown_trailing-newlines">#</a> **trailing-newlines** (*true*):
+Lorsque cette option est désactivée, les nouvelles lignes de fin trouvées dans
+le contenu à inclure sont supprimées. Les valeurs possibles sont `true` et
+`false`.
 
 > Notez que les chaînes **start** et **end** peuvent contenir des séquences
 d'échappement habituelles (de style Python) telles que `\n`, ce qui est pratique
@@ -128,12 +133,16 @@ la fin du contenu à inclure.
 href="#include_preserve-includer-indent">#</a> **preserve-includer-indent** (*true*):
 Lorsque cette option est activée (par défaut), chaque ligne du contenu à inclure
 est indentée avec le même nombre d'espaces utilisé pour indenter l'incluseur
-modèle `{% %}`.
+modèle `{% %}`. Les valeurs possibles sont `true` et `false`.
 - <a name="include_dedent" href="#include_dedent">#</a> **dedent** (*false*):
 Lorsque est activée, le contenu inclus sera déchiqueté.
 - <a name="include_exclude" href="#include_exclude">#</a> **exclude**: Spécifiez
 avec un glob quels fichiers doivent être ignorés. Uniquement utile lors du
 passage de globs pour inclure plusieurs fichiers.
+- <a name="include_trailing-newlines" href="#include_trailing-newlines">#</a> **trailing-newlines**
+(*true*): Lorsque cette option est désactivée, les nouvelles lignes de fin
+trouvées dans le contenu à inclure sont supprimées. Les valeurs possibles sont
+`true` et `false`.
 
 > Notez que les chaînes **start** et **end** peuvent contenir des séquences
 d'échappement habituelles (de style Python) telles que `\n`, ce qui est pratique
