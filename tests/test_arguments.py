@@ -1,12 +1,19 @@
 import os
+import sys
 
 import pytest
-from testing_utils import parametrize_directives
 
 from mkdocs_include_markdown_plugin.event import (
     ARGUMENT_REGEXES,
     BOOL_ARGUMENT_PATTERN,
     on_page_markdown,
+)
+
+from testing_utils import parametrize_directives
+
+
+WINDOWS_DOUBLE_QUOTES_PATHS_NOT_ALLOWED_REASON = (
+    'Double quotes are reserved characters not allowed for paths under Windows'
 )
 
 
@@ -61,6 +68,10 @@ More content that should be ignored
     assert result == '\nContent to include\n'
 
 
+@pytest.mark.skipif(
+    sys.platform.startswith('win'),
+    reason=WINDOWS_DOUBLE_QUOTES_PATHS_NOT_ALLOWED_REASON,
+)
 @parametrize_directives
 def test_exclude_double_quote_escapes(directive, page, tmp_path):
     drectory_to_include = tmp_path / 'exclude_double_quote_escapes'
@@ -93,6 +104,10 @@ class TestFilename:
         'inc"luded.md', 'inc"lude"d.md', 'included.md"', '"included.md',
     ]
 
+    @pytest.mark.skipif(
+        sys.platform.startswith('win'),
+        reason=WINDOWS_DOUBLE_QUOTES_PATHS_NOT_ALLOWED_REASON,
+    )
     @parametrize_directives
     @pytest.mark.parametrize('filename', double_quoted_filenames_cases)
     def test_not_escaped_double_quotes_in_filename(
@@ -108,6 +123,10 @@ class TestFilename:
                 tmp_path,
             )
 
+    @pytest.mark.skipif(
+        sys.platform.startswith('win'),
+        reason=WINDOWS_DOUBLE_QUOTES_PATHS_NOT_ALLOWED_REASON,
+    )
     @parametrize_directives
     @pytest.mark.parametrize('filename', double_quoted_filenames_cases)
     def test_escaped_double_quotes_in_filename(

@@ -3,9 +3,10 @@
 import os
 
 import pytest
-from testing_utils import parametrize_directives
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
+
+from testing_utils import parametrize_directives
 
 
 @parametrize_directives
