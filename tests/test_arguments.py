@@ -154,6 +154,7 @@ def test_exclude_double_quote_escapes(directive, page, tmp_path):
     assert result == 'Content that should be included\n'
 
 
+@double_quotes_windows_path_skip
 @parametrize_directives
 def test_invalid_exclude_argument(directive, page, tmp_path, caplog):
     drectory_to_include = tmp_path / 'exclude_double_quote_escapes'
