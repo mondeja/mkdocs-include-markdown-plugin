@@ -252,7 +252,7 @@ More text
             '''# Header
 {%
     include-markdown "{filepath}"
-    end="<!--end-->"
+    end='<!--end-->'
     comments=false
 %}''',
             '''
@@ -272,8 +272,8 @@ Some text
         pytest.param(
             '''# Header
 {%
-    include-markdown "{filepath}"
-    start="<!--start-->"
+    include-markdown '{filepath}'
+    start='<!--start-->'
     comments=false
 %}''',
             '''Some text
@@ -282,8 +282,9 @@ Some text
 ''',
             [
                 (
-                    "Delimiter start '<!--start-->' defined at {filepath}"
-                    ' not detected in the file {included_filepath}'
+                    "Delimiter start '<!--start-->' of 'include-markdown'"
+                    ' directive at {filepath}:2 not detected in the file'
+                    ' {included_filepath}'
                 ),
             ],
             id='start=foo (not found)-end=None',
@@ -306,7 +307,8 @@ Some text
 ''',
             [
                 (
-                    "Delimiter end '<!--end-->' defined at {filepath}"
+                    "Delimiter end '<!--end-->' of 'include-markdown'"
+                    ' directive at {filepath}:2'
                     ' not detected in the file {included_filepath}'
                 ),
             ],

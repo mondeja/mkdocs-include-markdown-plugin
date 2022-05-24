@@ -82,7 +82,7 @@ def test_exclude(
     exclude_prefix = f'{tmp_path}{os.sep}' if exclude_prefix else ''
     includer_filepath_content = f'''{{%
   {directive} "{tmp_path}{os.sep}content/*"
-  exclude="{exclude_prefix}{exclude}"
+  exclude='{exclude_prefix}{exclude}'
   comments=false
 %}}'''
     for basename, file in files.items():

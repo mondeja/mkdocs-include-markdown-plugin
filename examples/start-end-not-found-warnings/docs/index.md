@@ -8,7 +8,7 @@
 %}
 
 {%
-  include "./included.md"
+  include './included.md'
   start="<--start-->"
   end="<--end-->"
 %}

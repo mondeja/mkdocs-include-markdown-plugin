@@ -123,22 +123,26 @@ baz
             [
                 (
                     "Delimiter end '<!-- end-not-found-1 -->'"
-                    ' defined at {includer_file} not detected in'
+                    " of '{directive}' directive"
+                    ' at {includer_file}:10 not detected in'
                     ' the files {included_file_01}, {included_file_02}'
                 ),
                 (
                     "Delimiter end '<!-- end-not-found-2 -->'"
-                    ' defined at {includer_file} not detected in'
+                    " of '{directive}' directive"
+                    ' at {includer_file}:3 not detected in'
                     ' the files {included_file_01}, {included_file_02}'
                 ),
                 (
                     "Delimiter start '<!-- start-not-found-1 -->'"
-                    ' defined at {includer_file} not detected in'
+                    " of '{directive}' directive"
+                    ' at {includer_file}:10 not detected in'
                     ' the files {included_file_01}, {included_file_02}'
                 ),
                 (
                     "Delimiter start '<!-- start-not-found-2 -->'"
-                    ' defined at {includer_file} not detected in'
+                    " of '{directive}' directive"
+                    ' at {includer_file}:3 not detected in'
                     ' the files {included_file_01}, {included_file_02}'
                 ),
             ],
@@ -203,7 +207,8 @@ This 02 must appear only without specifying end.
         ).replace(
             '{included_file_02}',
             str(included_02_file.relative_to(tmp_path)),
-        ) for msg_schema in expected_warnings_schemas
+        ).replace('{directive}', directive)
+        for msg_schema in expected_warnings_schemas
     ]
 
     for record in caplog.records:

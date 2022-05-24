@@ -308,10 +308,14 @@ def get_file_content(
                     for fpath in file_paths_to_include
                 ])
                 plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
+                )
                 logger.warning(
-                    f"Delimiter {argname} '{value}' defined at"
-                    f' {os.path.relpath(page_src_path, docs_dir)}'
-                    f' not detected in the file{plural_suffix}'
+                    f"Delimiter {argname} '{value}' of 'include'"
+                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                    f':{lineno} not detected in the file{plural_suffix}'
                     f' {readable_files_to_include}',
                 )
 
@@ -554,10 +558,14 @@ def get_file_content(
                     for fpath in file_paths_to_include
                 ])
                 plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
+                )
                 logger.warning(
-                    f"Delimiter {argname} '{value}' defined at"
-                    f' {os.path.relpath(page_src_path, docs_dir)}'
-                    f' not detected in the file{plural_suffix}'
+                    f"Delimiter {argname} '{value}' of 'include-markdown'"
+                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                    f':{lineno} not detected in the file{plural_suffix}'
                     f' {readable_files_to_include}',
                 )
 

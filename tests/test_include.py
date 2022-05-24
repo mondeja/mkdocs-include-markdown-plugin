@@ -180,18 +180,21 @@ Some text
         # Don't specify end but not finds start in included content
         pytest.param(
             '''Foo
+
 {%
-    include-markdown "{filepath}"
+    include "{filepath}"
     start="<!--start-->"
     comments=false
 %}''',
             '''Some text
 ''',
             '''Foo
+
 ''',
             [
                 (
-                    "Delimiter start '<!--start-->' defined at {filepath}"
+                    "Delimiter start '<!--start-->' of 'include'"
+                    ' directive at {filepath}:3'
                     ' not detected in the file {included_filepath}'
                 ),
             ],
@@ -202,7 +205,7 @@ Some text
         pytest.param(
             '''Foo
 {%
-    include-markdown "{filepath}"
+    include "{filepath}"
     end="<!--end-->"
     comments=false
 %}''',
@@ -215,7 +218,8 @@ Some text
 ''',
             [
                 (
-                    "Delimiter end '<!--end-->' defined at {filepath}"
+                    "Delimiter end '<!--end-->' of 'include'"
+                    ' directive at {filepath}:2'
                     ' not detected in the file {included_filepath}'
                 ),
             ],
