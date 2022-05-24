@@ -378,19 +378,6 @@ def test_include(
     assert len(expected_warnings_schemas) == len(caplog.records)
 
 
-def test_include_filepath_error(page, tmp_path):
-    page_content = '''# Header
-
-{% include "/path/to/file/that/does/not/exists" %}
-'''
-
-    page_filepath = tmp_path / 'example.md'
-    page_filepath.write_text(page_content)
-
-    with pytest.raises(FileNotFoundError):
-        on_page_markdown(page_content, page(page_filepath), tmp_path)
-
-
 @pytest.mark.parametrize(
     'opt_name',
     (

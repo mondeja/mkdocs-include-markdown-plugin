@@ -716,20 +716,6 @@ def test_include_markdown(
     assert len(expected_warnings_schemas) == len(caplog.records)
 
 
-def test_include_markdown_filepath_error(page, tmp_path):
-    page_content = '''{%
-    include-markdown "/path/to/file/that/does/not/exists"
-    start="<!--start-here-->"
-    end="<!--end-here-->"
-%}'''
-
-    page_filepath = tmp_path / 'example.md'
-    page_filepath.write_text(page_content)
-
-    with pytest.raises(FileNotFoundError):
-        on_page_markdown(page_content, page(page_filepath), tmp_path)
-
-
 @pytest.mark.parametrize('rewrite_relative_urls', ['true', 'false', None])
 def test_include_markdown_relative_rewrite(
     page,
