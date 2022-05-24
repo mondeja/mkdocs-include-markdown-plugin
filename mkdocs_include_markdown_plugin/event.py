@@ -155,7 +155,7 @@ def get_file_content(
                     directive_match_start,
                 )
                 logger.error(
-                    "Invalid empty 'exclude' argument in 'include' directive "
+                    "Invalid empty 'exclude' argument in 'include' directive"
                     f' at {os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
                 ignore_paths = []
