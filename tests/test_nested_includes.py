@@ -155,7 +155,7 @@ Some test from final included.
             '''# Header
 
 {%
-  include-markdown "{filepath}"
+  include-markdown '{filepath}'
   comments=false
   start="<!--start-->"
   end="<!--end-->"
@@ -170,14 +170,14 @@ Some test from final included.
 ''',
             [
                 (
-                    "Delimiter start '<!--start-->' defined at"
-                    ' {first_includer_filepath} not detected in the file'
-                    ' {second_includer_filepath}'
+                    "Delimiter start '<!--start-->' of 'include-markdown'"
+                    ' directive at {first_includer_filepath}:3 not detected'
+                    ' in the file {second_includer_filepath}'
                 ),
                 (
-                    "Delimiter end '<!--end-->' defined at"
-                    ' {first_includer_filepath} not detected in the file'
-                    ' {second_includer_filepath}'
+                    "Delimiter end '<!--end-->' of 'include-markdown'"
+                    ' directive at {first_includer_filepath}:3 not detected'
+                    ' in the file {second_includer_filepath}'
                 ),
             ],
             id='start-end-not-found (first-level)',
@@ -209,14 +209,14 @@ Included content
 ''',
             [
                 (
-                    "Delimiter start '<!--start-->' defined at"
-                    ' {second_includer_filepath} not detected in the'
-                    ' file {included_filepath}'
+                    "Delimiter start '<!--start-->' of 'include-markdown'"
+                    ' directive at {second_includer_filepath}:3 not detected'
+                    ' in the file {included_filepath}'
                 ),
                 (
-                    "Delimiter end '<!--end-->' defined at"
-                    ' {second_includer_filepath} not detected in the'
-                    ' file {included_filepath}'
+                    "Delimiter end '<!--end-->' of 'include-markdown'"
+                    ' directive at {second_includer_filepath}:3 not detected'
+                    ' in the file {included_filepath}'
                 ),
             ],
             id='start-end-not-found (second-level)',

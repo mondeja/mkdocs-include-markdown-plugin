@@ -47,6 +47,13 @@ Paths of included files can be absolute or relative to the path of the file
 that includes them. This argument also accept globs, in which case certain
 paths can be ignored using the `exclude` argument.
 
+File paths to include and string arguments can be wrapped by double `"` or
+single `'` quotes, which can be escaped prepending them a `\` character as
+`\"` and `\'`.
+
+The arguments **start** and **end** may contain usual (Python-style) escape
+sequences like `\n` to match against newlines.
+
 <!-- mdpo-disable-next-line -->
 #### **`include-markdown`**
 
@@ -97,9 +104,9 @@ content to include.
 
 ```jinja
 {%
-   include-markdown "docs/includes/header.md"
-   start="<!--\n\ttable-start\n-->"
-   end="<!--\n\ttable-end\n-->"
+   include-markdown 'docs/includes/header.md'
+   start='<!--\n\ttable-start\n-->'
+   end='<!--\n\ttable-end\n-->'
    rewrite-relative-urls=false
    comments=false
 %}
@@ -116,13 +123,13 @@ content to include.
 {%
    include-markdown "../LICENSE*"
    start="<!--license \"start\" -->"
-   end="<!--license \"end\" -->"
+   end='<!--license "end" -->'
    exclude="../LICENSE*.rst"
 %}
 ```
 
 ```jinja
-{% include-markdown "/escap\"ed/double-quotes/in/file\"/name.md" %}
+{% include-markdown '/escap\'ed/single-quotes/in/file\'/name.md' %}
 ```
 
 <!-- mdpo-disable-next-line -->
@@ -166,8 +173,8 @@ Includes the content of a file or a group of files.
 
 ```jinja
 {%
-   include "../LICENSE*"
-   exclude="../LICENSE*.rst"
+   include '../LICENSE*'
+   exclude='../LICENSE*.rst'
 %}
 ```
 
