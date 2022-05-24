@@ -432,7 +432,7 @@ def get_file_content(
                 logger.error(
                     f"Invalid value for '{arg_name}' argument of"
                     " 'include-markdown' directive at"
-                    f'{os.path.relpath(page_src_path, docs_dir)}'
+                    f' {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}. Possible values are true or false.',
                 )
                 return ''
