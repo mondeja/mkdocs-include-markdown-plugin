@@ -376,28 +376,3 @@ def test_include(
     for record in caplog.records:
         assert record.msg in expected_warnings
     assert len(expected_warnings_schemas) == len(caplog.records)
-
-
-@pytest.mark.parametrize(
-    'opt_name',
-    (
-        'preserve-includer-indent',
-        'dedent',
-    ),
-)
-def test_include_invalid_bool_option(opt_name, page, tmp_path):
-    page_filepath = tmp_path / 'example.md'
-    page_content = f'''{{%
-    include "{page_filepath}"
-    {opt_name}=invalidoption
-%}}'''
-    page_filepath.write_text(page_content)
-
-    with pytest.raises(ValueError) as excinfo:
-        on_page_markdown(page_content, page(page_filepath), tmp_path)
-
-    expected_exc_message = (
-        f'Unknown value for \'{opt_name}\'.'
-        ' Possible values are: true, false'
-    )
-    assert expected_exc_message == str(excinfo.value)

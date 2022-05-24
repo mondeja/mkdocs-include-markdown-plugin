@@ -213,11 +213,16 @@ def get_file_content(
                     match.group(1) or TRUE_FALSE_BOOL_STR[arg['value']]
                 ]
             except KeyError:
-                # TODO: replace by logging error and add lineno
-                raise ValueError(
-                    f'Unknown value for \'{arg_name}\'. Possible values are:'
-                    ' true, false',
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
                 )
+                logger.error(
+                    f"Invalid value for '{arg_name}' argument of 'include'"
+                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                    f':{lineno}. Possible values are true or false.',
+                )
+                return ''
 
         start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
         if start_match:
@@ -420,11 +425,17 @@ def get_file_content(
                     match.group(1) or TRUE_FALSE_BOOL_STR[arg['value']]
                 ]
             except KeyError:
-                # TODO: replace by logging error and add lineno
-                raise ValueError(
-                    f'Unknown value for \'{arg_name}\'. Possible values are:'
-                    ' true, false',
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
                 )
+                logger.error(
+                    f"Invalid value for '{arg_name}' argument of"
+                    " 'include-markdown' directive at"
+                    f'{os.path.relpath(page_src_path, docs_dir)}'
+                    f':{lineno}. Possible values are true or false.',
+                )
+                return ''
 
         # start and end arguments
         start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)

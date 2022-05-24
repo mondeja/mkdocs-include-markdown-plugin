@@ -5,11 +5,7 @@ import sys
 
 import pytest
 
-from mkdocs_include_markdown_plugin.event import (
-    ARGUMENT_REGEXES,
-    BOOL_ARGUMENT_PATTERN,
-    on_page_markdown,
-)
+from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 from testing_utils import parametrize_directives
 
@@ -25,31 +21,50 @@ double_quotes_windows_path_skip = pytest.mark.skipif(
 
 
 @pytest.mark.parametrize(
-    'argument_name',
-    [
-        arg_name for arg_name, regex in ARGUMENT_REGEXES.items()
-        if BOOL_ARGUMENT_PATTERN in regex.pattern
-    ],
+    ('directive', 'arguments'),
+    (
+        pytest.param(
+            'include',
+            ['preserve-includer-indent', 'dedent', 'trailing-newlines'],
+            id='include',
+        ),
+        pytest.param(
+            'include-markdown',
+            [
+                'preserve-includer-indent',
+                'dedent',
+                'rewrite-relative-urls',
+                'comments',
+                'trailing-newlines',
+            ],
+            id='include-markdown',
+        ),
+    ),
 )
-def test_invalid_bool_args(argument_name, page, tmp_path):
-    page_to_include_filepath = tmp_path / 'included.md'
-    page_to_include_filepath.write_text('Included\n')
+def test_invalid_bool_arguments(directive, arguments, page, tmp_path, caplog):
+    for argument_name in arguments:
+        page_to_include_filepath = tmp_path / 'included.md'
+        page_to_include_filepath.write_text('Included\n')
 
-    with pytest.raises(ValueError) as excinfo:
-        on_page_markdown(
+        filename = 'includer.md'
+
+        result = on_page_markdown(
             f'''{{%
-    include-markdown "{page_to_include_filepath}"
+    {directive} "{page_to_include_filepath}"
     {argument_name}=invalidoption
-%}}''',
-            page(tmp_path / 'includer.md'),
+    %}}''',
+            page(tmp_path / filename),
             tmp_path,
         )
+        assert result == ''
 
-    expected_exc_message = (
-        f'Unknown value for \'{argument_name}\'.'
-        ' Possible values are: true, false'
-    )
-    assert expected_exc_message == str(excinfo.value)
+        assert len(caplog.records) == 1
+        assert caplog.records[0].msg == (
+            f"Invalid value for '{argument_name}' argument of '{directive}'"
+            f' directive at {filename}:1. Possible values are true or false.'
+        )
+
+        caplog.clear()
 
 
 @parametrize_directives
