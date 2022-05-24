@@ -40,6 +40,14 @@ Les paths des fichiers inclus peuvent être absolus ou relatifs au le path du
 fichier qui les inclut. Cet argument accepte également des globs, auquel cas
 certains paths peuvent être ignorés à l'aide de l'argument `exclude`.
 
+Les chemins d'accès aux fichiers à inclure et les arguments de chaîne peuvent
+être entourés de guillemets doubles `"` ou simples `'`, qui peuvent être
+échappés en leur ajoutant un caractère `\` comme `\"` et `\'`.
+
+Les chaînes **start** et **end** peuvent contenir des séquences d'échappement
+habituelles (de style Python) telles que `\n` pour correspondre aux nouvelles
+lignes.
+
 #### **`include-markdown`**
 
 Inclut contenu des Markdown fichiers, en utilisant éventuellement deux
@@ -93,9 +101,9 @@ le contenu à inclure sont supprimées. Les valeurs possibles sont `true` et
 
 ```jinja
 {%
-   include-markdown "docs/includes/header.md"
-   start="<!--\n\ttable-start\n-->"
-   end="<!--\n\ttable-end\n-->"
+   include-markdown 'docs/includes/header.md'
+   start='<!--\n\ttable-start\n-->'
+   end='<!--\n\ttable-end\n-->'
    rewrite-relative-urls=false
    comments=false
 %}
@@ -112,13 +120,13 @@ le contenu à inclure sont supprimées. Les valeurs possibles sont `true` et
 {%
    include-markdown "../LICENSE*"
    start="<!--license \"start\" -->"
-   end="<!--license \"end\" -->"
+   end='<!--license "end" -->'
    exclude="../LICENSE*.rst"
 %}
 ```
 
 ```jinja
-{% include-markdown "/escap\"ed/double-quotes/in/file\"/name.md" %}
+{% include-markdown '/escap\'ed/single-quotes/in/file\'/name.md' %}
 ```
 
 #### **`include`**
@@ -162,8 +170,8 @@ trouvées dans le contenu à inclure sont supprimées. Les valeurs possibles son
 
 ```jinja
 {%
-   include "../LICENSE*"
-   exclude="../LICENSE*.rst"
+   include '../LICENSE*'
+   exclude='../LICENSE*.rst'
 %}
 ```
 

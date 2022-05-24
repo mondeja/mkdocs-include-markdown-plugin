@@ -40,6 +40,14 @@ Las rutas de los archivos incluidos pueden ser absolutas o relativas a la ruta
 del archivo que las incluye. Este argumento también acepta globs, en cuyo caso
 ciertas rutas pueden ser ignoradas usando el argumento `exclude`.
 
+Las rutas de archivo para incluir y los argumentos de cadena se pueden envolver
+con comillas dobles `"` o simples `'`, que se pueden escapar anteponiendo un
+carácter `\` como `\"` y `\'`.
+
+Las cadenas **start** y **end** pueden contener caracteres usuales de secuencias
+de escape (al estilo Python) como `\n` para hacer coincidir contra caracteres de
+salto de línea
+
 #### **`include-markdown`**
 
 Incluye contenido de archivos Markdown, opcionalmente usando dos delimitadores
@@ -94,9 +102,9 @@ encuentran en el contenido a incluir se eliminan. Los valores posibles son
 
 ```jinja
 {%
-   include-markdown "docs/includes/header.md"
-   start="<!--\n\ttable-start\n-->"
-   end="<!--\n\ttable-end\n-->"
+   include-markdown 'docs/includes/header.md'
+   start='<!--\n\ttable-start\n-->'
+   end='<!--\n\ttable-end\n-->'
    rewrite-relative-urls=false
    comments=false
 %}
@@ -113,13 +121,13 @@ encuentran en el contenido a incluir se eliminan. Los valores posibles son
 {%
    include-markdown "../LICENSE*"
    start="<!--license \"start\" -->"
-   end="<!--license \"end\" -->"
+   end='<!--license "end" -->'
    exclude="../LICENSE*.rst"
 %}
 ```
 
 ```jinja
-{% include-markdown "/escap\"ed/double-quotes/in/file\"/name.md" %}
+{% include-markdown '/escap\'ed/single-quotes/in/file\'/name.md' %}
 ```
 
 #### **`include`**
@@ -163,8 +171,8 @@ se encuentran en el contenido a incluir se eliminan. Los valores posibles son
 
 ```jinja
 {%
-   include "../LICENSE*"
-   exclude="../LICENSE*.rst"
+   include '../LICENSE*'
+   exclude='../LICENSE*.rst'
 %}
 ```
 
