@@ -682,7 +682,24 @@ vɛвѣди
 1. List item number 3
 ''',
             [],
-            id='rstrip-trailing-newlines-keep-comments',
+            id='rstrip-trailing-newlines-comments',
+        ),
+
+        pytest.param(
+            '''1. List item number 1
+1. {%
+  include-markdown "{filepath}"
+  trailing-newlines=false
+%}
+1. List item number 3
+''',
+            'Content to include\n',
+            '''1. List item number 1
+1. <!-- BEGIN INCLUDE {filepath} --> Content to include <!-- END INCLUDE -->
+1. List item number 3
+''',
+            [],
+            id='rstrip-trailing-newlines-comments-multiline-directive',
         ),
     ),
 )
