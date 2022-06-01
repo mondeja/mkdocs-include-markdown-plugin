@@ -572,15 +572,17 @@ def get_file_content(
         if not bool_options['comments']['value']:
             return text_to_include
 
+        separator = '\n' if bool_options['trailing-newlines']['value'] else ''
+        start_end_part = html.escape(start or '')
+        if start_end_part:
+            start_end_part += ' '
+        start_end_part += html.escape(end or '')
+        if start_end_part:
+            start_end_part += ' '
         return (
-            _includer_indent
-            + '<!-- BEGIN INCLUDE {} {} {} -->\n'.format(
-                filename,
-                html.escape(start or ''),
-                html.escape(end or ''),
-            )
-            + text_to_include
-            + '\n' + _includer_indent + '<!-- END INCLUDE -->'
+            f'{_includer_indent}<!-- BEGIN INCLUDE {filename}'
+            f' {start_end_part}-->{separator}{text_to_include}'
+            f'{separator}{_includer_indent}<!-- END INCLUDE -->'
         )
 
     markdown = re.sub(
