@@ -19,7 +19,7 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
             'This must be included.',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}   -->
+<!-- BEGIN INCLUDE {filepath} -->
 This must be included.
 <!-- END INCLUDE -->
 ''',
@@ -64,7 +64,7 @@ This must be included.
 This must be ignored.''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}  &lt;!--end-here--&gt; -->
+<!-- BEGIN INCLUDE {filepath} &lt;!--end-here--&gt; -->
 This must be included.
 
 <!-- END INCLUDE -->
@@ -414,7 +414,7 @@ Some text
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}   -->
+<!-- BEGIN INCLUDE {filepath} -->
 ## This should be a second level heading.
 
 Example data
@@ -437,7 +437,7 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}   -->
+<!-- BEGIN INCLUDE {filepath} -->
 ### This should be a third level heading.
 
 Example data
@@ -460,7 +460,7 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}   -->
+<!-- BEGIN INCLUDE {filepath} -->
 # This should be a first level heading.
 
 Example data
@@ -484,7 +484,7 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}   -->
+<!-- BEGIN INCLUDE {filepath} -->
 # This should be a first level heading.
 
 Example data
@@ -508,7 +508,7 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}   -->
+<!-- BEGIN INCLUDE {filepath} -->
 # This should be a first level heading.
 
 Example data
@@ -532,7 +532,7 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}   -->
+<!-- BEGIN INCLUDE {filepath} -->
 ## This should be a second level heading.
 
 Example data
@@ -556,7 +556,7 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}   -->
+<!-- BEGIN INCLUDE {filepath} -->
 ''' + '#' * 94 + ''' This should be a 94th level heading.
 
 Example data
@@ -580,7 +580,7 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}   -->
+<!-- BEGIN INCLUDE {filepath} -->
 # This should be a first level heading.
 
 Example data
@@ -615,7 +615,7 @@ vɛвѣди
 ''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath}   -->
+<!-- BEGIN INCLUDE {filepath} -->
 Тест інклуде
 азъ
 два
@@ -635,6 +635,8 @@ vɛвѣди
             [],
             id='russian-characters',
         ),
+
+        # right strip unix trailing newlines
         pytest.param(
             '''1. List item number 1
 1. {% include-markdown "{filepath}" comments=false trailing-newlines=false %}
@@ -648,6 +650,8 @@ vɛвѣди
             [],
             id='rstrip-unix-trailing-newlines',
         ),
+
+        # right strip windows trailing nwlines
         pytest.param(
             '''1. List item number 1
 1. {%
@@ -664,6 +668,21 @@ vɛвѣди
 ''',
             [],
             id='rstrip-windows-trailing-newlines',
+        ),
+
+        # rstrip trailing newlines keeping comments
+        pytest.param(
+            '''1. List item number 1
+1. {% include-markdown "{filepath}" trailing-newlines=false %}
+1. List item number 3
+''',
+            'Content to include\n',
+            '''1. List item number 1
+1. <!-- BEGIN INCLUDE {filepath} --> Content to include <!-- END INCLUDE -->
+1. List item number 3
+''',
+            [],
+            id='rstrip-trailing-newlines-keep-comments',
         ),
     ),
 )
