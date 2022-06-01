@@ -670,7 +670,7 @@ vɛвѣди
             id='rstrip-windows-trailing-newlines',
         ),
 
-        # rstrip trailing newlines keeping comments
+        # right strip trailing newlines keeping comments
         pytest.param(
             '''1. List item number 1
 1. {% include-markdown "{filepath}" trailing-newlines=false %}
