@@ -606,32 +606,36 @@ def get_file_content(
     )
 
 
-def on_page_markdown(markdown,
-                     page,
-                     docs_dir,
-                     opening_tag='{%',
-                     closing_tag='%}'):
-    
+def on_page_markdown(
+    markdown,
+    page,
+    docs_dir,
+    opening_tag='{%',
+    closing_tag='%}',
+):
+
     # Escape special characters of the tags with a backslash.
     # For example : '{%' will be escaped as '\{\%'
     def escape(text):
-        TO_BE_ESCAPED='.^$*+-?{}[]\\|():<>=!/#%,;'
+        TO_BE_ESCAPED = '.^$*+-?{}[]\\|():<>=!/#%,;'
         return ''.join([('\\' if i in TO_BE_ESCAPED else '')+i for i in text])
     escaped_opening_tag = escape(opening_tag)
-    escaped_closing_tag =escape(closing_tag)
+    escaped_closing_tag = escape(closing_tag)
 
     # Replace the substrings "$OPENING_TAG" and "$CLOSING_TAG" from
     # "INCLUDE_TAG_REGEX" and "INCLUDE_MARKDOWN_TAG_REGEX" by the effective
     # tags
     include_tag_regex = re.compile(
-        INCLUDE_TAG_REGEX.pattern.replace('$OPENING_TAG', escaped_opening_tag).replace(
-            '$CLOSING_TAG', escaped_closing_tag),
+        INCLUDE_TAG_REGEX.pattern.replace(
+            '$OPENING_TAG', escaped_opening_tag,
+        ).replace('$CLOSING_TAG', escaped_closing_tag),
         flags=INCLUDE_TAG_REGEX.flags,
     )
 
     include_markdown_tag_regex = re.compile(
         INCLUDE_MARKDOWN_TAG_REGEX.pattern.replace(
-            '$OPENING_TAG', escaped_opening_tag).replace('$CLOSING_TAG', escaped_closing_tag),
+            '$OPENING_TAG', escaped_opening_tag,
+        ).replace('$CLOSING_TAG', escaped_closing_tag),
         flags=INCLUDE_MARKDOWN_TAG_REGEX.flags,
     )
 

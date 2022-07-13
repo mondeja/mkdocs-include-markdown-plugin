@@ -304,3 +304,11 @@ msgstr ""
 "Las rutas de archivo para incluir y los argumentos de cadena se pueden "
 "envolver con comillas dobles `\"` o simples `'`, que se pueden escapar "
 "anteponiendo un carácter `\\` como `\\\"` y `\\'`."
+
+msgid "Custom opening and closing tags"
+msgstr ""
+
+msgid ""
+"The default opening and closing tags are `{%` and `%}`. You can change this "
+"default with the argments `opening_tag` and `closing_tag`:"
+msgstr ""
