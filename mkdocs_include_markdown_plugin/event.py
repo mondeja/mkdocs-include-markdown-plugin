@@ -26,16 +26,19 @@ BOOL_ARGUMENT_PATTERN = r'\w+'
 DOUBLE_QUOTED_STR_ARGUMENT_PATTERN = r'([^"]|(?<=\\)["])+'
 SINGLE_QUOTED_STR_ARGUMENT_PATTERN = r"([^']|(?<=\\)['])+"
 
+# In the following regexp, he substrings "$OPENING_TAG" and "$CLOSING_TAG"
+# will be replaced by the effective opening and closing tags in the
+# `on_page_markdown` method below.
 INCLUDE_TAG_REGEX = re.compile(
     rf'''
-        (?P<_includer_indent>[^\S\r\n]*){{%
+        (?P<_includer_indent>[^\S\r\n]*)$OPENING_TAG
         \s*
         include
         \s+
         (?:"(?P<double_quoted_filename>{DOUBLE_QUOTED_STR_ARGUMENT_PATTERN})")?(?:'(?P<single_quoted_filename>{SINGLE_QUOTED_STR_ARGUMENT_PATTERN})')?
         (?P<arguments>.*?)
         \s*
-        %}}
+        $CLOSING_TAG
     ''',
     flags=re.VERBOSE | re.DOTALL,
 )
@@ -110,6 +113,8 @@ def get_file_content(
     markdown,
     page_src_path,
     docs_dir,
+    include_tag_regex,
+    include_markdown_tag_regex,
     cumulative_heading_offset=0,
 ):
 
@@ -277,6 +282,8 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
+                include_tag_regex,
+                include_markdown_tag_regex,
             )
 
             # trailing newlines right stripping
@@ -512,6 +519,8 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
+                include_tag_regex,
+                include_markdown_tag_regex,
             )
 
             # trailing newlines right stripping
@@ -586,20 +595,50 @@ def get_file_content(
         )
 
     markdown = re.sub(
-        INCLUDE_TAG_REGEX,
+        include_tag_regex,
         found_include_tag,
         markdown,
     )
     return re.sub(
-        INCLUDE_MARKDOWN_TAG_REGEX,
+        include_markdown_tag_regex,
         found_include_markdown_tag,
         markdown,
     )
 
 
-def on_page_markdown(markdown, page, docs_dir):
+def on_page_markdown(markdown,
+                     page,
+                     docs_dir,
+                     opening_tag='{%',
+                     closing_tag='%}'):
+    
+    # Escape special characters of the tags with a backslash.
+    # For example : '{%' will be escaped as '\{\%'
+    def escape(text):
+        TO_BE_ESCAPED='.^$*+-?{}[]\\|():<>=!/#%,;'
+        return ''.join([('\\' if i in TO_BE_ESCAPED else '')+i for i in text])
+    escaped_opening_tag = escape(opening_tag)
+    escaped_closing_tag =escape(closing_tag)
+
+    # Replace the substrings "$OPENING_TAG" and "$CLOSING_TAG" from
+    # "INCLUDE_TAG_REGEX" and "INCLUDE_MARKDOWN_TAG_REGEX" by the effective
+    # tags
+    include_tag_regex = re.compile(
+        INCLUDE_TAG_REGEX.pattern.replace('$OPENING_TAG', escaped_opening_tag).replace(
+            '$CLOSING_TAG', escaped_closing_tag),
+        flags=INCLUDE_TAG_REGEX.flags,
+    )
+
+    include_markdown_tag_regex = re.compile(
+        INCLUDE_MARKDOWN_TAG_REGEX.pattern.replace(
+            '$OPENING_TAG', escaped_opening_tag).replace('$CLOSING_TAG', escaped_closing_tag),
+        flags=INCLUDE_MARKDOWN_TAG_REGEX.flags,
+    )
+
     return get_file_content(
         markdown,
         page.file.abs_src_path,
         docs_dir,
+        include_tag_regex,
+        include_markdown_tag_regex,
     )
