@@ -306,9 +306,11 @@ msgstr ""
 "anteponiendo un carácter `\\` como `\\\"` y `\\'`."
 
 msgid "Custom opening and closing tags"
-msgstr ""
+msgstr "Etiquetas de apertura y cierre personalizadas"
 
 msgid ""
 "The default opening and closing tags are `{%` and `%}`. You can change this "
 "default with the argments `opening_tag` and `closing_tag`:"
 msgstr ""
+"Las etiquetas de apertura y cierre por defecto son `{%` y `%}`. Se puede "
+"cambiar esto por defecto con los argumentos `opening_tag` y `closing_tag`:"
