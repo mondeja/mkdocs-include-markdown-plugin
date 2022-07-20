@@ -614,13 +614,8 @@ def on_page_markdown(
     closing_tag='%}',
 ):
 
-    # Escape special characters of the tags with a backslash.
-    # For example : '{%' will be escaped as '\{\%'
-    def escape(text):
-        TO_BE_ESCAPED = '.^$*+-?{}[]\\|():<>=!/#%,;'
-        return ''.join([('\\' if i in TO_BE_ESCAPED else '')+i for i in text])
-    escaped_opening_tag = escape(opening_tag)
-    escaped_closing_tag = escape(closing_tag)
+    escaped_opening_tag = re.escape(opening_tag)
+    escaped_closing_tag = re.escape(closing_tag)
 
     # Replace the substrings "$OPENING_TAG" and "$CLOSING_TAG" from
     # "INCLUDE_TAG_REGEX" and "INCLUDE_MARKDOWN_TAG_REGEX" by the effective
