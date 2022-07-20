@@ -41,7 +41,7 @@ plugins:
 ### Custom opening and closing tags
 
 The default opening and closing tags are `{%` and `%}`. You can change this
-default with the argments `opening_tag` and `closing_tag`:
+default with the configuration fields `opening_tag` and `closing_tag`:
 
 ```yaml
 plugins:
