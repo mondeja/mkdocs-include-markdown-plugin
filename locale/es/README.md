@@ -31,6 +31,19 @@ plugins:
 > Asegúrate que defines `include-markdown` antes de otros plugins que pudieran
 entrar en conflicto, como [`mkdocs-macros-plugin`][mkdocs-macros-plugin-link].
 
+### Etiquetas de apertura y cierre personalizadas
+
+Las etiquetas de apertura y cierre por defecto son `{%` y `%}`. Se puede cambiar
+este valor por defecto con los campos de configuración `opening_tag` y
+`closing_tag`.
+
+```yaml
+plugins:
+  - include-markdown:
+      opening_tag: "{!"
+      closing_tag: "!}"
+```
+
 ### Referencia
 
 Este plugin provee dos directivas, una para incluir archivos Markdown y otra
