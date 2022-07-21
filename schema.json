@@ -1,6 +1,33 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema",
   "title": "Mkdocs Markdown includer plugin.",
-  "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#readme",
-  "enum": ["include-markdown"]
+  "oneOf": [
+    {
+      "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#readme",
+      "enum": ["include-markdown"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "include-markdown": {
+          "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#documentation",
+          "type": "object",
+          "properties": {
+            "opening_tag": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#custom-opening-and-closing-tags",
+              "type": "string",
+              "default": "{%"
+            },
+            "closing_tag": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#custom-opening-and-closing-tags",
+              "type": "string",
+              "default": "%}"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
 }
