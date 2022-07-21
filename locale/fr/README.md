@@ -34,7 +34,8 @@ pourraient entrer en conflit, comme [`mkdocs-macros-plugin`][mkdocs-macros-plugi
 ### Balises d'ouverture et de fermeture personnalisées
 
 Les balises d'ouverture et de fermeture par défaut sont `{%` et `%}`. Vous
-pouvez changer ces balises avec les arguments `opening_tag` et `closing_tag`:
+pouvez changer ces balises avec les paramètres de configuration `opening_tag` et
+`closing_tag`:
 
 ```yaml
 plugins:

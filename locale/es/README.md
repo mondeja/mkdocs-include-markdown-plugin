@@ -34,7 +34,8 @@ entrar en conflicto, como [`mkdocs-macros-plugin`][mkdocs-macros-plugin-link].
 ### Etiquetas de apertura y cierre personalizadas
 
 Las etiquetas de apertura y cierre por defecto son `{%` y `%}`. Se puede cambiar
-esto por defecto con los argumentos `opening_tag` y `closing_tag`:
+este valor por defecto con los campos de configuración `opening_tag` y
+`closing_tag`.
 
 ```yaml
 plugins:
