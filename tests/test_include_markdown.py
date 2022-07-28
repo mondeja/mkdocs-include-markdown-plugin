@@ -45,7 +45,7 @@ This must be included.''',
 
 This must be included.
 <!-- END INCLUDE -->
-''',  # noqa: E501
+''',
             [],
             id='start',
         ),
@@ -68,7 +68,7 @@ This must be ignored.''',
 This must be included.
 
 <!-- END INCLUDE -->
-''',  # noqa: E501
+''',
             [],
             id='end',
         ),
@@ -833,7 +833,7 @@ Here's a [reference link][ref-link].
 [ref-link]: docs/page3.md
 
 <!-- END INCLUDE -->
-'''  # noqa: E501
+'''
     else:
         # include without rewriting
         assert output == '''
@@ -848,7 +848,7 @@ Here's a [reference link][ref-link].
 [ref-link]: page3.md
 
 <!-- END INCLUDE -->
-'''  # noqa: E501
+'''
 
 
 def test_multiple_includes(page, tmp_path):
