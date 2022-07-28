@@ -41,7 +41,7 @@ This must be included.
 This must be included.''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} &lt;!--start-here--&gt;  -->
+<!-- BEGIN INCLUDE {filepath} '&lt;!--start-here--&gt;' '' -->
 
 This must be included.
 <!-- END INCLUDE -->
@@ -64,7 +64,7 @@ This must be included.
 This must be ignored.''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} &lt;!--end-here--&gt; -->
+<!-- BEGIN INCLUDE {filepath} '' '&lt;!--end-here--&gt;' -->
 This must be included.
 
 <!-- END INCLUDE -->
@@ -90,12 +90,12 @@ This must be included.
 This must be ignored also.''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} &lt;!--start-here--&gt; &lt;!--end-here--&gt; -->
+<!-- BEGIN INCLUDE {filepath} '&lt;!--start-here--&gt;' '&lt;!--end-here--&gt;' -->
 
 This must be included.
 
 <!-- END INCLUDE -->
-''',
+''',  # noqa: E501
             [],
             id='start/end',
         ),
@@ -117,12 +117,12 @@ This must be included.
 This must be ignored also.''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} &lt;!--\\tstart --&gt; &lt;!--\\tend --&gt; -->
+<!-- BEGIN INCLUDE {filepath} '&lt;!--\\tstart --&gt;' '&lt;!--\\tend --&gt;' -->
 
 This must be included.
 
 <!-- END INCLUDE -->
-''',
+''',  # noqa: E501
             [],
             id='start/end (escaped special characters)',
         ),
@@ -144,9 +144,9 @@ This must be included.
 This must be ignored also.''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} &lt;!--
-start --&gt; &lt;!--
-end --&gt; -->
+<!-- BEGIN INCLUDE {filepath} '&lt;!--
+start --&gt;' '&lt;!--
+end --&gt;' -->
 
 This must be included.
 
@@ -701,6 +701,25 @@ vɛвѣди
             [],
             id='rstrip-trailing-newlines-comments-multiline-directive',
         ),
+
+        pytest.param(
+            (
+                "{% include-markdown \"{filepath}\""
+                " start='<!--start-\\'including-->' %}"
+            ),
+            """Ignored content
+
+<!--start-'including-->
+Content to include
+""",
+            r'''<!-- BEGIN INCLUDE {filepath} '&lt;!--start-&#x27;including--&gt;' '' -->
+
+Content to include
+
+<!-- END INCLUDE -->''',  # noqa: E501
+            [],
+            id='escape-comments',
+        ),
     ),
 )
 def test_include_markdown(
@@ -805,7 +824,7 @@ Here's a [reference link][ref-link].
         assert output == '''
 # Heading
 
-<!-- BEGIN INCLUDE docs/page.md &lt;!--start--&gt; &lt;!--end--&gt; -->
+<!-- BEGIN INCLUDE docs/page.md '&lt;!--start--&gt;' '&lt;!--end--&gt;' -->
 
 Here's [a link](docs/page2.md) and here's an image: ![](docs/image.png)
 
@@ -820,7 +839,7 @@ Here's a [reference link][ref-link].
         assert output == '''
 # Heading
 
-<!-- BEGIN INCLUDE docs/page.md &lt;!--start--&gt; &lt;!--end--&gt; -->
+<!-- BEGIN INCLUDE docs/page.md '&lt;!--start--&gt;' '&lt;!--end--&gt;' -->
 
 Here's [a link](page2.md) and here's an image: ![](image.png)
 

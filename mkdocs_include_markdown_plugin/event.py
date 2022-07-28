@@ -582,12 +582,12 @@ def get_file_content(
             return text_to_include
 
         separator = '\n' if bool_options['trailing-newlines']['value'] else ''
-        start_end_part = html.escape(start or '')
-        if start_end_part:
-            start_end_part += ' '
-        start_end_part += html.escape(end or '')
-        if start_end_part:
-            start_end_part += ' '
+        if not start and not end:
+            start_end_part = ''
+        else:
+            start_end_part = f"'{html.escape(start)}' " if start else "'' "
+            start_end_part += f"'{html.escape(end)}' " if end else "'' "
+
         return (
             f'{_includer_indent}<!-- BEGIN INCLUDE {filename}'
             f' {start_end_part}-->{separator}{text_to_include}'
