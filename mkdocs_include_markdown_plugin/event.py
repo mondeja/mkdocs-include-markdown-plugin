@@ -120,7 +120,7 @@ def get_file_content(
 
     def found_include_tag(match, include_markdown=False):
         directive_match_start = match.start()
-        # incl_keyword is used for proper error reporting.
+        # directive_name is used for proper error reporting.
         directive_name = (
             'include' if not include_markdown
             else 'include-markdown'
@@ -274,7 +274,7 @@ def get_file_content(
                     directive_match_start,
                 )
                 logger.error(
-                    "Invalid empty 'end' argument in '{incl_keyword}'"
+                    "Invalid empty 'end' argument in '{directive_name}'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}',
                 )
