@@ -274,7 +274,7 @@ def get_file_content(
                     directive_match_start,
                 )
                 logger.error(
-                    "Invalid empty 'end' argument in '{directive_name}'"
+                    f"Invalid empty 'end' argument in '{directive_name}'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}',
                 )
