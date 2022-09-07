@@ -4,7 +4,7 @@ import sys
 
 import pytest
 
-from testing_utils import rootdir
+from testing_helpers import rootdir
 
 
 EXAMPLES_DIR = os.path.join(rootdir, 'examples')
