@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 import pytest
 
@@ -13,7 +14,7 @@ EXAMPLES_DIR = os.path.join(rootdir, 'examples')
 def test_examples(dirname):
     with open(os.devnull, 'w') as devnull:
         assert subprocess.call(
-            ['mkdocs', 'build'],
+            [sys.executable, '-mmkdocs', 'build'],
             cwd=os.path.join(EXAMPLES_DIR, dirname),
             stdout=devnull,
             stderr=devnull,
