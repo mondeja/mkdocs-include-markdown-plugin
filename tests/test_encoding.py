@@ -17,19 +17,6 @@ Content to include
 É
 ''')
 
-    result = on_page_markdown(
-        f'''{{%
-  {directive} "{page_to_include_file}"
-  comments=false
-  start='<!-- start -->'
-  end="<!-- end -->"
-  encoding="utf-8"
-%}}''',
-        page(tmp_path / 'includer.md'),
-        tmp_path,
-    )
-    assert result == '\nContent to include\n'
-
     with pytest.raises(UnicodeDecodeError):
         on_page_markdown(
             f'''{{%
@@ -64,6 +51,34 @@ Content to include
   comments=false
   start='<!-- start -->'
   end="<!-- end -->"
+%}}''',
+        page(tmp_path / 'includer.md'),
+        tmp_path,
+    )
+    assert result == '\nContent to include\n'
+
+
+@pytest.mark.skipif(
+    sys.platform != 'linux',
+    reason='On Windows CI the utf-8 encoding does not work',
+)
+@parametrize_directives
+def test_explicit_default_encoding(directive, page, tmp_path):
+    page_to_include_file = tmp_path / 'included.md'
+    page_to_include_file.write_text('''Á
+<!-- start -->
+Content to include
+<!-- end -->
+É
+''')
+
+    result = on_page_markdown(
+        f'''{{%
+  {directive} "{page_to_include_file}"
+  comments=false
+  start='<!-- start -->'
+  end="<!-- end -->"
+  encoding="utf-8"
 %}}''',
         page(tmp_path / 'includer.md'),
         tmp_path,
