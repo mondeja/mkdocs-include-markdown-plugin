@@ -1,2 +1,2 @@
 __title__ = 'mkdocs_include_markdown_plugin'
-__version__ = '3.6.1'
+__version__ = '3.7.0'

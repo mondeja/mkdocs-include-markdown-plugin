@@ -78,6 +78,17 @@ indentar la plantilla `{% %}` incluidora. Los valores posibles son `true` y
 `false`.
 - <a name="include-markdown_dedent" href="#include-markdown_dedent">#</a> **dedent**
 (*false*): Si se habilita, el contenido incluido será dedentado.
+- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a> **exclude**:
+Expecifica mediante un glob los archivos que deben ser ignorados. Sólo es útil
+pasando globs para incluir múltiples archivos.
+- <a name="include-markdown_trailing-newlines"
+href="#include-markdown_trailing-newlines">#</a> **trailing-newlines** (*true*):
+Cuando esta opción está deshabilitada, los saltos de línea finales que se
+encuentran en el contenido a incluir se eliminan. Los valores posibles son
+`true` y `false`.
+- <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a> **encoding**
+(*utf-8*): Especifica la codificación del archivo incluído. Si no se define, se
+usará `utf-8`.
 - <a name="include-markdown_rewrite-relative-urls"
 href="#include-markdown_rewrite-relative-urls">#</a> **rewrite-relative-urls** (*true*):
 Cuando esta opción está habilitada (por defecto), los enlaces e imágenes
@@ -94,14 +105,6 @@ href="#include-markdown_heading-offset">#</a> **heading-offset** (0): Incrementa
 o disminuye la profundidad de encabezados Markdown por el número especificado.
 Sólo soporta la sintaxis de encabezado de caracteres de hash (`#`). Acepta
 valores negativos para eliminar caracteres `#` a la izquierda.
-- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a> **exclude**:
-Expecifica mediante un glob los archivos que deben ser ignorados. Sólo es útil
-pasando globs para incluir múltiples archivos.
-- <a name="include-markdown_trailing-newlines"
-href="#include-markdown_trailing-newlines">#</a> **trailing-newlines** (*true*):
-Cuando esta opción está deshabilitada, los saltos de línea finales que se
-encuentran en el contenido a incluir se eliminan. Los valores posibles son
-`true` y `false`.
 
 ##### Ejemplos
 
@@ -165,6 +168,9 @@ pasando globs para incluir múltiples archivos.
 (*true*): Cuando esta opción está deshabilitada, los saltos de línea finales que
 se encuentran en el contenido a incluir se eliminan. Los valores posibles son
 `true` y `false`.
+- <a name="include_encoding" href="#include_encoding">#</a> **encoding** (*utf-8*):
+Especifica la codificación del archivo incluído. Si no se define, se usará
+`utf-8`.
 
 ##### Ejemplos
 

@@ -7,7 +7,7 @@ import pytest
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
-from testing_utils import parametrize_directives
+from testing_helpers import parametrize_directives
 
 
 WINDOWS_DOUBLE_QUOTES_PATHS_NOT_ALLOWED_REASON = (

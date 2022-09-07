@@ -83,6 +83,15 @@ content to include.
  `true` and `false`.
 - <a name="include-markdown_dedent" href="#include-markdown_dedent">#</a>
  **dedent** (*false*): If enabled, the included content will be dedented.
+- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a>
+ **exclude**: Specify with a glob which files should be ignored. Only useful
+ when passing globs to include multiple files.
+- <a name="include-markdown_trailing-newlines" href="#include-markdown_trailing-newlines">#</a>
+ **trailing-newlines** (*true*): When this option is disabled, the trailing newlines
+ found in the content to include are stripped. Possible values are `true` and `false`.
+- <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a>
+ **encoding** (*utf-8*): Specify the encoding of the included file.
+ If not defined `utf-8` will be used.
 - <a name="include-markdown_rewrite-relative-urls" href="#include-markdown_rewrite-relative-urls">#</a>
  **rewrite-relative-urls** (*true*): When this option is enabled (default),
  Markdown links and images in the content that are specified by a relative URL
@@ -97,12 +106,6 @@ content to include.
  **heading-offset** (0): Increases or decreases the Markdown headings depth
  by this number. Only supports number sign (`#`) heading syntax. Accepts
  negative values to drop leading `#` characters.
-- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a>
- **exclude**: Specify with a glob which files should be ignored. Only useful
- when passing globs to include multiple files.
-- <a name="include-markdown_trailing-newlines" href="#include-markdown_trailing-newlines">#</a>
- **trailing-newlines** (*true*): When this option is disabled, the trailing newlines
- found in the content to include are stripped. Possible values are `true` and `false`.
 
 ##### Examples
 
@@ -166,6 +169,9 @@ Includes the content of a file or a group of files.
 - <a name="include_trailing-newlines" href="#include_trailing-newlines">#</a>
  **trailing-newlines** (*true*): When this option is disabled, the trailing newlines
  found in the content to include are stripped. Possible values are `true` and `false`.
+- <a name="include_encoding" href="#include_encoding">#</a>
+ **encoding** (*utf-8*): Specify the encoding of the included file.
+ If not defined `utf-8` will be used.
 
 ##### Examples
 
