@@ -107,8 +107,8 @@ def transform_p_by_p_skipping_codeblocks(markdown, func):
         if not _current_fcodeblock_delimiter and not _inside_icodeblock:
             lstripped_line = line.lstrip()
             if (
-                lstripped_line.startswith('```') or
-                lstripped_line.startswith('~~~')
+                lstripped_line.startswith('```')
+                or lstripped_line.startswith('~~~')
             ):
                 _current_fcodeblock_delimiter = lstripped_line[:3]
                 if current_paragraph:
@@ -157,8 +157,8 @@ def transform_line_by_line_skipping_codeblocks(markdown, func):
         if not _current_fcodeblock_delimiter:
             lstripped_line = line.lstrip()
             if (
-                lstripped_line.startswith('```') or
-                lstripped_line.startswith('~~~')
+                lstripped_line.startswith('```')
+                or lstripped_line.startswith('~~~')
             ):
                 _current_fcodeblock_delimiter = lstripped_line[:3]
             else:

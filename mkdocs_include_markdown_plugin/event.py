@@ -48,33 +48,27 @@ INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
     flags=INCLUDE_TAG_REGEX.flags,
 )
 
+str_arg = lambda arg: re.compile(
+    rf'{arg}=(?:"({DOUBLE_QUOTED_STR_ARGUMENT_PATTERN})")?'
+    rf"(?:'({SINGLE_QUOTED_STR_ARGUMENT_PATTERN})')?",
+)
+
+bool_arg = lambda arg: re.compile(
+    rf'{arg}=({BOOL_ARGUMENT_PATTERN})',
+)
+
 ARGUMENT_REGEXES = {
-    # str
-    'start': re.compile(
-            rf'start=(?:"({DOUBLE_QUOTED_STR_ARGUMENT_PATTERN})")?'
-            rf"(?:'({SINGLE_QUOTED_STR_ARGUMENT_PATTERN})')?",
-    ),
-    'end': re.compile(
-            rf'end=(?:"({DOUBLE_QUOTED_STR_ARGUMENT_PATTERN})")?'
-            rf"(?:'({SINGLE_QUOTED_STR_ARGUMENT_PATTERN})')?",
-    ),
-    'exclude': re.compile(
-            rf'exclude=(?:"({DOUBLE_QUOTED_STR_ARGUMENT_PATTERN})")?'
-            rf"(?:'({SINGLE_QUOTED_STR_ARGUMENT_PATTERN})')?",
-    ),
+    'start': str_arg('start'),
+    'end': str_arg('end'),
+    'exclude': str_arg('exclude'),
+    'encoding': str_arg('encoding'),
 
     # bool
-    'rewrite-relative-urls': re.compile(
-        rf'rewrite-relative-urls=({BOOL_ARGUMENT_PATTERN})',
-    ),
-    'comments': re.compile(rf'comments=({BOOL_ARGUMENT_PATTERN})'),
-    'preserve-includer-indent': re.compile(
-        rf'preserve-includer-indent=({BOOL_ARGUMENT_PATTERN})',
-    ),
-    'dedent': re.compile(rf'dedent=({BOOL_ARGUMENT_PATTERN})'),
-    'trailing-newlines': re.compile(
-        rf'trailing-newlines=({BOOL_ARGUMENT_PATTERN})',
-    ),
+    'rewrite-relative-urls': bool_arg('rewrite-relative-urls'),
+    'comments': bool_arg('comments'),
+    'preserve-includer-indent': bool_arg('preserve-includer-indent'),
+    'dedent': bool_arg('dedent'),
+    'trailing-newlines': bool_arg('trailing-newlines'),
 
     # int
     'heading-offset': re.compile(r'heading-offset=(-?\d+)'),
@@ -107,6 +101,11 @@ def parse_string_argument(match):
 
 def lineno_from_content_start(content, start):
     return content[:start].count('\n') + 1
+
+
+def read_file(file_path, encoding):
+    with open(file_path, encoding=encoding) as f:
+        return f.read()
 
 
 def get_file_content(
@@ -259,11 +258,29 @@ def get_file_content(
         else:
             end = None
 
+        encoding_match = re.search(
+            ARGUMENT_REGEXES['encoding'],
+            arguments_string,
+        )
+        if encoding_match:
+            encoding = parse_string_argument(encoding_match)
+            if encoding is None:
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
+                )
+                logger.error(
+                    "Invalid empty 'encoding' argument in 'include'"
+                    ' directive at '
+                    f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
+                )
+        else:
+            encoding = 'utf-8'
+
         text_to_include = ''
         expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
-            with open(file_path, encoding='utf-8') as f:
-                new_text_to_include = f.read()
+            new_text_to_include = read_file(file_path, encoding)
 
             if start is not None or end is not None:
                 new_text_to_include, *expected_not_found = (
@@ -481,6 +498,25 @@ def get_file_content(
         else:
             end = None
 
+        encoding_match = re.search(
+            ARGUMENT_REGEXES['encoding'],
+            arguments_string,
+        )
+        if encoding_match:
+            encoding = parse_string_argument(encoding_match)
+            if encoding is None:
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
+                )
+                logger.error(
+                    "Invalid empty 'encoding' argument in 'include-markdown'"
+                    ' directive at '
+                    f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
+                )
+        else:
+            encoding = 'utf-8'
+
         # heading offset
         offset = 0
         offset_match = re.search(
@@ -499,8 +535,7 @@ def get_file_content(
         # but they have been specified, so the warning(s) must be raised
         expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
-            with open(file_path, encoding='utf-8') as f:
-                new_text_to_include = f.read()
+            new_text_to_include = read_file(file_path, encoding)
 
             if start is not None or end is not None:
                 new_text_to_include, *expected_not_found = (

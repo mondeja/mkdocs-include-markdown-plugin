@@ -22,11 +22,13 @@ repos:
         args:
           - --py36-plus
   - repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v1.20.2
+    rev: v2.0.0
     hooks:
       - id: setup-cfg-fmt
+        args:
+          - --include-version-classifiers
   - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 5.0.4
     hooks:
       - id: flake8
         additional_dependencies:
@@ -40,7 +42,7 @@ repos:
           - --filter-files
         files: \.py$
   - repo: https://github.com/mondeja/mdpo
-    rev: v0.3.86
+    rev: v1.0.0
     hooks:
       - id: md2po2md
         files: ^README\.md
@@ -71,7 +73,7 @@ repos:
           - -c
           - .yamllint
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.5.0
+    rev: v0.5.1
     hooks:
       - id: markdownlint-cli2
         name: markdownlint-readme

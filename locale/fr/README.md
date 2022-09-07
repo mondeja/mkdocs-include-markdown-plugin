@@ -77,6 +77,17 @@ href="#include-markdown_preserve-includer-indent">#</a> **preserve-includer-inde
 l'incluseur modèle `{% %}`. Les valeurs possibles sont `true` et `false`.
 - <a name="include-markdown_dedent" href="#include-markdown_dedent">#</a> **dedent**
 (*false*): Lorsque est activée, le contenu inclus sera déchiqueté.
+- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a> **exclude**:
+Spécifiez avec un glob quels fichiers doivent être ignorés. Uniquement utile
+lors du passage de globs pour inclure plusieurs fichiers.
+- <a name="include-markdown_trailing-newlines"
+href="#include-markdown_trailing-newlines">#</a> **trailing-newlines** (*true*):
+Lorsque cette option est désactivée, les nouvelles lignes de fin trouvées dans
+le contenu à inclure sont supprimées. Les valeurs possibles sont `true` et
+`false`.
+- <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a> **encoding**
+(*utf-8*): Spécifiez l'encodage du fichier inclus. S'il n'est pas défini,
+`utf-8` sera utilisé.
 - <a name="include-markdown_rewrite-relative-urls"
 href="#include-markdown_rewrite-relative-urls">#</a> **rewrite-relative-urls** (*true*):
 Lorsque cette option est activée (par défaut), liens et images Markdown dans le
@@ -93,14 +104,6 @@ href="#include-markdown_heading-offset">#</a> **heading-offset** (0): Augmente
 ou diminue la profondeur des en-têtes Markdown de ce nombre. Ne prend en charge
 que la syntaxe d'en-tête du signe dièse (`#`). Cet argument accepte les valeurs
 négatives pour supprimer les caractères `#` de tête.
-- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a> **exclude**:
-Spécifiez avec un glob quels fichiers doivent être ignorés. Uniquement utile
-lors du passage de globs pour inclure plusieurs fichiers.
-- <a name="include-markdown_trailing-newlines"
-href="#include-markdown_trailing-newlines">#</a> **trailing-newlines** (*true*):
-Lorsque cette option est désactivée, les nouvelles lignes de fin trouvées dans
-le contenu à inclure sont supprimées. Les valeurs possibles sont `true` et
-`false`.
 
 ##### Exemples
 
@@ -164,6 +167,9 @@ passage de globs pour inclure plusieurs fichiers.
 (*true*): Lorsque cette option est désactivée, les nouvelles lignes de fin
 trouvées dans le contenu à inclure sont supprimées. Les valeurs possibles sont
 `true` et `false`.
+- <a name="include_encoding" href="#include_encoding">#</a> **encoding** (*utf-8*):
+Spécifiez l'encodage du fichier inclus. S'il n'est pas défini, `utf-8` sera
+utilisé.
 
 ##### Exemples
 
