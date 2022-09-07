@@ -624,7 +624,7 @@ def get_file_content(
             start_end_part += f"'{html.escape(end)}' " if end else "'' "
 
         return (
-            f'{_includer_indent}<!-- BEGIN INCLUDE {filename}'
+            f'{_includer_indent}<!-- BEGIN INCLUDE {html.escape(filename)}'
             f' {start_end_part}-->{separator}{text_to_include}'
             f'{separator}{_includer_indent}<!-- END INCLUDE -->'
         )

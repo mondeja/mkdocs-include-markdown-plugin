@@ -10,13 +10,12 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
 from testing_helpers import parametrize_directives
 
 
-WINDOWS_DOUBLE_QUOTES_PATHS_NOT_ALLOWED_REASON = (
-    'Double quotes are reserved characters not allowed for paths under Windows'
-)
-
 double_quotes_windows_path_skip = pytest.mark.skipif(
     sys.platform.startswith('win'),
-    reason=WINDOWS_DOUBLE_QUOTES_PATHS_NOT_ALLOWED_REASON,
+    reason=(
+        'Double quotes are reserved characters not allowed for'
+        ' paths under Windows'
+    ),
 )
 
 
@@ -25,7 +24,11 @@ double_quotes_windows_path_skip = pytest.mark.skipif(
     (
         pytest.param(
             'include',
-            ['preserve-includer-indent', 'dedent', 'trailing-newlines'],
+            [
+                'preserve-includer-indent',
+                'dedent',
+                'trailing-newlines',
+            ],
             id='include',
         ),
         pytest.param(
