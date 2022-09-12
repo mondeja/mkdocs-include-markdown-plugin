@@ -10,44 +10,48 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
         'includer_schema',
         'content_to_include',
         'expected_result',
-        'tags',
+        'config',
     ),
     (
+        # opening_tag and closing_tag
         pytest.param(
             '# Header\n\n{! include "{filepath}" !}\n',
             'This must be included.',
             '# Header\n\nThis must be included.\n',
-            ('{!', '!}'),
+            {'opening_tag': '{!', 'closing_tag': '!}'},
             id='custom-tag {! ... !}',
         ),
         pytest.param(
             '# Header\n\n{* include "{filepath}" *}\n',
             'This must be included.',
             '# Header\n\nThis must be included.\n',
-            ('{*', '*}'),
+            {'opening_tag': '{*', 'closing_tag': '*}'},
             id='custom-tag {* ... *}',
         ),
         pytest.param(
             '# Header\n\n#INC[ include "{filepath}" ]\n',
             'This must be included.',
             '# Header\n\nThis must be included.\n',
-            ('#INC[', ']'),
+            {'opening_tag': '#INC[', 'closing_tag': ']'},
             id='custom-tag #INC[ ...]',
         ),
         pytest.param(
             '# Header\n\n.^$*+-?{}[]\\|():<>=!/#%,; include "{filepath}" }\n',
             'This must be included.',
             '# Header\n\nThis must be included.\n',
-            ('.^$*+-?{}[]\\|():<>=!/#%,;', '}'),
+            {'opening_tag': '.^$*+-?{}[]\\|():<>=!/#%,;', 'closing_tag': '}'},
             id='custom-tag-all-escaped-char',
         ),
+
+        # encoding
+
     ),
 )
-def test_include(
+def test_config(
     includer_schema,
     content_to_include,
     expected_result,
-    tags,
+    config,
     page,
     caplog,
     tmp_path,
@@ -72,8 +76,7 @@ def test_include(
             page_content,
             page(includer_filepath),
             tmp_path,
-            opening_tag=tags[0],
-            closing_tag=tags[1],
+            config,
         )
         == expected_result
     )
