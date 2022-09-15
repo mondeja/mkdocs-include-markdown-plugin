@@ -44,7 +44,84 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
         ),
 
         # encoding
+        pytest.param(
+            '# Header\n\n{% include "{filepath}" %}',
+            'bóg wąż wąską dróżką',
+            '# Header\n\nbóg wąż wąską dróżką',
+            {},
+            id='default-encoding',
+        ),
+        pytest.param(
+            '# Header\n\n{% include "{filepath}" %}',
+            'bóg wąż wąską dróżką',
+            '# Header\n\nbĂłg wÄ…ĹĽ wÄ…skÄ… drĂłĹĽkÄ…',
+            {'encoding': 'cp1250'},
+            id='custom-encoding',
+        ),
 
+        # preserve_includer_indent
+        pytest.param(
+            '  {% include "{filepath}" %}',
+            'foo\nbar\n',
+            '  foo\n  bar\n',
+            {},
+            id='default-preserve_includer_indent',
+        ),
+        pytest.param(
+            '  {% include "{filepath}" %}',
+            'foo\nbar\n',
+            '  foo\nbar\n',
+            {'preserve_includer_indent': False},
+            id='custom-preserve_includer_indent',
+        ),
+
+        # dedent
+        pytest.param(
+            '{% include "{filepath}" %}',
+            'foo\n  bar\n',
+            'foo\n  bar\n',
+            {},
+            id='default-dedent',
+        ),
+        pytest.param(
+            '{% include "{filepath}" %}',
+            '  foo\n  bar\n',
+            'foo\nbar\n',
+            {'dedent': True},
+            id='custom-dedent',
+        ),
+
+        # trailing_newlines
+        pytest.param(
+            '{% include "{filepath}" %}',
+            'foo\n\n\n',
+            'foo\n\n\n',
+            {},
+            id='default-trailing_newlines',
+        ),
+        pytest.param(
+            '{% include "{filepath}" %}',
+            'foo\n\n\n',
+            'foo',
+            {'trailing_newlines': False},
+            id='custom-trailing_newlines',
+        ),
+
+        # comments
+        pytest.param(
+            '{% include-markdown "{filepath}" %}',
+            'foo\n',
+            '<!-- BEGIN INCLUDE {filepath} -->\nfoo\n\n<!-- END INCLUDE -->',
+            {},
+            id='default-comments',
+        ),
+        pytest.param(
+            '{% include-markdown "{filepath}" %}',
+            'foo\n',
+            'foo\n',
+            {'comments': False},
+            id='custom-comments',
+        ),
     ),
 )
 def test_config(
@@ -70,6 +147,11 @@ def test_config(
         included_filepath.as_posix(),
     )
     includer_filepath.write_text(page_content)
+
+    expected_result = expected_result.replace(
+        '{filepath}',
+        included_filepath.as_posix(),
+    )
 
     assert (
         on_page_markdown(

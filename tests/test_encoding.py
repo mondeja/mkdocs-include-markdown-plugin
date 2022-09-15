@@ -49,7 +49,7 @@ Content to include
         f'''{{%
   {directive} "{page_to_include_file}"
   comments=false
-  start='<!-- start -->'
+  start="<!-- start -->"
   end="<!-- end -->"
 %}}''',
         page(tmp_path / 'includer.md'),
