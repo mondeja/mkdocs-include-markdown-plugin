@@ -1,22 +1,12 @@
 import functools
 import os
 import re
-import sys
 
 import pytest
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
-from testing_helpers import parametrize_directives
-
-
-double_quotes_windows_path_skip = pytest.mark.skipif(
-    sys.platform.startswith('win'),
-    reason=(
-        'Double quotes are reserved characters not allowed for'
-        ' paths under Windows'
-    ),
-)
+from testing_helpers import parametrize_directives, unix_only
 
 
 @pytest.mark.parametrize(
@@ -129,7 +119,7 @@ More content that should be ignored
     assert len(records_messages) == len(expected_args)
 
 
-@double_quotes_windows_path_skip
+@unix_only
 @parametrize_directives
 def test_exclude_double_quote_escapes(directive, page, tmp_path):
     drectory_to_include = tmp_path / 'exclude_double_quote_escapes'
@@ -157,7 +147,7 @@ def test_exclude_double_quote_escapes(directive, page, tmp_path):
     assert result == 'Content that should be included\n'
 
 
-@double_quotes_windows_path_skip
+@unix_only
 @parametrize_directives
 def test_invalid_exclude_argument(directive, page, tmp_path, caplog):
     drectory_to_include = tmp_path / 'exclude_double_quote_escapes'
@@ -222,7 +212,7 @@ class TestFilename:
         fname.replace('"', "'") for fname in double_quoted_filenames
     ]
 
-    @double_quotes_windows_path_skip
+    @unix_only
     @parametrize_directives
     @pytest.mark.parametrize('filename', double_quoted_filenames)
     def test_not_escaped_double_quotes(
@@ -244,7 +234,7 @@ class TestFilename:
             caplog.records[0].msg,
         )
 
-    @double_quotes_windows_path_skip
+    @unix_only
     @parametrize_directives
     @pytest.mark.parametrize('filename', double_quoted_filenames)
     def test_escaped_double_quotes(
@@ -291,7 +281,7 @@ class TestFilename:
         )
         assert result == included_content
 
-    @double_quotes_windows_path_skip
+    @unix_only
     @parametrize_directives
     @pytest.mark.parametrize('filename', double_quoted_filenames)
     def test_unescaped_double_quotes(
@@ -330,7 +320,7 @@ class TestFilename:
         )
         assert result == included_content
 
-    @double_quotes_windows_path_skip
+    @unix_only
     @parametrize_directives
     @pytest.mark.parametrize(
         'filename', ["inc'luded\".md", "''i\"nc\"lude'd.md"],
