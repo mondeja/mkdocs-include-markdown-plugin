@@ -8,6 +8,7 @@ import re
 import textwrap
 
 from mkdocs_include_markdown_plugin import process
+from mkdocs_include_markdown_plugin.config import CONFIG_DEFAULTS
 
 
 logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
@@ -64,11 +65,11 @@ ARGUMENT_REGEXES = {
     'encoding': str_arg('encoding'),
 
     # bool
-    'rewrite-relative-urls': bool_arg('rewrite-relative-urls'),
     'comments': bool_arg('comments'),
     'preserve-includer-indent': bool_arg('preserve-includer-indent'),
     'dedent': bool_arg('dedent'),
     'trailing-newlines': bool_arg('trailing-newlines'),
+    'rewrite-relative-urls': bool_arg('rewrite-relative-urls'),
 
     # int
     'heading-offset': re.compile(r'heading-offset=(-?\d+)'),
@@ -114,6 +115,11 @@ def get_file_content(
     docs_dir,
     include_tag_regex,
     include_markdown_tag_regex,
+    default_encoding,
+    default_preserve_includer_indent,
+    default_dedent,
+    default_trailing_newlines,
+    default_comments=CONFIG_DEFAULTS['comments'],
     cumulative_heading_offset=0,
 ):
 
@@ -195,15 +201,15 @@ def get_file_content(
 
         bool_options = {
             'preserve-includer-indent': {
-                'value': True,
+                'value': default_preserve_includer_indent,
                 'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
             },
             'dedent': {
-                'value': False,
+                'value': default_dedent,
                 'regex': ARGUMENT_REGEXES['dedent'],
             },
             'trailing-newlines': {
-                'value': True,
+                'value': default_trailing_newlines,
                 'regex': ARGUMENT_REGEXES['trailing-newlines'],
             },
         }
@@ -275,7 +281,7 @@ def get_file_content(
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
         else:
-            encoding = 'utf-8'
+            encoding = default_encoding
 
         text_to_include = ''
         expected_but_any_found = [start is not None, end is not None]
@@ -301,6 +307,10 @@ def get_file_content(
                 docs_dir,
                 include_tag_regex,
                 include_markdown_tag_regex,
+                default_encoding,
+                default_preserve_includer_indent,
+                default_dedent,
+                default_trailing_newlines,
             )
 
             # trailing newlines right stripping
@@ -427,19 +437,19 @@ def get_file_content(
                 'regex': ARGUMENT_REGEXES['rewrite-relative-urls'],
             },
             'comments': {
-                'value': True,
+                'value': default_comments,
                 'regex': ARGUMENT_REGEXES['comments'],
             },
             'preserve-includer-indent': {
-                'value': True,
+                'value': default_preserve_includer_indent,
                 'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
             },
             'dedent': {
-                'value': False,
+                'value': default_dedent,
                 'regex': ARGUMENT_REGEXES['dedent'],
             },
             'trailing-newlines': {
-                'value': True,
+                'value': default_trailing_newlines,
                 'regex': ARGUMENT_REGEXES['trailing-newlines'],
             },
         }
@@ -515,7 +525,7 @@ def get_file_content(
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
         else:
-            encoding = 'utf-8'
+            encoding = default_encoding
 
         # heading offset
         offset = 0
@@ -556,6 +566,11 @@ def get_file_content(
                 docs_dir,
                 include_tag_regex,
                 include_markdown_tag_regex,
+                default_encoding,
+                default_preserve_includer_indent,
+                default_dedent,
+                default_trailing_newlines,
+                default_comments=default_comments,
             )
 
             # trailing newlines right stripping
@@ -645,16 +660,18 @@ def on_page_markdown(
     markdown,
     page,
     docs_dir,
-    opening_tag='{%',
-    closing_tag='%}',
+    config={},
 ):
+    escaped_opening_tag = re.escape(
+        config.get('opening_tag', CONFIG_DEFAULTS['opening_tag']),
+    )
+    escaped_closing_tag = re.escape(
+        config.get('closing_tag', CONFIG_DEFAULTS['closing_tag']),
+    )
 
-    escaped_opening_tag = re.escape(opening_tag)
-    escaped_closing_tag = re.escape(closing_tag)
-
-    # Replace the substrings "$OPENING_TAG" and "$CLOSING_TAG" from
-    # "INCLUDE_TAG_REGEX" and "INCLUDE_MARKDOWN_TAG_REGEX" by the effective
-    # tags
+    # Replace the substrings OPENING_TAG and CLOSING_TAG from
+    # INCLUDE_TAG_REGEX and INCLUDE_MARKDOWN_TAG_REGEX by the
+    # effective tags
     include_tag_regex = re.compile(
         INCLUDE_TAG_REGEX.pattern.replace(
             '$OPENING_TAG', escaped_opening_tag,
@@ -675,4 +692,12 @@ def on_page_markdown(
         docs_dir,
         include_tag_regex,
         include_markdown_tag_regex,
+        config.get('encoding', CONFIG_DEFAULTS['encoding']),
+        config.get(
+            'preserve_includer_indent',
+            CONFIG_DEFAULTS['preserve_includer_indent'],
+        ),
+        config.get('dedent', CONFIG_DEFAULTS['dedent']),
+        config.get('trailing_newlines', CONFIG_DEFAULTS['trailing_newlines']),
+        default_comments=config.get('comments', CONFIG_DEFAULTS['comments']),
     )

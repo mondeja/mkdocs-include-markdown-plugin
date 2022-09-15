@@ -31,17 +31,26 @@ plugins:
 > Assurez-vous de définir `include-markdown` avant d'autres plugins qui
 pourraient entrer en conflit, comme [`mkdocs-macros-plugin`][mkdocs-macros-plugin-link].
 
-### Balises d'ouverture et de fermeture personnalisées
+### Configuration
 
-Les balises d'ouverture et de fermeture par défaut sont `{%` et `%}`. Vous
-pouvez changer ces balises avec les paramètres de configuration `opening_tag` et
-`closing_tag`:
+Le comportement global du plugin peut être personnalisé dans la configuration.
+
+- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and **closing_tag**:
+Les balises d'ouverture et de fermeture par défaut. Par défaut sont `{%` et `%}`.
+
+Le reste des options définira les valeurs par défaut passées aux arguments des
+directives et sont documentées dans la [référence](#reference).
 
 ```yaml
 plugins:
   - include-markdown:
       opening_tag: "{!"
       closing_tag: "!}"
+      encoding: ascii
+      preserve_includer_indent: false
+      dedent: true
+      trailing_newlines: false
+      comments: false
 ```
 
 ### Référence

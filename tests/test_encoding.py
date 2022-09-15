@@ -1,10 +1,8 @@
-import sys
-
 import pytest
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
-from testing_helpers import parametrize_directives
+from testing_helpers import parametrize_directives, unix_only
 
 
 @parametrize_directives
@@ -31,10 +29,7 @@ Content to include
         )
 
 
-@pytest.mark.skipif(
-    sys.platform != 'linux',
-    reason='On Windows CI the utf-8 encoding does not work',
-)
+@unix_only
 @parametrize_directives
 def test_default_encoding(directive, page, tmp_path):
     page_to_include_file = tmp_path / 'included.md'
@@ -49,7 +44,7 @@ Content to include
         f'''{{%
   {directive} "{page_to_include_file}"
   comments=false
-  start='<!-- start -->'
+  start="<!-- start -->"
   end="<!-- end -->"
 %}}''',
         page(tmp_path / 'includer.md'),
@@ -58,10 +53,7 @@ Content to include
     assert result == '\nContent to include\n'
 
 
-@pytest.mark.skipif(
-    sys.platform != 'linux',
-    reason='On Windows CI the utf-8 encoding does not work',
-)
+@unix_only
 @parametrize_directives
 def test_explicit_default_encoding(directive, page, tmp_path):
     page_to_include_file = tmp_path / 'included.md'

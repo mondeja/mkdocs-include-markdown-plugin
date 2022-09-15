@@ -38,16 +38,27 @@ plugins:
 > Make sure that you define `include-markdown` before other plugins that could
  conflict, like [`mkdocs-macros-plugin`][mkdocs-macros-plugin-link].
 
-### Custom opening and closing tags
+### Configuration
 
-The default opening and closing tags are `{%` and `%}`. You can change this
-default with the configuration fields `opening_tag` and `closing_tag`:
+The global behaviour of the plugin can be customized in the configuration.
+
+- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
+ **closing_tag**: The default opening and closing tags. By default are
+ `{%` and `%}`.
+
+The rest of the options will define the default values passed to arguments
+of directives and are documented in the [reference](#reference).
 
 ```yaml
 plugins:
   - include-markdown:
       opening_tag: "{!"
       closing_tag: "!}"
+      encoding: ascii
+      preserve_includer_indent: false
+      dedent: true
+      trailing_newlines: false
+      comments: false
 ```
 
 ### Reference
