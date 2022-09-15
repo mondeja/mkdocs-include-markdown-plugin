@@ -191,6 +191,29 @@ def test_invalid_exclude_argument(directive, page, tmp_path, caplog):
     )
 
 
+@parametrize_directives
+def test_empty_encoding_argument(directive, page, tmp_path, caplog):
+    page_to_include_filepath = tmp_path / 'included.md'
+    page_to_include_filepath.write_text('Content to include')
+
+    result = on_page_markdown(
+        f'''{{%
+  {directive} "{page_to_include_filepath}"
+  comments=false
+  encoding=
+%}}''',
+        page(tmp_path / 'includer.md'),
+        tmp_path,
+    )
+    assert result == 'Content to include'
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].msg == (
+        f"Invalid empty 'encoding' argument in '{directive}'"
+        ' directive at includer.md:1'
+    )
+
+
 class TestFilename:
     double_quoted_filenames = [
         'inc"luded.md', 'inc"lude"d.md', 'included.md"', '"included.md',
