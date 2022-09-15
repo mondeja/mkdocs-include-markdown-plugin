@@ -155,8 +155,24 @@ def _run_test(
         ),
     ),
 )
-def test_config_options(*args):
-    return _run_test(*args)
+def test_config_options(
+    includer_schema,
+    content_to_include,
+    expected_result,
+    config,
+    page,
+    caplog,
+    tmp_path,
+):
+    return _run_test(
+        includer_schema,
+        content_to_include,
+        expected_result,
+        config,
+        page,
+        caplog,
+        tmp_path,
+    )
 
 
 @unix_only
@@ -180,5 +196,21 @@ def test_config_options(*args):
         ),
     ),
 )
-def test_config_encoding_option(*args):
-    return _run_test(*args)
+def test_config_encoding_option(
+    includer_schema,
+    content_to_include,
+    expected_result,
+    config,
+    page,
+    caplog,
+    tmp_path,
+):
+    return _run_test(
+        includer_schema,
+        content_to_include,
+        expected_result,
+        config,
+        page,
+        caplog,
+        tmp_path,
+    )
