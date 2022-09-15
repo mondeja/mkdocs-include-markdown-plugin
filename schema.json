@@ -14,14 +14,39 @@
           "type": "object",
           "properties": {
             "opening_tag": {
-              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#custom-opening-and-closing-tags",
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#config_tags",
               "type": "string",
               "default": "{%"
             },
             "closing_tag": {
-              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#custom-opening-and-closing-tags",
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#config_tags",
               "type": "string",
               "default": "%}"
+            },
+            "encoding": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include_encoding",
+              "type": "string",
+              "default": "utf-8"
+            },
+            "preserve_includer_indent": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include_preserve-includer-indent",
+              "type": "boolean",
+              "default": true
+            },
+            "dedent": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include_dedent",
+              "type": "boolean",
+              "default": false
+            },
+            "trailing_newlines": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include_trailing-newlines",
+              "type": "boolean",
+              "default": true
+            },
+            "comments": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include-markdown_comments",
+              "type": "boolean",
+              "default": true
             }
           },
           "additionalProperties": false
