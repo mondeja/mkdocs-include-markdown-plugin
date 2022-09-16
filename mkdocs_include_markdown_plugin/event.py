@@ -200,7 +200,7 @@ def get_file_content(
                 f':{lineno}',
             )
             return ''
-        else:
+        elif build is not None:
             build.included_files.extend(file_paths_to_include)
 
         bool_options = {
@@ -439,7 +439,7 @@ def get_file_content(
                 f':{lineno}',
             )
             return ''
-        else:
+        elif build is not None:
             build.included_files.extend(file_paths_to_include)
 
         bool_options = {
