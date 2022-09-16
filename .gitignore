@@ -1,5 +1,8 @@
 tests/test_integration/test_on_serve/site
 
+# Mkdocs files
+site/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -118,6 +121,9 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
+
+# VS Code
+.vscode
 
 # mkdocs documentation
 /site

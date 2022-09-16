@@ -1,13 +1,17 @@
 '''Tests for mkdocs-include-markdown-plugin `exclude` directives argument.'''
 
+import functools
 import os
+import re
 
 import pytest
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
+from testing_helpers import parametrize_directives
 
-@pytest.mark.parametrize('directive', ('include', 'include-markdown'))
+
+@parametrize_directives
 @pytest.mark.parametrize(
     ('filenames', 'exclude', 'exclude_prefix', 'expected_result'),
     (
@@ -15,42 +19,42 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
             ('foo', 'bar', 'baz'),
             f'content{os.sep}foo*',
             True,
-            'bar\nbaz\n\n',
+            'bar\nbaz\n',
             id='ignore-by-glob',
         ),
         pytest.param(
             ('foo', 'bar', 'baz'),
             f'content{os.sep}ba*',
             True,
-            'foo\n\n',
+            'foo\n',
             id='ignore-multiple-by-glob',
         ),
         pytest.param(
             ('foo', 'bar', 'baz'),
             '',
             True,
-            'bar\nbaz\nfoo\n\n',
+            'bar\nbaz\nfoo\n',
             id='not-ignore',
         ),
         pytest.param(
             ('foo', 'bar', 'baz'),
             '*',
             True,
-            FileNotFoundError,
+            None,
             id='ignore-all',
         ),
         pytest.param(
             ('foo', 'bar', 'baz'),
             f'..{os.sep}content{os.sep}*',
             False,
-            FileNotFoundError,
+            None,
             id='ignore-all-relative',
         ),
         pytest.param(
             ('foo', 'bar', 'baz'),
             f'..{os.sep}content{os.sep}b*',
             False,
-            'foo\n\n',
+            'foo\n',
             id='ignore-relative',
         ),
     ),
@@ -58,6 +62,7 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
 def test_exclude(
     page,
     tmp_path,
+    caplog,
     directive,
     filenames,
     exclude,
@@ -77,21 +82,26 @@ def test_exclude(
     exclude_prefix = f'{tmp_path}{os.sep}' if exclude_prefix else ''
     includer_filepath_content = f'''{{%
   {directive} "{tmp_path}{os.sep}content/*"
-  exclude="{exclude_prefix}{exclude}"
+  exclude='{exclude_prefix}{exclude}'
   comments=false
-%}}
-'''
+%}}'''
     for basename, file in files.items():
         file.write_text(f'{basename}\n')
 
     includer_file.write_text(includer_filepath_content)
 
-    if hasattr(expected_result, '__traceback__'):
-        with pytest.raises(expected_result):
-            on_page_markdown(
-                includer_filepath_content, page(includer_file),
-            )
+    func = functools.partial(
+        on_page_markdown,
+        includer_filepath_content,
+        page(includer_file),
+        includer_folder,
+    )
+
+    if expected_result is None:
+        assert func() == ''
+        assert len(caplog.records) == 1
+        for record in caplog.records:
+            assert re.match(r'No files found including ', record.msg)
     else:
-        assert on_page_markdown(
-            includer_filepath_content, page(includer_file),
-        ) == expected_result
+        assert func() == expected_result
+        assert len(caplog.records) == 0

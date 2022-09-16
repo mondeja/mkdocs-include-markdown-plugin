@@ -1,7 +1,7 @@
+import functools
 import os
 import re
-from functools import partial
-from pathlib import Path
+from typing import Optional, Tuple
 from urllib.parse import urlparse, urlunparse
 
 
@@ -95,51 +95,47 @@ def transform_p_by_p_skipping_codeblocks(markdown, func):
     Skip indented and fenced codeblock lines, where the transformation never is
     applied.
     '''
-    _inside_fcodeblock = False            # inside fenced codeblock
     _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
     _inside_icodeblock = False            # inside indented codeblock
 
     lines, current_paragraph = ([], '')
 
-    def process_current_paragraph_lines():
+    def process_current_paragraph():
         lines.extend(func(current_paragraph).splitlines(keepends=True))
 
     for line in markdown.splitlines(keepends=True):
-        if not _inside_fcodeblock and not _inside_icodeblock:
+        if not _current_fcodeblock_delimiter and not _inside_icodeblock:
             lstripped_line = line.lstrip()
-            if any([
-                lstripped_line.startswith('```'),
-                lstripped_line.startswith('~~~'),
-            ]):
-                _inside_fcodeblock = True
+            if (
+                lstripped_line.startswith('```')
+                or lstripped_line.startswith('~~~')
+            ):
                 _current_fcodeblock_delimiter = lstripped_line[:3]
                 if current_paragraph:
-                    process_current_paragraph_lines()
+                    process_current_paragraph()
                     current_paragraph = ''
                 lines.append(line)
             elif (
-                # 5 and 2 including newline character
-                (line.startswith('    ') and len(line) == 5) or
-                (line.startswith('\t') and len(line) == 2)
+                line.replace('\t', '    ').replace('\r\n', '\n')
+                == '    \n'
             ):
                 _inside_icodeblock = True
-                lines.append(line)
                 if current_paragraph:
-                    process_current_paragraph_lines()
+                    process_current_paragraph()
                     current_paragraph = ''
+                lines.append(line)
             else:
                 current_paragraph += line
         else:
             lines.append(line)
             if _current_fcodeblock_delimiter:
                 if line.lstrip().startswith(_current_fcodeblock_delimiter):
-                    _inside_fcodeblock = False
                     _current_fcodeblock_delimiter = None
             else:
-                if not line.startswith('    '):
+                if not line.startswith('    ') and not line.startswith('\t'):
                     _inside_icodeblock = False
 
-    process_current_paragraph_lines()
+    process_current_paragraph()
 
     return ''.join(lines)
 
@@ -147,46 +143,35 @@ def transform_p_by_p_skipping_codeblocks(markdown, func):
 def transform_line_by_line_skipping_codeblocks(markdown, func):
     '''Apply a transformation line by line in a Markdown text using a function.
 
-    Skip indented and fenced codeblock lines, where the transformation never is
-    applied.
+    Skip fenced codeblock lines, where the transformation never is applied.
+
+    Indented codeblocks are not taken into account because in the practice
+    this function is never used for transformations on indented lines. See
+    the PR https://github.com/mondeja/mkdocs-include-markdown-plugin/pull/95
+    to recover the implementation handling indented codeblocks.
     '''
-    _inside_fcodeblock = False            # inside fenced codeblock
     _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
-    _inside_icodeblock = False            # inside indented codeblock
 
     lines = []
     for line in markdown.splitlines(keepends=True):
-        if not _inside_fcodeblock and not _inside_icodeblock:
+        if not _current_fcodeblock_delimiter:
             lstripped_line = line.lstrip()
-            if any([
-                lstripped_line.startswith('```'),
-                lstripped_line.startswith('~~~'),
-            ]):
-                _inside_fcodeblock = True
-                _current_fcodeblock_delimiter = line[:3]
-            elif (
-                # 5 and 2 including newline character
-                (line.startswith('    ') and len(line) == 4) or
-                (line.startswith('\t') and len(line) == 1)
+            if (
+                lstripped_line.startswith('```')
+                or lstripped_line.startswith('~~~')
             ):
-                _inside_icodeblock = True
+                _current_fcodeblock_delimiter = lstripped_line[:3]
             else:
                 line = func(line)
-        else:
-            if _current_fcodeblock_delimiter:
-                if line.lstrip().startswith(_current_fcodeblock_delimiter):
-                    _inside_fcodeblock = False
-                    _current_fcodeblock_delimiter = None
-            else:
-                if not line.startswith('    '):
-                    _inside_icodeblock = False
+        elif line.lstrip().startswith(_current_fcodeblock_delimiter):
+            _current_fcodeblock_delimiter = None
         lines.append(line)
 
     return ''.join(lines)
 
 
 def rewrite_relative_urls(
-    markdown: str, source_path: Path, destination_path: Path,
+    markdown: str, source_path: str, destination_path: str,
 ) -> str:
     '''Rewrites markdown so that relative links that were written at
     ``source_path`` will still work when inserted into a file at
@@ -203,12 +188,12 @@ def rewrite_relative_urls(
         trailing_slash = path.endswith('/')
 
         path = os.path.relpath(
-            source_path.parent / path,
-            destination_path.parent,
+            os.path.join(os.path.dirname(source_path), path),
+            os.path.dirname(destination_path),
         )
 
         # ensure forward slashes are used, on Windows
-        path = Path(path).as_posix()
+        path = path.replace('\\', '/').replace('//', '/')
 
         if trailing_slash:
             # the above operation removes a trailing slash. Add it back if it
@@ -228,20 +213,25 @@ def rewrite_relative_urls(
             + m.string[href_end:match_end]
         )
 
+    found_href_url_group_index_3 = functools.partial(
+        found_href,
+        url_group_index=3,
+    )
+
     def transform(paragraph):
         paragraph = re.sub(
             MARKDOWN_LINK_REGEX,
-            partial(found_href, url_group_index=3),
+            found_href_url_group_index_3,
             paragraph,
         )
         paragraph = re.sub(
             MARKDOWN_IMAGE_REGEX,
-            partial(found_href, url_group_index=3),
+            found_href_url_group_index_3,
             paragraph,
         )
         return re.sub(
             MARKDOWN_LINK_DEFINITION_REGEX,
-            partial(found_href, url_group_index=2),
+            functools.partial(found_href, url_group_index=2),
             paragraph,
         )
     return transform_p_by_p_skipping_codeblocks(
@@ -257,54 +247,93 @@ def interpret_escapes(value: str) -> str:
     return value.encode('latin-1', 'backslashreplace').decode('unicode_escape')
 
 
-def filter_inclusions(new_start, new_end, text_to_include):
+def filter_inclusions(
+    new_start: Optional[str],
+    new_end: Optional[str],
+    text_to_include: str,
+) -> Tuple[str, bool, bool]:
     '''Manages inclusions from files using ``start`` and ``end`` directive
     arguments.
     '''
-    start = None
-    end = None
+
+    expected_not_found = [False, False]  # start, end
+
     if new_start is not None:
         start = interpret_escapes(new_start)
-        if new_end is not None:
-            end = interpret_escapes(new_end)
+        end = interpret_escapes(new_end) if new_end is not None else None
 
         new_text_to_include = ''
-        if new_end is not None:
-            for start_text in text_to_include.split(start)[1:]:
-                for i, end_text in enumerate(start_text.split(end)):
-                    if not i % 2:
-                        new_text_to_include += end_text
+
+        if end is not None:
+            end_found = False
+            start_split = text_to_include.split(start)[1:]
+            if not start_split:
+                expected_not_found[0] = True
+            else:
+                for start_text in start_split:
+                    for i, end_text in enumerate(start_text.split(end)):
+                        if not i % 2:
+                            new_text_to_include += end_text
+                            end_found = True
+            if not end_found:
+                expected_not_found[1] = True
         else:
-            new_text_to_include = text_to_include.split(start)[1]
+            if start in text_to_include:
+                new_text_to_include = text_to_include.split(
+                    start,
+                    maxsplit=1,
+                )[1]
+            else:
+                expected_not_found[0] = True
         text_to_include = new_text_to_include
 
     elif new_end is not None:
         end = interpret_escapes(new_end)
-        text_to_include, _, _ = text_to_include.partition(end)
+        if end in text_to_include:
+            text_to_include = text_to_include.split(
+                end,
+                maxsplit=1,
+            )[0]
+        else:
+            expected_not_found[1] = True
 
-    return (text_to_include, start, end)
+    return (text_to_include, *expected_not_found)
 
 
-def increase_headings_offset(markdown, offset=0):
+def _transform_negative_offset_func_factory(offset):
+    heading_prefix = '#' * abs(offset)
+    return lambda line: line if not line.startswith('#') else (
+        heading_prefix + line.lstrip('#')
+        if line.startswith(heading_prefix)
+        else '#' + line.lstrip('#')
+    )
+
+
+def _transform_positive_offset_func_factory(offset):
+    heading_prefix = '#' * offset
+    return lambda line: (
+        heading_prefix + line if line.startswith('#') else line
+    )
+
+
+def increase_headings_offset(markdown: str, offset: int = 0):
     '''Increases the headings depth of a snippet of Makdown content.'''
     if not offset:
         return markdown
     return transform_line_by_line_skipping_codeblocks(
         markdown,
-        (
-            lambda line: ('#' * offset + line)
-            if line.startswith('#') else line
-        ) if offset > 0 else (
-            lambda line: line if not line.startswith('#') else (
-                re.sub('^' + '#' * abs(offset), '', line)
-                if line.startswith('#' * abs(offset)) else
-                '#' + line.lstrip('#')
-            )
-        ),
+        _transform_positive_offset_func_factory(offset) if offset > 0
+        else _transform_negative_offset_func_factory(offset),
     )
 
 
-def filter_paths(filepaths, ignore_paths=[]):
+def rstrip_trailing_newlines(content):
+    while content.endswith('\n') or content.endswith('\r'):
+        content = content.rstrip('\r\n')
+    return content
+
+
+def filter_paths(filepaths: list, ignore_paths: list = []):
     """Filters a list of paths removing those defined in other list of paths.
 
     The paths to filter can be defined in the list of paths to ignore in
@@ -327,9 +356,13 @@ def filter_paths(filepaths, ignore_paths=[]):
         # ignore by filepath
         if filepath in ignore_paths:
             continue
+
         # ignore by dirpath (relative or absolute)
         if (os.sep).join(filepath.split(os.sep)[:-1]) in ignore_paths:
             continue
-        response.append(filepath)
+
+        # ignore if is a directory
+        if not os.path.isdir(filepath):
+            response.append(filepath)
     response.sort()
     return response

@@ -38,6 +38,29 @@ plugins:
 > Make sure that you define `include-markdown` before other plugins that could
  conflict, like [`mkdocs-macros-plugin`][mkdocs-macros-plugin-link].
 
+### Configuration
+
+The global behaviour of the plugin can be customized in the configuration.
+
+- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
+ **closing_tag**: The default opening and closing tags. By default are
+ `{%` and `%}`.
+
+The rest of the options will define the default values passed to arguments
+of directives and are documented in the [reference](#reference).
+
+```yaml
+plugins:
+  - include-markdown:
+      opening_tag: "{!"
+      closing_tag: "!}"
+      encoding: ascii
+      preserve_includer_indent: false
+      dedent: true
+      trailing_newlines: false
+      comments: false
+```
+
 ### Reference
 
 This plugin provides two directives, one to include Markdown files and another
@@ -45,7 +68,14 @@ to include files of any type.
 
 Paths of included files can be absolute or relative to the path of the file
 that includes them. This argument also accept globs, in which case certain
-paths can be ignored using the `exclude` argument:
+paths can be ignored using the `exclude` argument.
+
+File paths to include and string arguments can be wrapped by double `"` or
+single `'` quotes, which can be escaped prepending them a `\` character as
+`\"` and `\'`.
+
+The arguments **start** and **end** may contain usual (Python-style) escape
+sequences like `\n` to match against newlines.
 
 <!-- mdpo-disable-next-line -->
 #### **`include-markdown`**
@@ -53,30 +83,40 @@ paths can be ignored using the `exclude` argument:
 Includes Markdown files content, optionally using two delimiters to filter the
 content to include.
 
-- **start**: Delimiter that marks the beginning of the content to include.
-- **end**: Delimiter that marks the end of the content to include.
-- **preserve-includer-indent** (*true*): When this option is enabled (default),
+- <a name="include-markdown_start" href="#include-markdown_start">#</a>
+ **start**: Delimiter that marks the beginning of the content to include.
+- <a name="include-markdown_end" href="#include-markdown_end">#</a>
+ **end**: Delimiter that marks the end of the content to include.
+- <a name="include-markdown_preserve-includer-indent" href="#include-markdown_preserve-includer-indent">#</a>
+ **preserve-includer-indent** (*true*): When this option is enabled (default),
  every line of the content to include is indented with the same number of
  spaces used to indent the includer `{% %}` template. Possible values are
  `true` and `false`.
-- **dedent** (*false*): If enabled, the included content will be dedented.
-- **rewrite-relative-urls** (*true*): When this option is enabled (default),
+- <a name="include-markdown_dedent" href="#include-markdown_dedent">#</a>
+ **dedent** (*false*): If enabled, the included content will be dedented.
+- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a>
+ **exclude**: Specify with a glob which files should be ignored. Only useful
+ when passing globs to include multiple files.
+- <a name="include-markdown_trailing-newlines" href="#include-markdown_trailing-newlines">#</a>
+ **trailing-newlines** (*true*): When this option is disabled, the trailing newlines
+ found in the content to include are stripped. Possible values are `true` and `false`.
+- <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a>
+ **encoding** (*utf-8*): Specify the encoding of the included file.
+ If not defined `utf-8` will be used.
+- <a name="include-markdown_rewrite-relative-urls" href="#include-markdown_rewrite-relative-urls">#</a>
+ **rewrite-relative-urls** (*true*): When this option is enabled (default),
  Markdown links and images in the content that are specified by a relative URL
  are rewritten to work correctly in their new location. Possible values are
  `true` and `false`.
-- **comments** (*true*): When this option is enabled (default), the content to
+- <a name="include-markdown_comments" href="#include-markdown_comments">#</a>
+ **comments** (*true*): When this option is enabled (default), the content to
  include is wrapped by `<!-- BEGIN INCLUDE -->` and `<!-- END INCLUDE -->`
  comments which help to identify that the content has been included. Possible
  values are `true` and `false`.
-- **heading-offset** (0): Increases or decreases the Markdown headings depth
+- <a name="include-markdown_heading-offset" href="#include-markdown_heading-offset">#</a>
+ **heading-offset** (0): Increases or decreases the Markdown headings depth
  by this number. Only supports number sign (`#`) heading syntax. Accepts
  negative values to drop leading `#` characters.
-- **exclude**: Specify with a glob which files should be ignored. Only useful
- when passing globs to include multiple files.
-
-> Note that **start** and **end** strings may contain usual (Python-style)
-escape sequences like `\n`, which is handy if you need to match on a multi-line
-start or end trigger.
 
 ##### Examples
 
@@ -90,9 +130,9 @@ start or end trigger.
 
 ```jinja
 {%
-   include-markdown "docs/includes/header.md"
-   start="<!--\n\ttable-start\n-->"
-   end="<!--\n\ttable-end\n-->"
+   include-markdown 'docs/includes/header.md'
+   start='<!--\n\ttable-start\n-->'
+   end='<!--\n\ttable-end\n-->'
    rewrite-relative-urls=false
    comments=false
 %}
@@ -108,10 +148,14 @@ start or end trigger.
 ```jinja
 {%
    include-markdown "../LICENSE*"
-   start="<!--license-start-->"
-   end="<!--license-end-->"
+   start="<!--license \"start\" -->"
+   end='<!--license "end" -->'
    exclude="../LICENSE*.rst"
 %}
+```
+
+```jinja
+{% include-markdown '/escap\'ed/single-quotes/in/file\'/name.md' %}
 ```
 
 <!-- mdpo-disable-next-line -->
@@ -119,19 +163,26 @@ start or end trigger.
 
 Includes the content of a file or a group of files.
 
-- **start**: Delimiter that marks the beginning of the content to include.
-- **end**: Delimiter that marks the end of the content to include.
-- **preserve-includer-indent** (*true*): When this option is enabled (default),
+- <a name="include_start" href="#include_start">#</a>
+ **start**: Delimiter that marks the beginning of the content to include.
+- <a name="include_end" href="#include_end">#</a>
+ **end**: Delimiter that marks the end of the content to include.
+- <a name="include_preserve-includer-indent" href="#include_preserve-includer-indent">#</a>
+ **preserve-includer-indent** (*true*): When this option is enabled (default),
  every line of the content to include is indented with the same number of
  spaces used to indent the includer `{% %}` template. Possible values are
  `true` and `false`.
-- **dedent** (*false*): If enabled, the included content will be dedented.
-- **exclude**: Specify with a glob which files should be ignored. Only useful
+- <a name="include_dedent" href="#include_dedent">#</a>
+ **dedent** (*false*): If enabled, the included content will be dedented.
+- <a name="include_exclude" href="#include_exclude">#</a>
+ **exclude**: Specify with a glob which files should be ignored. Only useful
  when passing globs to include multiple files.
-
-> Note that **start** and **end** strings may contain usual (Python-style)
-escape sequences like `\n`, which is handy if you need to match on a multi-line
-start or end trigger.
+- <a name="include_trailing-newlines" href="#include_trailing-newlines">#</a>
+ **trailing-newlines** (*true*): When this option is disabled, the trailing newlines
+ found in the content to include are stripped. Possible values are `true` and `false`.
+- <a name="include_encoding" href="#include_encoding">#</a>
+ **encoding** (*utf-8*): Specify the encoding of the included file.
+ If not defined `utf-8` will be used.
 
 ##### Examples
 
@@ -143,7 +194,7 @@ start or end trigger.
 
 ```jinja
     {%
-      include "../examples/__main__.py"
+      include "../examples.md"
       start="~~~yaml"
       end="~~~\n"
     %}
@@ -151,8 +202,8 @@ start or end trigger.
 
 ```jinja
 {%
-   include "../LICENSE*"
-   exclude="../LICENSE*.rst"
+   include '../LICENSE*'
+   exclude='../LICENSE*.rst'
 %}
 ```
 

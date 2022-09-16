@@ -26,11 +26,6 @@ rules:
     ignore: |
       .github
   key-duplicates: enable
-  key-ordering:
-    ignore: |
-      .pre-commit-config.yaml
-      .github
-      tests/test_integration/test_on_serve/mkdocs.yml
   line-length:
     allow-non-breakable-words: true
     max: 80

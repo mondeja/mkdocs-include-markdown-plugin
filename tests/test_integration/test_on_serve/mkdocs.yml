@@ -1,4 +1,0 @@
-site_name: mkdocs-include-markdown-plugin integration tests
-
-plugins:
-  - include-markdown
