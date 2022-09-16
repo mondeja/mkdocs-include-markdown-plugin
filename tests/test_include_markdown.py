@@ -678,7 +678,7 @@ vɛвѣди
 ''',
             'Content to include\n',
             '''1. List item number 1
-1. <!-- BEGIN INCLUDE {filepath} --> Content to include <!-- END INCLUDE -->
+1. <!-- BEGIN INCLUDE {filepath} -->Content to include<!-- END INCLUDE -->
 1. List item number 3
 ''',
             [],
@@ -695,7 +695,7 @@ vɛвѣди
 ''',
             'Content to include\n',
             '''1. List item number 1
-1. <!-- BEGIN INCLUDE {filepath} --> Content to include <!-- END INCLUDE -->
+1. <!-- BEGIN INCLUDE {filepath} -->Content to include<!-- END INCLUDE -->
 1. List item number 3
 ''',
             [],
@@ -719,6 +719,44 @@ Content to include
 <!-- END INCLUDE -->''',  # noqa: E501
             [],
             id='escape-comments',
+        ),
+
+        pytest.param(
+            '''1.  This is the first number line
+
+1.  {%
+       include-markdown "{filepath}"
+    %}
+
+1.  If everything works as expected this should be number 3
+''',
+            '''This content chunk contains code
+
+```
+This is my example
+It is a code block
+```
+
+With some text after it
+''',
+            '''1.  This is the first number line
+
+1.  <!-- BEGIN INCLUDE {filepath} -->
+    This content chunk contains code
+
+    ```
+    This is my example
+    It is a code block
+    ```
+
+    With some text after it
+
+    <!-- END INCLUDE -->
+
+1.  If everything works as expected this should be number 3
+''',
+            [],
+            id='include-code-block-to-list-item (#123)',
         ),
     ),
 )

@@ -5,6 +5,7 @@ import html
 import logging
 import os
 import re
+import string
 import textwrap
 
 from mkdocs_include_markdown_plugin import process
@@ -32,7 +33,7 @@ SINGLE_QUOTED_STR_ARGUMENT_PATTERN = r"([^']|(?<=\\)['])+"
 # `on_page_markdown` method below.
 INCLUDE_TAG_REGEX = re.compile(
     rf'''
-        (?P<_includer_indent>[^\S\r\n]*)$OPENING_TAG
+        (?P<_includer_indent>[ \t\f\v\w{re.escape(string.punctuation)}]*?)$OPENING_TAG
         \s*
         include
         \s+
@@ -40,7 +41,7 @@ INCLUDE_TAG_REGEX = re.compile(
         (?P<arguments>.*?)
         \s*
         $CLOSING_TAG
-    ''',
+    ''',  # noqa: E501
     flags=re.VERBOSE | re.DOTALL,
 )
 
@@ -319,14 +320,17 @@ def get_file_content(
                     new_text_to_include,
                 )
 
-            if bool_options['dedent']:
+            if bool_options['dedent']['value']:
                 new_text_to_include = textwrap.dedent(new_text_to_include)
 
             # includer indentation preservation
             if bool_options['preserve-includer-indent']['value']:
                 new_text_to_include = ''.join(
                     _includer_indent + line
-                    for line in new_text_to_include.splitlines(keepends=True)
+                    for line in (
+                        new_text_to_include.splitlines(keepends=True)
+                        or ['']
+                    )
                 )
             else:
                 new_text_to_include = _includer_indent + new_text_to_include
@@ -359,6 +363,7 @@ def get_file_content(
         directive_match_start = match.start()
 
         _includer_indent = match.group('_includer_indent')
+        _empty_includer_indent = ' ' * len(_includer_indent)
 
         filename, raw_filename = parse_filename_argument(match)
         if filename is None:
@@ -536,7 +541,12 @@ def get_file_content(
         if offset_match:
             offset += int(offset_match.group(1))
 
-        text_to_include = ''
+        separator = '\n' if bool_options['trailing-newlines']['value'] else ''
+        if not start and not end:
+            start_end_part = ''
+        else:
+            start_end_part = f"'{html.escape(start)}' " if start else "'' "
+            start_end_part += f"'{html.escape(end)}' " if end else "'' "
 
         # if any start or end strings are found in the included content
         # but the arguments are specified, we must raise a warning
@@ -544,6 +554,8 @@ def get_file_content(
         # `True` means that no start/end strings have been found in content
         # but they have been specified, so the warning(s) must be raised
         expected_but_any_found = [start is not None, end is not None]
+
+        text_to_include = ''
         for file_path in file_paths_to_include:
             new_text_to_include = read_file(file_path, encoding)
 
@@ -587,18 +599,32 @@ def get_file_content(
                     destination_path=page_src_path,
                 )
 
+            # comments
+            if bool_options['comments']['value']:
+                new_text_to_include = (
+                    f'{_includer_indent}'
+                    f'<!-- BEGIN INCLUDE {html.escape(filename)}'
+                    f' {start_end_part}-->{separator}{new_text_to_include}'
+                    f'{separator}<!-- END INCLUDE -->'
+                )
+            else:
+                new_text_to_include = (
+                    f'{_includer_indent}{new_text_to_include}'
+                )
+
             # dedent
-            if bool_options['dedent']:
+            if bool_options['dedent']['value']:
                 new_text_to_include = textwrap.dedent(new_text_to_include)
 
             # includer indentation preservation
             if bool_options['preserve-includer-indent']['value']:
                 new_text_to_include = ''.join(
-                    _includer_indent + line
-                    for line in new_text_to_include.splitlines(keepends=True)
+                    (_empty_includer_indent if i > 0 else '') + line
+                    for i, line in enumerate(
+                        new_text_to_include.splitlines(keepends=True)
+                        or [''],
+                    )
                 )
-            else:
-                new_text_to_include = _includer_indent + new_text_to_include
 
             if offset_match:
                 new_text_to_include = process.increase_headings_offset(
@@ -628,32 +654,19 @@ def get_file_content(
                     f' {readable_files_to_include}',
                 )
 
-        if not bool_options['comments']['value']:
-            return text_to_include
-
-        separator = '\n' if bool_options['trailing-newlines']['value'] else ''
-        if not start and not end:
-            start_end_part = ''
-        else:
-            start_end_part = f"'{html.escape(start)}' " if start else "'' "
-            start_end_part += f"'{html.escape(end)}' " if end else "'' "
-
-        return (
-            f'{_includer_indent}<!-- BEGIN INCLUDE {html.escape(filename)}'
-            f' {start_end_part}-->{separator}{text_to_include}'
-            f'{separator}{_includer_indent}<!-- END INCLUDE -->'
-        )
+        return text_to_include
 
     markdown = re.sub(
         include_tag_regex,
         found_include_tag,
         markdown,
     )
-    return re.sub(
+    markdown = re.sub(
         include_markdown_tag_regex,
         found_include_markdown_tag,
         markdown,
     )
+    return markdown
 
 
 def on_page_markdown(
