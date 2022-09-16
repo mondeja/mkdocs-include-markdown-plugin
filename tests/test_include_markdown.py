@@ -743,18 +743,18 @@ With some text after it
 
 1.  <!-- BEGIN INCLUDE {filepath} -->
     This content chunk contains code
-
+''' + '    ' + '''
     ```
     This is my example
     It is a code block
     ```
-
+''' + '    ' + '''
     With some text after it
-
+''' + '    ' + '''
     <!-- END INCLUDE -->
 
 1.  If everything works as expected this should be number 3
-''',
+''',  # noqa: ISC003
             [],
             id='include-code-block-to-list-item (#123)',
         ),
