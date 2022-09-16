@@ -194,6 +194,12 @@ def get_file_content(
                 markdown,
                 directive_match_start,
             )
+            logger.error(
+                f"No files found including '{raw_filename}'"
+                f' at {os.path.relpath(page_src_path, docs_dir)}'
+                f':{lineno}',
+            )
+            return ''
         else:
             build.included_files.extend(file_paths_to_include)
 
@@ -427,6 +433,12 @@ def get_file_content(
                 markdown,
                 directive_match_start,
             )
+            logger.error(
+                f"No files found including '{raw_filename}' at"
+                f' {os.path.relpath(page_src_path, docs_dir)}'
+                f':{lineno}',
+            )
+            return ''
         else:
             build.included_files.extend(file_paths_to_include)
 
