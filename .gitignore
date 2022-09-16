@@ -1,5 +1,3 @@
-tests/test_integration/test_on_serve/site
-
 # Mkdocs files
 site/
 
