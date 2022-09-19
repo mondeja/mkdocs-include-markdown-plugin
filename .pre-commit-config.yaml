@@ -42,7 +42,7 @@ repos:
           - --filter-files
         files: \.py$
   - repo: https://github.com/mondeja/mdpo
-    rev: coverage-excludes
+    rev: master
     hooks:
       - id: md2po2md
         files: ^README\.md
@@ -54,7 +54,6 @@ repos:
           - -o
           - locale/{lang}
           - --no-location
-        verbose: true
   - repo: https://github.com/mondeja/pre-commit-hooks
     rev: v1.8.0
     hooks:
