@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.38.0
+    rev: v2.38.2
     hooks:
       - id: pyupgrade
         args:
@@ -15,7 +15,7 @@ repos:
       - id: double-quote-string-fixer
         name: double-quote-string-fixer
   - repo: https://github.com/asottile/add-trailing-comma
-    rev: v2.2.3
+    rev: v2.3.0
     hooks:
       - id: add-trailing-comma
         name: add-trailing-comma
@@ -42,7 +42,7 @@ repos:
           - --filter-files
         files: \.py$
   - repo: https://github.com/mondeja/mdpo
-    rev: v1.0.1
+    rev: v1.0.3
     hooks:
       - id: md2po2md
         files: ^README\.md
