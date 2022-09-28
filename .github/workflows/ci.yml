@@ -13,6 +13,8 @@ jobs:
   test:
     name: Test
     runs-on: ${{ matrix.os }}
+    env:
+      PYTEST_ADDOPTS: -vv
     strategy:
       matrix:
         os:
@@ -35,8 +37,6 @@ jobs:
           python -m pip install -U pip coveralls tox tox-gh-actions
       - name: Run tests
         run: tox
-        env:
-          PYTEST_ADDOPTS: -vv
       - name: Coveralls
         run: coveralls
         env:
