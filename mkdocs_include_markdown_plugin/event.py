@@ -122,6 +122,7 @@ def get_file_content(
     default_trailing_newlines,
     default_comments=CONFIG_DEFAULTS['comments'],
     cumulative_heading_offset=0,
+    build=None,
 ):
 
     def found_include_tag(match):
@@ -199,6 +200,8 @@ def get_file_content(
                 f':{lineno}',
             )
             return ''
+        elif build is not None:
+            build.included_files.extend(file_paths_to_include)
 
         bool_options = {
             'preserve-includer-indent': {
@@ -312,6 +315,7 @@ def get_file_content(
                 default_preserve_includer_indent,
                 default_dedent,
                 default_trailing_newlines,
+                build=build,
             )
 
             # trailing newlines right stripping
@@ -435,6 +439,8 @@ def get_file_content(
                 f':{lineno}',
             )
             return ''
+        elif build is not None:
+            build.included_files.extend(file_paths_to_include)
 
         bool_options = {
             'rewrite-relative-urls': {
@@ -583,6 +589,7 @@ def get_file_content(
                 default_dedent,
                 default_trailing_newlines,
                 default_comments=default_comments,
+                build=build,
             )
 
             # trailing newlines right stripping
@@ -674,6 +681,7 @@ def on_page_markdown(
     page,
     docs_dir,
     config={},
+    build=None,
 ):
     escaped_opening_tag = re.escape(
         config.get('opening_tag', CONFIG_DEFAULTS['opening_tag']),
@@ -713,4 +721,5 @@ def on_page_markdown(
         config.get('dedent', CONFIG_DEFAULTS['dedent']),
         config.get('trailing_newlines', CONFIG_DEFAULTS['trailing_newlines']),
         default_comments=config.get('comments', CONFIG_DEFAULTS['comments']),
+        build=build,
     )
