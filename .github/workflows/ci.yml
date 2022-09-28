@@ -37,7 +37,7 @@ jobs:
         shell: python
         run: |
           import codecs; import os; import sys
-          env = f"TOXENV=py3{sys.version_info[0]}\n"
+          env = f"TOXENV=py3{sys.version_info[1]}\n"
           print("Picked:\n{env}for{sys.version}")
           with codecs.open(os.environ["GITHUB_ENV"], "a", "utf-8") as file_handler:
                file_handler.write(env)
