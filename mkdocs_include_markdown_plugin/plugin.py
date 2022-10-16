@@ -58,7 +58,7 @@ else:
                 SERVER = server
                 self._watch_included_files()
 
-        @mkdocs.plugins.event_priority(-100)
+        @mkdocs.plugins.event_priority(100)
         def on_page_markdown(self, markdown, page, **kwargs):
             global WATCHING_FILES
             if WATCHING_FILES is None:
