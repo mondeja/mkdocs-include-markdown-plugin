@@ -8,6 +8,9 @@ authors = [
   { name = "Joe Rickerby" },
   { name = "Álvaro Mondéjar Rubio", email = "mondejar1994@gmail.com" }
 ]
+maintainers = [
+  { name = "Álvaro Mondéjar Rubio", email = "mondejar1994@gmail.com" }
+]
 requires-python = ">=3.7,<3.12"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
