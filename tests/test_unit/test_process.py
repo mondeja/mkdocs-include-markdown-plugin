@@ -1,4 +1,4 @@
-'''String processing tests.'''
+"""String processing tests."""
 
 import pytest
 

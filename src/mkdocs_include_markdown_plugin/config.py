@@ -1,3 +1,5 @@
+"""Plugin configuration."""
+
 import mkdocs.config.config_options
 
 

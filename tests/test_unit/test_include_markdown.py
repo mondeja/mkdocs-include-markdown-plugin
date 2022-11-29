@@ -1,4 +1,4 @@
-'''``include-markdown`` directive tests'''
+"""``include-markdown`` directive tests"""
 
 import pytest
 
@@ -811,7 +811,7 @@ def test_include_markdown(
     assert len(expected_warnings_schemas) == len(caplog.records)
 
 
-@pytest.mark.parametrize('rewrite_relative_urls', ['true', 'false', None])
+@pytest.mark.parametrize('rewrite_relative_urls', ('true', 'false', None))
 def test_include_markdown_relative_rewrite(
     page,
     tmp_path,

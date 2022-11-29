@@ -3,10 +3,9 @@ import os
 import re
 
 import pytest
+from testing_helpers import parametrize_directives, unix_only
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
-
-from testing_helpers import parametrize_directives, unix_only
 
 
 @pytest.mark.parametrize(
@@ -323,7 +322,7 @@ class TestFilename:
     @unix_only
     @parametrize_directives
     @pytest.mark.parametrize(
-        'filename', ["inc'luded\".md", "''i\"nc\"lude'd.md"],
+        'filename', ("inc'luded\".md", "''i\"nc\"lude'd.md"),
     )
     @pytest.mark.parametrize(
         'quote', ('"', "'"), ids=('quote="', "quote='"),

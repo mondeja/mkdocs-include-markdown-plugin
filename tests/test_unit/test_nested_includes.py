@@ -1,4 +1,4 @@
-'''Nested inclusion tests.'''
+"""Nested inclusion tests."""
 
 import pytest
 

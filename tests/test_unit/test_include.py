@@ -1,4 +1,4 @@
-'''``include`` directive tests.'''
+"""``include`` directive tests."""
 
 import pytest
 

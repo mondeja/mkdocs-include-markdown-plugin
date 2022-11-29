@@ -1,4 +1,4 @@
-'''Module where the `on_page_markdown` plugin event is processed.'''
+"""Module where the `on_page_markdown` plugin event is processed."""
 
 import glob
 import html
@@ -32,7 +32,7 @@ SINGLE_QUOTED_STR_ARGUMENT_PATTERN = r"([^']|(?<=\\)['])+"
 # will be replaced by the effective opening and closing tags in the
 # `on_page_markdown` method below.
 INCLUDE_TAG_REGEX = re.compile(
-    rf'''
+    rf"""
         (?P<_includer_indent>[ \t\f\v\w{re.escape(string.punctuation)}]*?)$OPENING_TAG
         \s*
         include
@@ -41,7 +41,7 @@ INCLUDE_TAG_REGEX = re.compile(
         (?P<arguments>.*?)
         \s*
         $CLOSING_TAG
-    ''',  # noqa: E501
+    """,  # noqa: E501
     flags=re.VERBOSE | re.DOTALL,
 )
 
@@ -50,14 +50,19 @@ INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
     flags=INCLUDE_TAG_REGEX.flags,
 )
 
-str_arg = lambda arg: re.compile(
-    rf'{arg}=(?:"({DOUBLE_QUOTED_STR_ARGUMENT_PATTERN})")?'
-    rf"(?:'({SINGLE_QUOTED_STR_ARGUMENT_PATTERN})')?",
-)
 
-bool_arg = lambda arg: re.compile(
-    rf'{arg}=({BOOL_ARGUMENT_PATTERN})',
-)
+def str_arg(arg):
+    """Return a compiled regexp to match a string argument."""
+    return re.compile(
+        rf'{arg}=(?:"({DOUBLE_QUOTED_STR_ARGUMENT_PATTERN})")?'
+        rf"(?:'({SINGLE_QUOTED_STR_ARGUMENT_PATTERN})')?",
+    )
+
+
+def bool_arg(arg):
+    """Return a compiled regexp to match a boolean argument."""
+    return re.compile(rf'{arg}=({BOOL_ARGUMENT_PATTERN})')
+
 
 ARGUMENT_REGEXES = {
     'start': str_arg('start'),
@@ -78,6 +83,7 @@ ARGUMENT_REGEXES = {
 
 
 def parse_filename_argument(match):
+    """Return the filename argument matched by ``match``."""
     raw_filename = match.group('double_quoted_filename')
     if raw_filename is None:
         raw_filename = match.group('single_quoted_filename')
@@ -91,6 +97,7 @@ def parse_filename_argument(match):
 
 
 def parse_string_argument(match):
+    """Return the string argument matched by ``match``."""
     value = match.group(1)
     if value is None:
         value = match.group(3)
@@ -102,10 +109,12 @@ def parse_string_argument(match):
 
 
 def lineno_from_content_start(content, start):
+    """Return the line number of the first line of ``start`` in ``content``."""
     return content[:start].count('\n') + 1
 
 
 def read_file(file_path, encoding):
+    """Read a file and return its content."""
     with open(file_path, encoding=encoding) as f:
         return f.read()
 
@@ -124,7 +133,7 @@ def get_file_content(
     cumulative_heading_offset=0,
     build=None,
 ):
-
+    """Return the content of the file to include."""
     def found_include_tag(match):
         directive_match_start = match.start()
 
@@ -680,9 +689,13 @@ def on_page_markdown(
     markdown,
     page,
     docs_dir,
-    config={},
+    config=None,
     build=None,
 ):
+    """Process markdown content of a page."""
+    if config is None:
+        config = {}
+
     escaped_opening_tag = re.escape(
         config.get('opening_tag', CONFIG_DEFAULTS['opening_tag']),
     )
