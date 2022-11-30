@@ -97,6 +97,7 @@ style = [
 ]
 
 [tool.coverage.run]
+source = ["src"]
 omit = ["src/mkdocs_include_markdown_plugin/plugin.py"]
 
 [tool.coverage.report]
