@@ -3,8 +3,8 @@
 ## Development install
 
 ```sh
-git clone https://github.com/mondeja/mdpo
-cd mdpo
+git clone https://github.com/mondeja/mkdocs-include-markdown-plugin
+cd mkdocs-include-markdown-plugin
 pip install hatch
 ```
 
