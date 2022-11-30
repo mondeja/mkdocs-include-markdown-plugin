@@ -1,12 +1,11 @@
-'''Tests for multiple inclusions across directives.'''
+"""Tests for multiple inclusions across directives."""
 
 import os
 
 import pytest
+from testing_helpers import parametrize_directives
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
-
-from testing_helpers import parametrize_directives
 
 
 def test_glob_include_simple(page, tmp_path):

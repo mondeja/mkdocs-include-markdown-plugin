@@ -1,11 +1,15 @@
 name: pre-commit autoupdate
+
+permissions:
+  pull-requests: write
+
 on:
   schedule:
     - cron: 0 3 1 1/6 *
   workflow_dispatch:
 
 jobs:
-  auto-update:
+  autoupdate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,13 +21,13 @@ jobs:
         run: pip install pre-commit
       - name: Run pre-commit autoupdate
         run: pre-commit autoupdate
-      - name: Create pull request
+      - name: Open pull request
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.PRECOMMIT_AUTOUPDATE_TOKEN }}
-          branch: update/pre-commit-autoupdate
-          title: Update pre-commit hooks
-          commit-message: Update pre-commit hooks versions
-          body: Update versions of pre-commit tools to latest version.
+          branch: pre-commit-autoupdate
+          title: Upgrade pre-commit hooks revisions
+          commit-message: Upgrade pre-commit hooks revisions
+          body: 'Upgrades revisions of pre-commit hooks tools to latest versions :hammer_and_wrench:'
           labels: dependencies
           delete-branch: true

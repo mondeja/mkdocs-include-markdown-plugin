@@ -1,8 +1,7 @@
 import pytest
+from testing_helpers import parametrize_directives, unix_only
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
-
-from testing_helpers import parametrize_directives, unix_only
 
 
 @parametrize_directives

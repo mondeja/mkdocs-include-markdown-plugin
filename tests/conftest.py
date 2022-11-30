@@ -11,7 +11,7 @@ if TESTS_DIR not in sys.path:
 
 @pytest.fixture
 def page():
-    '''Fake mkdocs page object.'''
+    """Fake mkdocs page object."""
     def _page(filepath):
         return type(
             'FakeMkdocsPage', (), {

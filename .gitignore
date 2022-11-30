@@ -1,5 +1,6 @@
 # Mkdocs files
 site/
+.hatch/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

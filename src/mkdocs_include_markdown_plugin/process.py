@@ -1,3 +1,5 @@
+"""Utilities for string processing."""
+
 import functools
 import os
 import re
@@ -10,18 +12,31 @@ from urllib.parse import urlparse, urlunparse
 
 # Matches markdown links.
 # e.g. [scikit-learn](https://github.com/scikit-learn/scikit-learn)
-MARKDOWN_LINK_REGEX = re.compile(
-    r'''
+#
+# The next Regex can raise a catastrophic backtracking, but with the current
+# implementation of the plugin it is not very much likely to reach the case.
+# Can be checked with dlint:
+# python3 -m dlint.redos --pattern '\[(?:(?:\[[^\[\]]+\])*)?\]'
+#
+# In the original Markdown.pl, the nested brackets are enclosed by an atomic
+# group (?>...), but atomic groups are not supported by Python in versions
+# previous to Python3.11. Also, these nested brackets can be recursive in the
+# Perl implementation but this doesn't seem possible in Python, the current
+# implementation only reaches two levels.
+MARKDOWN_LINK_REGEX = re.compile(  # noqa: DUO138
+    r"""
         (                 # wrap whole match in $1
           (?<!!)          # don't match images - negative lookbehind
           \[
             (             # link text = $2
-                [^\[\]]*  # not bracket
                 (?:
-                    \[[^\[\]]+\]  # another level of nested bracket with
-                                  # something inside
-                    [^\[\]]*      # not bracket
-                )*
+                    [^\[\]]+  # not bracket
+                    (?:
+                        \[[^\[\]]+\]  # another level of nested bracket
+                                      # with something inside
+                        [^\[\]]*      # not bracket
+                    )*
+                )?        # allow for empty link text
             )
           \]
           \(             # literal paren
@@ -35,14 +50,14 @@ MARKDOWN_LINK_REGEX = re.compile(
             )?           # title is optional
           \)
         )
-    ''',
+    """,
     flags=re.VERBOSE,
 )
 
 # Matches markdown inline images.
 # e.g. ![alt-text](path/to/image.png)
 MARKDOWN_IMAGE_REGEX = re.compile(
-    r'''
+    r"""
         (                # wrap whole match in $1
           !\[
             (.*?)        # alt text = $2
@@ -59,14 +74,14 @@ MARKDOWN_IMAGE_REGEX = re.compile(
             )?           # title is optional
           \)
         )
-    ''',
+    """,
     flags=re.VERBOSE,
 )
 
 # Matches markdown link definitions.
 # e.g. [scikit-learn]: https://github.com/scikit-learn/scikit-learn
 MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
-    r'''
+    r"""
         ^[ ]{0,4}\[(.+)\]:   # id = $1
         [ \t]*
         \n?                # maybe *one* newline
@@ -83,18 +98,18 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
             [ \t]*
         )?                   # title is optional
         (?:\n+|\Z)
-    ''',
+    """,
     flags=re.VERBOSE | re.MULTILINE,
 )
 
 
 def transform_p_by_p_skipping_codeblocks(markdown, func):
-    '''Apply a transformation paragraph by paragraph in a Markdown text using
-    a function.
+    """Apply a transformation paragraph by paragraph in a Markdown text.
 
-    Skip indented and fenced codeblock lines, where the transformation never is
-    applied.
-    '''
+    Apply a transformation paragraph by paragraph in a Markdown using a
+    function. Skip indented and fenced codeblock lines, where the
+    transformation is never applied.
+    """
     _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
     _inside_icodeblock = False            # inside indented codeblock
 
@@ -141,7 +156,7 @@ def transform_p_by_p_skipping_codeblocks(markdown, func):
 
 
 def transform_line_by_line_skipping_codeblocks(markdown, func):
-    '''Apply a transformation line by line in a Markdown text using a function.
+    """Apply a transformation line by line in a Markdown text using a function.
 
     Skip fenced codeblock lines, where the transformation never is applied.
 
@@ -149,7 +164,7 @@ def transform_line_by_line_skipping_codeblocks(markdown, func):
     this function is never used for transformations on indented lines. See
     the PR https://github.com/mondeja/mkdocs-include-markdown-plugin/pull/95
     to recover the implementation handling indented codeblocks.
-    '''
+    """
     _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
 
     lines = []
@@ -173,10 +188,12 @@ def transform_line_by_line_skipping_codeblocks(markdown, func):
 def rewrite_relative_urls(
     markdown: str, source_path: str, destination_path: str,
 ) -> str:
-    '''Rewrites markdown so that relative links that were written at
+    """Rewrite relative URLs in a Markdown text.
+
+    Rewrites markdown so that relative links that were written at
     ``source_path`` will still work when inserted into a file at
     ``destination_path``.
-    '''
+    """
     def rewrite_url(url: str) -> str:
         scheme, netloc, path, params, query, fragment = urlparse(url)
 
@@ -241,9 +258,11 @@ def rewrite_relative_urls(
 
 
 def interpret_escapes(value: str) -> str:
-    '''Replaces any standard escape sequences in value with their usual
-    meanings as in ordinary python string literals.
-    '''
+    """Interpret Python literal escapes in a string.
+
+    Replaces any standard escape sequences in value with their usual
+    meanings as in ordinary Python string literals.
+    """
     return value.encode('latin-1', 'backslashreplace').decode('unicode_escape')
 
 
@@ -252,10 +271,11 @@ def filter_inclusions(
     new_end: Optional[str],
     text_to_include: str,
 ) -> Tuple[str, bool, bool]:
-    '''Manages inclusions from files using ``start`` and ``end`` directive
-    arguments.
-    '''
+    """Filter inclusions in a text.
 
+    Manages inclusions from files using ``start`` and ``end`` directive
+    arguments.
+    """
     expected_not_found = [False, False]  # start, end
 
     if new_start is not None:
@@ -317,7 +337,7 @@ def _transform_positive_offset_func_factory(offset):
 
 
 def increase_headings_offset(markdown: str, offset: int = 0):
-    '''Increases the headings depth of a snippet of Makdown content.'''
+    """Increases the headings depth of a snippet of Makdown content."""
     if not offset:
         return markdown
     return transform_line_by_line_skipping_codeblocks(
@@ -328,12 +348,13 @@ def increase_headings_offset(markdown: str, offset: int = 0):
 
 
 def rstrip_trailing_newlines(content):
+    """Removes trailing newlines from a string."""
     while content.endswith('\n') or content.endswith('\r'):
         content = content.rstrip('\r\n')
     return content
 
 
-def filter_paths(filepaths: list, ignore_paths: list = []):
+def filter_paths(filepaths: list, ignore_paths: list = frozenset()) -> list:
     """Filters a list of paths removing those defined in other list of paths.
 
     The paths to filter can be defined in the list of paths to ignore in

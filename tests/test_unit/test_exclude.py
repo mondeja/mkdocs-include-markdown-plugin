@@ -1,14 +1,13 @@
-'''Tests for mkdocs-include-markdown-plugin `exclude` directives argument.'''
+"""Tests for mkdocs-include-markdown-plugin `exclude` directives argument."""
 
 import functools
 import os
 import re
 
 import pytest
+from testing_helpers import parametrize_directives
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
-
-from testing_helpers import parametrize_directives
 
 
 @parametrize_directives
