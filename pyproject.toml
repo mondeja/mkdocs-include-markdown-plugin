@@ -98,8 +98,6 @@ style = [
   "gh://mondeja/project-config-styles@v3/base/pre-commit/md2po2md.json5"
 ]
 
-[tool.coverage]
-
 [tool.coverage.run]
 source = ["src"]
 omit = ["src/mkdocs_include_markdown_plugin/plugin.py"]
@@ -139,8 +137,6 @@ flake8-absolute-import = ["+*"]
 flake8-unused-arguments = ["+*"]
 flake8-slots = ["+*"]
 dlint = ["+*"]
-
-[tool.flakeheaven.exceptions]
 
 [tool.flakeheaven.exceptions."tests/**"]
 flake8-docstrings = [
