@@ -4,14 +4,7 @@ version = "4.0.0"
 description = "Mkdocs Markdown includer plugin."
 readme = "README.md"
 license = "Apache-2.0"
-authors = [
-  { name = "Joe Rickerby" },
-  { name = "Álvaro Mondéjar Rubio", email = "mondejar1994@gmail.com" }
-]
-maintainers = [
-  { name = "Álvaro Mondéjar Rubio", email = "mondejar1994@gmail.com" }
-]
-requires-python = ">=3.7,<3.12"
+requires-python = ">=3.7,<=3.11"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Operating System :: OS Independent",
@@ -26,9 +19,20 @@ classifiers = [
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.11"
 ]
 keywords = ["markdown", "mkdocs", "includer", "plugin"]
+
+[[project.authors]]
+name = "Joe Rickerby"
+
+[[project.authors]]
+name = "Álvaro Mondéjar Rubio"
+email = "mondejar1994@gmail.com"
+
+[[project.maintainers]]
+name = "Álvaro Mondéjar Rubio"
+email = "mondejar1994@gmail.com"
 
 [project.urls]
 Source = "https://github.com/mondeja/mkdocs-include-markdown-plugin"
@@ -61,40 +65,48 @@ lint = "pre-commit run -a"
 matrix-name-format = "{variable}-{value}"
 dependencies = ["pytest~=7.0", "coverage~=6.4"]
 
-[tool.hatch.envs.tests.scripts]
-all = "coverage run -m pytest"
-unit = "coverage run -m pytest tests/test_unit"
-integration = "pytest tests/test_integration --override-ini addopts=-svv"
-cov = """hatch run +py=py310 tests:all &&
-coverage html &&
-python -c 'import webbrowser as w;w.open("http://127.0.0.1:8088")' &&
-python -m http.server 8088 -b localhost -d htmlcov
-"""
-
 [[tool.hatch.envs.tests.matrix]]
 python = ["py37", "py38", "py39", "py310", "py311"]
 mkdocs = ["1.2.4", "1.3.1", "1.4.0"]
 
-[tool.hatch.envs.tests.overrides]
-matrix.mkdocs.dependencies = [
-  { value = "mkdocs==1.2.4", if = ["1.2.4"] },
-  { value = "mkdocs==1.3.1", if = ["1.3.1"] },
-  { value = "mkdocs==1.4.0", if = ["1.4.0"] },
+[tool.hatch.envs.tests.scripts]
+all = "coverage run -m pytest"
+unit = "coverage run -m pytest tests/test_unit"
+integration = "pytest tests/test_integration --override-ini addopts=-svv"
+cov = [
+  "hatch run +py=py310 tests:all",
+  "coverage html",
+  "python -c 'import webbrowser as w;w.open(\"http://127.0.0.1:8088\")'",
+  "python -m http.server 8088 -b localhost -d htmlcov",
 ]
 
-[tool.bump]
-targets = [{ file = "pyproject.toml" }]
+[[tool.hatch.envs.tests.overrides.matrix.mkdocs.dependencies]]
+value = "mkdocs==1.2.4"
+if = ["1.2.4"]
+
+[[tool.hatch.envs.tests.overrides.matrix.mkdocs.dependencies]]
+value = "mkdocs==1.3.1"
+if = ["1.3.1"]
+
+[[tool.hatch.envs.tests.overrides.matrix.mkdocs.dependencies]]
+value = "mkdocs==1.4.0"
+if = ["1.4.0"]
+
+[[tool.bump.targets]]
+file = "pyproject.toml"
 
 [tool.project-config]
 cache = "2 days"
 style = [
-  "gh://mondeja/project-config-styles@v2.1/python/base.json5",
-  "gh://mondeja/project-config-styles@v2.1/python/single-quotes.json5",
-  "gh://mondeja/project-config-styles@v2.1/python/line-length-80.json5",
-  "gh://mondeja/project-config-styles@v2.1/python/tests.json5",
-  "gh://mondeja/project-config-styles@v2.1/python/google-docstrings.json5",
-  "gh://mondeja/project-config-styles@v2.1/base/pre-commit/md2po2md.json5"
+  "gh://mondeja/project-config-styles@v3/python/base.json5",
+  "gh://mondeja/project-config-styles@v3/python/single-quotes.json5",
+  "gh://mondeja/project-config-styles@v3/python/line-length-80.json5",
+  "gh://mondeja/project-config-styles@v3/python/tests.json5",
+  "gh://mondeja/project-config-styles@v3/python/google-docstrings.json5",
+  "gh://mondeja/project-config-styles@v3/base/pre-commit/md2po2md.json5"
 ]
+
+[tool.coverage]
 
 [tool.coverage.run]
 source = ["src"]
@@ -105,7 +117,7 @@ exclude_lines = [
   "pragma: no cover",
   "def __repr__\\(",
   "raise NotImplementedError",
-  "@(abc\\.)?abstractmethod",
+  "@(abc\\.)?abstractmethod"
 ]
 
 [tool.flakeheaven]
@@ -135,6 +147,8 @@ flake8-absolute-import = ["+*"]
 flake8-unused-arguments = ["+*"]
 flake8-slots = ["+*"]
 dlint = ["+*"]
+
+[tool.flakeheaven.exceptions]
 
 [tool.flakeheaven.exceptions."tests/**"]
 flake8-docstrings = [
