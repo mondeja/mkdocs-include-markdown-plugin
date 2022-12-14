@@ -1,9 +1,11 @@
 """Utilities for string processing."""
 
+from __future__ import annotations
+
 import functools
 import os
 import re
-from typing import Optional, Tuple
+from collections.abc import Callable, Iterator
 from urllib.parse import urlparse, urlunparse
 
 
@@ -103,7 +105,10 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
 )
 
 
-def transform_p_by_p_skipping_codeblocks(markdown, func):
+def transform_p_by_p_skipping_codeblocks(
+        markdown: str,
+        func: Callable[[str], str],
+) -> str:
     """Apply a transformation paragraph by paragraph in a Markdown text.
 
     Apply a transformation paragraph by paragraph in a Markdown using a
@@ -115,7 +120,7 @@ def transform_p_by_p_skipping_codeblocks(markdown, func):
 
     lines, current_paragraph = ([], '')
 
-    def process_current_paragraph():
+    def process_current_paragraph() -> None:
         lines.extend(func(current_paragraph).splitlines(keepends=True))
 
     for line in markdown.splitlines(keepends=True):
@@ -155,7 +160,10 @@ def transform_p_by_p_skipping_codeblocks(markdown, func):
     return ''.join(lines)
 
 
-def transform_line_by_line_skipping_codeblocks(markdown, func):
+def transform_line_by_line_skipping_codeblocks(
+        markdown: str,
+        func: Callable[[str], str],
+) -> str:
     """Apply a transformation line by line in a Markdown text using a function.
 
     Skip fenced codeblock lines, where the transformation never is applied.
@@ -219,7 +227,7 @@ def rewrite_relative_urls(
 
         return urlunparse((scheme, netloc, path, params, query, fragment))
 
-    def found_href(m: 're.Match', url_group_index=-1) -> str:
+    def found_href(m: re.Match[str], url_group_index: int = -1) -> str:
         match_start, match_end = m.span(0)
         href = m.group(url_group_index)
         href_start, href_end = m.span(url_group_index)
@@ -235,7 +243,7 @@ def rewrite_relative_urls(
         url_group_index=3,
     )
 
-    def transform(paragraph):
+    def transform(paragraph: str) -> str:
         paragraph = re.sub(
             MARKDOWN_LINK_REGEX,
             found_href_url_group_index_3,
@@ -267,16 +275,16 @@ def interpret_escapes(value: str) -> str:
 
 
 def filter_inclusions(
-    new_start: Optional[str],
-    new_end: Optional[str],
+    new_start: str | None,
+    new_end: str | None,
     text_to_include: str,
-) -> Tuple[str, bool, bool]:
+) -> tuple[str, bool, bool]:
     """Filter inclusions in a text.
 
     Manages inclusions from files using ``start`` and ``end`` directive
     arguments.
     """
-    expected_not_found = [False, False]  # start, end
+    expected_start_not_found, expected_end_not_found = (False, False)
 
     if new_start is not None:
         start = interpret_escapes(new_start)
@@ -288,7 +296,7 @@ def filter_inclusions(
             end_found = False
             start_split = text_to_include.split(start)[1:]
             if not start_split:
-                expected_not_found[0] = True
+                expected_start_not_found = True
             else:
                 for start_text in start_split:
                     for i, end_text in enumerate(start_text.split(end)):
@@ -296,7 +304,7 @@ def filter_inclusions(
                             new_text_to_include += end_text
                             end_found = True
             if not end_found:
-                expected_not_found[1] = True
+                expected_end_not_found = True
         else:
             if start in text_to_include:
                 new_text_to_include = text_to_include.split(
@@ -304,7 +312,7 @@ def filter_inclusions(
                     maxsplit=1,
                 )[1]
             else:
-                expected_not_found[0] = True
+                expected_start_not_found = True
         text_to_include = new_text_to_include
 
     elif new_end is not None:
@@ -315,12 +323,18 @@ def filter_inclusions(
                 maxsplit=1,
             )[0]
         else:
-            expected_not_found[1] = True
+            expected_end_not_found = True
 
-    return (text_to_include, *expected_not_found)
+    return (
+        text_to_include,
+        expected_start_not_found,
+        expected_end_not_found,
+    )
 
 
-def _transform_negative_offset_func_factory(offset):
+def _transform_negative_offset_func_factory(
+        offset: int,
+) -> Callable[[str], str]:
     heading_prefix = '#' * abs(offset)
     return lambda line: line if not line.startswith('#') else (
         heading_prefix + line.lstrip('#')
@@ -329,14 +343,16 @@ def _transform_negative_offset_func_factory(offset):
     )
 
 
-def _transform_positive_offset_func_factory(offset):
+def _transform_positive_offset_func_factory(
+        offset: int,
+) -> Callable[[str], str]:
     heading_prefix = '#' * offset
     return lambda line: (
         heading_prefix + line if line.startswith('#') else line
     )
 
 
-def increase_headings_offset(markdown: str, offset: int = 0):
+def increase_headings_offset(markdown: str, offset: int = 0) -> str:
     """Increases the headings depth of a snippet of Makdown content."""
     if not offset:
         return markdown
@@ -347,14 +363,17 @@ def increase_headings_offset(markdown: str, offset: int = 0):
     )
 
 
-def rstrip_trailing_newlines(content):
+def rstrip_trailing_newlines(content: str) -> str:
     """Removes trailing newlines from a string."""
     while content.endswith('\n') or content.endswith('\r'):
         content = content.rstrip('\r\n')
     return content
 
 
-def filter_paths(filepaths: list, ignore_paths: list = frozenset()) -> list:
+def filter_paths(
+        filepaths: Iterator[str],
+        ignore_paths: list[str] | None = None,
+) -> list[str]:
     """Filters a list of paths removing those defined in other list of paths.
 
     The paths to filter can be defined in the list of paths to ignore in
@@ -372,6 +391,9 @@ def filter_paths(filepaths: list, ignore_paths: list = frozenset()) -> list:
     Returns:
         list: Non filtered paths ordered alphabetically.
     """
+    if ignore_paths is None:
+        ignore_paths = []
+
     response = []
     for filepath in filepaths:
         # ignore by filepath
