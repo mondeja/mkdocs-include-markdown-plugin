@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from mkdocs.plugins import BasePlugin
 
@@ -16,10 +16,11 @@ except ImportError:
     def event_priority(priority: float) -> Callable[[T], T]:  # noqa: D103
         return lambda f: f
 
-from mkdocs.config.defaults import MkDocsConfig
-from mkdocs.livereload import LiveReloadServer
-from mkdocs.structure.files import Files
-from mkdocs.structure.pages import Page
+if TYPE_CHECKING:
+    from mkdocs.config.defaults import MkDocsConfig
+    from mkdocs.livereload import LiveReloadServer
+    from mkdocs.structure.files import Files
+    from mkdocs.structure.pages import Page
 
 from mkdocs_include_markdown_plugin.config import CONFIG_SCHEME
 from mkdocs_include_markdown_plugin.event import (

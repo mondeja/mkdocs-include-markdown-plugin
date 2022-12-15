@@ -8,7 +8,6 @@ import logging
 import os
 import re
 import string
-import sys
 import textwrap
 from collections.abc import MutableMapping
 from typing import TYPE_CHECKING, Any
@@ -22,6 +21,8 @@ from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
 
 
 if TYPE_CHECKING:  # remove this if for mypyc compiling
+    import sys
+
     if sys.version_info >= (3, 8):
         from typing import TypedDict
     else:
