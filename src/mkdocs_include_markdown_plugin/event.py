@@ -20,7 +20,7 @@ from mkdocs_include_markdown_plugin.config import (
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
 
 
-if TYPE_CHECKING:  # remove this if for mypyc compiling
+if TYPE_CHECKING:  # remove this for mypyc compiling
     import sys
 
     if sys.version_info >= (3, 8):
