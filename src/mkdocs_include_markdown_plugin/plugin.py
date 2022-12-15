@@ -3,16 +3,23 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, TypeVar, cast
 
-from mkdocs.plugins import BasePlugin, event_priority as mkdocs_event_priority
+from mkdocs.plugins import BasePlugin
 
 
-if TYPE_CHECKING:
-    from mkdocs.livereload import LiveReloadServer
-    from mkdocs.config.defaults import MkDocsConfig
-    from mkdocs.structure.pages import Page
-    from mkdocs.structure.files import Files
+try:
+    from mkdocs.plugins import event_priority
+except ImportError:
+    T = TypeVar('T')
+
+    def event_priority(priority: float) -> Callable[[T], T]:  # noqa: D103
+        return lambda f: f
+
+from mkdocs.config.defaults import MkDocsConfig
+from mkdocs.livereload import LiveReloadServer
+from mkdocs.structure.files import Files
+from mkdocs.structure.pages import Page
 
 from mkdocs_include_markdown_plugin.config import CONFIG_SCHEME
 from mkdocs_include_markdown_plugin.event import (
@@ -68,7 +75,7 @@ class IncludeMarkdownPlugin(BasePlugin):
             SERVER = server
             self._watch_included_files()
 
-    @mkdocs_event_priority(100)
+    @event_priority(100)
     def on_page_markdown(
             self,
             markdown: str,
