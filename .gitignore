@@ -13,5 +13,6 @@ venv*/
 *.mo
 *.pot
 .vscode
+.mypy_cache/
 
 site/

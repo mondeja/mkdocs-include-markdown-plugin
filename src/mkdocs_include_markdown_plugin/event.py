@@ -1,5 +1,7 @@
 """Module where the `on_page_markdown` plugin event is processed."""
 
+from __future__ import annotations
+
 import glob
 import html
 import logging
@@ -7,9 +9,24 @@ import os
 import re
 import string
 import textwrap
+from collections.abc import MutableMapping
+from typing import TYPE_CHECKING, Any
 
 from mkdocs_include_markdown_plugin import process
-from mkdocs_include_markdown_plugin.config import CONFIG_DEFAULTS
+from mkdocs_include_markdown_plugin.config import (
+    CONFIG_DEFAULT_COMMENTS,
+    CONFIG_DEFAULTS,
+)
+from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
+
+
+if TYPE_CHECKING:
+    from mkdocs.structure.pages import Page
+    from typing_extensions import TypedDict
+
+    class DirectiveBoolArgument(TypedDict):  # noqa: D101
+        value: bool
+        regex: re.Pattern[str]
 
 
 logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
@@ -51,7 +68,7 @@ INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
 )
 
 
-def str_arg(arg):
+def str_arg(arg: str) -> re.Pattern[str]:
     """Return a compiled regexp to match a string argument."""
     return re.compile(
         rf'{arg}=(?:"({DOUBLE_QUOTED_STR_ARGUMENT_PATTERN})")?'
@@ -59,7 +76,7 @@ def str_arg(arg):
     )
 
 
-def bool_arg(arg):
+def bool_arg(arg: str) -> re.Pattern[str]:
     """Return a compiled regexp to match a boolean argument."""
     return re.compile(rf'{arg}=({BOOL_ARGUMENT_PATTERN})')
 
@@ -82,7 +99,9 @@ ARGUMENT_REGEXES = {
 }
 
 
-def parse_filename_argument(match):
+def parse_filename_argument(
+        match: re.Match[str],
+) -> tuple[str | None, str | None]:
     """Return the filename argument matched by ``match``."""
     raw_filename = match.group('double_quoted_filename')
     if raw_filename is None:
@@ -96,7 +115,7 @@ def parse_filename_argument(match):
     return filename, raw_filename
 
 
-def parse_string_argument(match):
+def parse_string_argument(match: re.Match[str]) -> str | None:
     """Return the string argument matched by ``match``."""
     value = match.group(1)
     if value is None:
@@ -108,33 +127,33 @@ def parse_string_argument(match):
     return value
 
 
-def lineno_from_content_start(content, start):
+def lineno_from_content_start(content: str, start: int) -> int:
     """Return the line number of the first line of ``start`` in ``content``."""
     return content[:start].count('\n') + 1
 
 
-def read_file(file_path, encoding):
+def read_file(file_path: str, encoding: str) -> str:
     """Read a file and return its content."""
     with open(file_path, encoding=encoding) as f:
         return f.read()
 
 
 def get_file_content(
-    markdown,
-    page_src_path,
-    docs_dir,
-    include_tag_regex,
-    include_markdown_tag_regex,
-    default_encoding,
-    default_preserve_includer_indent,
-    default_dedent,
-    default_trailing_newlines,
-    default_comments=CONFIG_DEFAULTS['comments'],
-    cumulative_heading_offset=0,
-    build=None,
-):
+    markdown: str,
+    page_src_path: str,
+    docs_dir: str,
+    include_tag_regex: re.Pattern[str],
+    include_markdown_tag_regex: re.Pattern[str],
+    default_encoding: str,
+    default_preserve_includer_indent: bool,
+    default_dedent: bool,
+    default_trailing_newlines: bool,
+    default_comments: bool = CONFIG_DEFAULT_COMMENTS,
+    cumulative_heading_offset: int = 0,
+    files_watcher: FilesWatcher | None = None,
+) -> str:
     """Return the content of the file to include."""
-    def found_include_tag(match):
+    def found_include_tag(match: re.Match[str]) -> str:
         directive_match_start = match.start()
 
         _includer_indent = match.group('_includer_indent')
@@ -167,7 +186,7 @@ def get_file_content(
             arguments_string,
         )
         if exclude_match is None:
-            ignore_paths = []
+            ignore_paths: list[str] = []
         else:
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
@@ -209,10 +228,10 @@ def get_file_content(
                 f':{lineno}',
             )
             return ''
-        elif build is not None:
-            build.included_files.extend(file_paths_to_include)
+        elif files_watcher is not None:
+            files_watcher.included_files.extend(file_paths_to_include)
 
-        bool_options = {
+        bool_options: dict[str, DirectiveBoolArgument] = {
             'preserve-includer-indent': {
                 'value': default_preserve_includer_indent,
                 'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
@@ -228,12 +247,14 @@ def get_file_content(
         }
 
         for arg_name, arg in bool_options.items():
-            match = re.search(arg['regex'], arguments_string)
-            if match is None:
+            bool_arg_match = arg['regex'].search(arguments_string)
+            if bool_arg_match is None:
                 continue
             try:
                 bool_options[arg_name]['value'] = TRUE_FALSE_STR_BOOL[
-                    match.group(1) or TRUE_FALSE_BOOL_STR[arg['value']]
+                    bool_arg_match.group(
+                        1,
+                    ) or TRUE_FALSE_BOOL_STR[arg['value']]
                 ]
             except KeyError:
                 lineno = lineno_from_content_start(
@@ -293,6 +314,7 @@ def get_file_content(
                     ' directive at '
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
+                encoding = 'utf-8'
         else:
             encoding = default_encoding
 
@@ -324,7 +346,7 @@ def get_file_content(
                 default_preserve_includer_indent,
                 default_dedent,
                 default_trailing_newlines,
-                build=build,
+                files_watcher=files_watcher,
             )
 
             # trailing newlines right stripping
@@ -372,7 +394,7 @@ def get_file_content(
 
         return text_to_include
 
-    def found_include_markdown_tag(match):
+    def found_include_markdown_tag(match: re.Match[str]) -> str:
         directive_match_start = match.start()
 
         _includer_indent = match.group('_includer_indent')
@@ -406,7 +428,7 @@ def get_file_content(
             arguments_string,
         )
         if exclude_match is None:
-            ignore_paths = []
+            ignore_paths: list[str] = []
         else:
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
@@ -448,10 +470,10 @@ def get_file_content(
                 f':{lineno}',
             )
             return ''
-        elif build is not None:
-            build.included_files.extend(file_paths_to_include)
+        elif files_watcher is not None:
+            files_watcher.included_files.extend(file_paths_to_include)
 
-        bool_options = {
+        bool_options: dict[str, DirectiveBoolArgument] = {
             'rewrite-relative-urls': {
                 'value': True,
                 'regex': ARGUMENT_REGEXES['rewrite-relative-urls'],
@@ -475,12 +497,14 @@ def get_file_content(
         }
 
         for arg_name, arg in bool_options.items():
-            match = re.search(arg['regex'], arguments_string)
-            if match is None:
+            bool_arg_match = re.search(arg['regex'], arguments_string)
+            if bool_arg_match is None:
                 continue
             try:
                 bool_options[arg_name]['value'] = TRUE_FALSE_STR_BOOL[
-                    match.group(1) or TRUE_FALSE_BOOL_STR[arg['value']]
+                    bool_arg_match.group(
+                        1,
+                    ) or TRUE_FALSE_BOOL_STR[arg['value']]
                 ]
             except KeyError:
                 lineno = lineno_from_content_start(
@@ -544,6 +568,7 @@ def get_file_content(
                     ' directive at '
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
+                encoding = 'utf-8'
         else:
             encoding = default_encoding
 
@@ -598,7 +623,7 @@ def get_file_content(
                 default_dedent,
                 default_trailing_newlines,
                 default_comments=default_comments,
-                build=build,
+                files_watcher=files_watcher,
             )
 
             # trailing newlines right stripping
@@ -686,12 +711,12 @@ def get_file_content(
 
 
 def on_page_markdown(
-    markdown,
-    page,
-    docs_dir,
-    config=None,
-    build=None,
-):
+    markdown: str,
+    page: Page,
+    docs_dir: str,
+    config: MutableMapping[str, Any] | None = None,
+    files_watcher: FilesWatcher | None = None,
+) -> str:
     """Process markdown content of a page."""
     if config is None:
         config = {}
@@ -734,5 +759,5 @@ def on_page_markdown(
         config.get('dedent', CONFIG_DEFAULTS['dedent']),
         config.get('trailing_newlines', CONFIG_DEFAULTS['trailing_newlines']),
         default_comments=config.get('comments', CONFIG_DEFAULTS['comments']),
-        build=build,
+        files_watcher=files_watcher,
     )

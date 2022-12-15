@@ -1,7 +1,11 @@
 """Plugin configuration."""
 
-import mkdocs.config.config_options
+from __future__ import annotations
 
+from mkdocs.config.config_options import Type as MkType
+
+
+CONFIG_DEFAULT_COMMENTS = True
 
 CONFIG_DEFAULTS = {
     'opening_tag': '{%',
@@ -10,50 +14,36 @@ CONFIG_DEFAULTS = {
     'preserve_includer_indent': True,
     'dedent': False,
     'trailing_newlines': True,
-    'comments': True,
+    'comments': CONFIG_DEFAULT_COMMENTS,
 }
 
 CONFIG_SCHEME = (
     (
         'opening_tag',
-        mkdocs.config.config_options.Type(
-            str, default=CONFIG_DEFAULTS['opening_tag'],
-        ),
+        MkType(str, default=CONFIG_DEFAULTS['opening_tag']),
     ),
     (
         'closing_tag',
-        mkdocs.config.config_options.Type(
-            str, default=CONFIG_DEFAULTS['closing_tag'],
-        ),
+        MkType(str, default=CONFIG_DEFAULTS['closing_tag']),
     ),
     (
         'encoding',
-        mkdocs.config.config_options.Type(
-            str, default=CONFIG_DEFAULTS['encoding'],
-        ),
+        MkType(str, default=CONFIG_DEFAULTS['encoding']),
     ),
     (
         'preserve_includer_indent',
-        mkdocs.config.config_options.Type(
-            bool, default=CONFIG_DEFAULTS['preserve_includer_indent'],
-        ),
+        MkType(bool, default=CONFIG_DEFAULTS['preserve_includer_indent']),
     ),
     (
         'dedent',
-        mkdocs.config.config_options.Type(
-            bool, default=CONFIG_DEFAULTS['dedent'],
-        ),
+        MkType(bool, default=CONFIG_DEFAULTS['dedent']),
     ),
     (
         'trailing_newlines',
-        mkdocs.config.config_options.Type(
-            bool, default=CONFIG_DEFAULTS['trailing_newlines'],
-        ),
+        MkType(bool, default=CONFIG_DEFAULTS['trailing_newlines']),
     ),
     (
         'comments',
-        mkdocs.config.config_options.Type(
-            bool, default=CONFIG_DEFAULTS['comments'],
-        ),
+        MkType(bool, default=CONFIG_DEFAULTS['comments']),
     ),
 )
