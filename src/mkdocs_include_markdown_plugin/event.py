@@ -11,9 +11,7 @@ import string
 import sys
 import textwrap
 from collections.abc import MutableMapping
-from typing import Any
-
-from mkdocs.structure.pages import Page
+from typing import TYPE_CHECKING, Any
 
 from mkdocs_include_markdown_plugin import process
 from mkdocs_include_markdown_plugin.config import (
@@ -23,15 +21,17 @@ from mkdocs_include_markdown_plugin.config import (
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
 
 
-if sys.version_info >= (3, 8):
-    from typing import TypedDict
-else:
-    from typing_extensions import TypedDict
+if TYPE_CHECKING:  # remove this if for mypyc compiling
+    if sys.version_info >= (3, 8):
+        from typing import TypedDict
+    else:
+        from typing_extensions import TypedDict
 
+    from mkdocs.structure.pages import Page
 
-class DirectiveBoolArgument(TypedDict):  # noqa: D101
-    value: bool
-    regex: re.Pattern[str]
+    class DirectiveBoolArgument(TypedDict):  # noqa: D101
+        value: bool
+        regex: re.Pattern[str]
 
 
 logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
