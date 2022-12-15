@@ -115,8 +115,11 @@ def transform_p_by_p_skipping_codeblocks(
     function. Skip indented and fenced codeblock lines, where the
     transformation is never applied.
     """
-    _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
-    _inside_icodeblock = False            # inside indented codeblock
+    # current fenced codeblock delimiter
+    _current_fcodeblock_delimiter = ''
+
+    # inside indented codeblock
+    _inside_icodeblock = False
 
     lines, current_paragraph = ([], '')
 
@@ -150,7 +153,7 @@ def transform_p_by_p_skipping_codeblocks(
             lines.append(line)
             if _current_fcodeblock_delimiter:
                 if line.lstrip().startswith(_current_fcodeblock_delimiter):
-                    _current_fcodeblock_delimiter = None
+                    _current_fcodeblock_delimiter = ''
             else:
                 if not line.startswith('    ') and not line.startswith('\t'):
                     _inside_icodeblock = False
@@ -173,7 +176,8 @@ def transform_line_by_line_skipping_codeblocks(
     the PR https://github.com/mondeja/mkdocs-include-markdown-plugin/pull/95
     to recover the implementation handling indented codeblocks.
     """
-    _current_fcodeblock_delimiter = None  # current fenced codeblock delimiter
+    # current fenced codeblock delimiter
+    _current_fcodeblock_delimiter = ''
 
     lines = []
     for line in markdown.splitlines(keepends=True):
@@ -187,7 +191,7 @@ def transform_line_by_line_skipping_codeblocks(
             else:
                 line = func(line)
         elif line.lstrip().startswith(_current_fcodeblock_delimiter):
-            _current_fcodeblock_delimiter = None
+            _current_fcodeblock_delimiter = ''
         lines.append(line)
 
     return ''.join(lines)

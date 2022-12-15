@@ -14,5 +14,6 @@ venv*/
 *.pot
 .vscode
 .mypy_cache/
+*.so
 
 site/

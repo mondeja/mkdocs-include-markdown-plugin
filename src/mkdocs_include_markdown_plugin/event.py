@@ -20,9 +20,15 @@ from mkdocs_include_markdown_plugin.config import (
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # remove this for mypyc compiling
+    import sys
+
+    if sys.version_info >= (3, 8):
+        from typing import TypedDict
+    else:
+        from typing_extensions import TypedDict
+
     from mkdocs.structure.pages import Page
-    from typing_extensions import TypedDict
 
     class DirectiveBoolArgument(TypedDict):  # noqa: D101
         value: bool
