@@ -1,6 +1,6 @@
 [project]
 name = "mkdocs-include-markdown-plugin"
-version = "4.0.0"
+version = "5.0.0"
 description = "Mkdocs Markdown includer plugin."
 readme = "README.md"
 license = "Apache-2.0"
@@ -85,6 +85,9 @@ cov = [
   "python -c 'import webbrowser as w;w.open(\"http://127.0.0.1:8088\")'",
   "python -m http.server 8088 -b localhost -d htmlcov",
 ]
+
+[tool.bump]
+targets = [{ file = "pyproject.toml" }]
 
 [tool.project-config]
 cache = "2 days"
