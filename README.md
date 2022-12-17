@@ -223,8 +223,8 @@ Includes the content of a file or a group of files.
 [pypi-version-badge-link]: https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white
 [tests-image]: https://img.shields.io/github/actions/workflow/status/mondeja/mkdocs-include-markdown-plugin/ci.yml?branch=master&logo=github&label=tests
 [tests-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/actions?query=workflow%3ACI
-[coverage-image]: https://img.shields.io/codecov/c/github/mondeja/mdpo?logo=codecov&logoColor=white
-[coverage-link]: https://app.codecov.io/gh/mondeja/mdpo
+[coverage-image]: https://img.shields.io/codecov/c/github/mondeja/mkdocs-include-markdown-plugin?logo=codecov&logoColor=white
+[coverage-link]: https://app.codecov.io/gh/mondeja/mkdocs-include-markdown-plugin
 [cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
 [mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io
