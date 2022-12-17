@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
+from mkdocs.livereload import LiveReloadServer
 from mkdocs.plugins import BasePlugin
 
 
@@ -18,7 +19,6 @@ except ImportError:
 
 if TYPE_CHECKING:
     from mkdocs.config.defaults import MkDocsConfig
-    from mkdocs.livereload import LiveReloadServer
     from mkdocs.structure.files import Files
     from mkdocs.structure.pages import Page
 
