@@ -43,7 +43,7 @@ rules:
       # https://github.com/mondeja/latex-ji18n/runs/1459035577
       # https://github.community/t/dependabot-parser-treat-hours-as-integers/145596
       - \d\d:\d\d
-    quote-type: single
+    quote-type: double
     required: only-when-needed
   trailing-spaces: enable
   truthy: disable

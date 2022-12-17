@@ -1,2 +1,2 @@
 Foo: bar
-Some content to include from *bad-multimarkdown.md*.
+Some content to include from _bad-multimarkdown.md_.

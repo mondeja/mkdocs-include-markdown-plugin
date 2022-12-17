@@ -26,13 +26,29 @@ repos:
         name: double-quote-string-fixer
       - id: debug-statements
         name: debug-statements
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.0-alpha.4
+    hooks:
+      - id: prettier
+        types_or:
+          - toml
+          - css
+          - json
+          - json5
+          - yaml
+          - markdown
+        additional_dependencies:
+          - prettier
+          - prettier-plugin-toml
+        minimum_pre_commit_version: 2.9.0
+        exclude: ^locale
   - repo: https://github.com/asottile/add-trailing-comma
     rev: v2.4.0
     hooks:
       - id: add-trailing-comma
         name: add-trailing-comma
   - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v2.0.0
+    rev: v2.0.1
     hooks:
       - id: autopep8
   - repo: https://github.com/PyCQA/isort
@@ -50,7 +66,7 @@ repos:
         alias: isort-meta
         files: ^(docs|tests)
   - repo: https://github.com/mondeja/mdpo
-    rev: v1.0.3
+    rev: v1.1.0
     hooks:
       - id: md2po2md
         files: ^README\.md
@@ -82,19 +98,6 @@ repos:
       - id: markdownlint-cli2
         name: markdownlint-readme
         files: ^README.md
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.4
-    hooks:
-      - id: prettier
-        types_or:
-          - toml
-          - css
-          - json
-          - json5
-        additional_dependencies:
-          - prettier
-          - prettier-plugin-toml
-        minimum_pre_commit_version: 2.9.0
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
     rev: 2.6.2
     hooks:

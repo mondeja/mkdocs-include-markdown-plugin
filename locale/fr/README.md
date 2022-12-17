@@ -211,10 +211,10 @@ autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
 
 [pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin
 [pypi-version-badge-link]: https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white
-[tests-image]: https://img.shields.io/github/workflow/status/mondeja/mkdocs-include-markdown-plugin/CI?logo=github&label=tests
+[tests-image]: https://img.shields.io/github/actions/workflow/status/mondeja/mkdocs-include-markdown-plugin/ci.yml?branch=master&logo=github&label=tests
 [tests-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/actions?query=workflow%3ACI
-[coverage-image]: https://img.shields.io/coveralls/github/mondeja/mkdocs-include-markdown-plugin?logo=coveralls
-[coverage-link]: https://coveralls.io/github/mondeja/mkdocs-include-markdown-plugin
+[coverage-image]: https://img.shields.io/codecov/c/github/mondeja/mdpo?logo=codecov&logoColor=white
+[coverage-link]: https://app.codecov.io/gh/mondeja/mdpo
 [cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
 [mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io

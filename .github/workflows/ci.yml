@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Install dependencies
         run: pip install -U hatch
       - name: Lint
@@ -41,22 +41,22 @@ jobs:
             python-version: 3.9
             py: py39
           - platform: ubuntu-latest
-            python-version: '3.10'
+            python-version: "3.10"
             py: py310
           - platform: ubuntu-latest
-            python-version: '3.11'
+            python-version: "3.11"
             py: py311
           - platform: macos-latest
             python-version: 3.7
             py: py37
           - platform: macos-latest
-            python-version: '3.11'
+            python-version: "3.11"
             py: py311
           - platform: windows-latest
             python-version: 3.7
             py: py37
           - platform: windows-latest
-            python-version: '3.11'
+            python-version: "3.11"
             py: py311
     steps:
       - uses: actions/checkout@v3
@@ -68,13 +68,12 @@ jobs:
         run: pip install -U hatch
       - name: Run tests
         run: hatch run +py=${{ matrix.py }} tests:all
-      - name: Coveralls
+      - name: Convert coverage to XML
         run: |
-          pip install coveralls coverage[toml]
-          coveralls
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_SERVICE_NAME: github
+          pip install coverage
+          coverage xml
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
 
   build-dist:
     if: startsWith(github.ref, 'refs/tags/')
@@ -88,7 +87,7 @@ jobs:
       - uses: actions/setup-python@v4
         name: Install Python
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Install build dependencies
         run: pip install -U hatch
       - name: Build package
