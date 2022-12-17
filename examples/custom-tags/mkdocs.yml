@@ -1,5 +1,5 @@
 plugins:
   - include-markdown:
-      opening_tag: '|>'
+      opening_tag: "|>"
       closing_tag: <|
 site_name: Foo

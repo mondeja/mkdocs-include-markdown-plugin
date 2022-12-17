@@ -1,5 +1,5 @@
 ```yaml
-{% include '../mkdocs.yml'%}
+{ % include '../mkdocs.yml'% }
 ```
 
 {% include-markdown 'included.md' start='<!--start-->' end='<!--end-->' %}

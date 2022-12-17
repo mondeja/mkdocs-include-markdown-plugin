@@ -94,13 +94,13 @@ targets = [{ file = "pyproject.toml" }]
 [tool.project-config]
 cache = "2 days"
 style = [
-  "gh://mondeja/project-config-styles@v3/base/pre-commit/md2po2md.json5",
-  "gh://mondeja/project-config-styles@v3/python/base.json5",
-  "gh://mondeja/project-config-styles@v3/python/single-quotes.json5",
-  "gh://mondeja/project-config-styles@v3/python/line-length-80.json5",
-  "gh://mondeja/project-config-styles@v3/python/tests.json5",
-  "gh://mondeja/project-config-styles@v3/python/google-docstrings.json5",
-  "gh://mondeja/project-config-styles@v3/python/mypy.json5",
+  "gh://mondeja/project-config-styles@v4/base/pre-commit/md2po2md.json5",
+  "gh://mondeja/project-config-styles@v4/python/base.json5",
+  "gh://mondeja/project-config-styles@v4/python/single-quotes.json5",
+  "gh://mondeja/project-config-styles@v4/python/line-length-80.json5",
+  "gh://mondeja/project-config-styles@v4/python/tests.json5",
+  "gh://mondeja/project-config-styles@v4/python/google-docstrings.json5",
+  "gh://mondeja/project-config-styles@v4/python/mypy.json5",
 ]
 
 [tool.coverage.run]
@@ -114,6 +114,7 @@ exclude_lines = [
   "raise NotImplementedError",
   "@(abc\\.)?abstractmethod",
   "class .*\\bProtocol\\):",
+  "if TYPE_CHECKING:",
 ]
 
 [tool.flakeheaven]
@@ -196,7 +197,7 @@ extra_standard_library = [
 
 [tool.mypy]
 strict = true
-python_version = "3.7"
+python_version = "3.10"
 allow_untyped_calls = true
 allow_any_generics = true
 
