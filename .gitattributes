@@ -1,0 +1,2 @@
+* text=auto
+examples/a-lot-of-includes/** -diff

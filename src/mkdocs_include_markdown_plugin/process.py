@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import functools
+import io
 import os
 import re
 from collections.abc import Callable, Iterator
@@ -61,20 +62,20 @@ MARKDOWN_LINK_REGEX = re.compile(  # noqa: DUO138
 MARKDOWN_IMAGE_REGEX = re.compile(
     r"""
         (                # wrap whole match in $1
-          !\[
+        !\[
             (.*?)        # alt text = $2
-          \]
-          \(             # literal paren
+        \]
+            \(             # literal paren
             [ \t]*
             <?(\S+?)>?   # src url = $3
             [ \t]*
             (            # $4
-              (['"])     # quote char = $5
-              (.*?)      # title = $6
-              \5         # matching quote
-              [ \t]*
+                (['"])     # quote char = $5
+                (.*?)      # title = $6
+                \5         # matching quote
+                [ \t]*
             )?           # title is optional
-          \)
+        \)
         )
     """,
     flags=re.VERBOSE,
@@ -126,7 +127,7 @@ def transform_p_by_p_skipping_codeblocks(
     def process_current_paragraph() -> None:
         lines.extend(func(current_paragraph).splitlines(keepends=True))
 
-    for line in markdown.splitlines(keepends=True):
+    for line in io.StringIO(markdown):
         if not _current_fcodeblock_delimiter and not _inside_icodeblock:
             lstripped_line = line.lstrip()
             if (
@@ -209,9 +210,8 @@ def rewrite_relative_urls(
     def rewrite_url(url: str) -> str:
         scheme, netloc, path, params, query, fragment = urlparse(url)
 
-        if path.startswith('/'):  # is absolute
-            return url
-        if scheme == 'mailto':
+        # absolute or mail
+        if path.startswith('/') or scheme == 'mailto':
             return url
 
         trailing_slash = path.endswith('/')
@@ -248,18 +248,15 @@ def rewrite_relative_urls(
     )
 
     def transform(paragraph: str) -> str:
-        paragraph = re.sub(
-            MARKDOWN_LINK_REGEX,
+        paragraph = MARKDOWN_LINK_REGEX.sub(
             found_href_url_group_index_3,
             paragraph,
         )
-        paragraph = re.sub(
-            MARKDOWN_IMAGE_REGEX,
+        paragraph = MARKDOWN_IMAGE_REGEX.sub(
             found_href_url_group_index_3,
             paragraph,
         )
-        return re.sub(
-            MARKDOWN_LINK_DEFINITION_REGEX,
+        return MARKDOWN_LINK_DEFINITION_REGEX.sub(
             functools.partial(found_href, url_group_index=2),
             paragraph,
         )
