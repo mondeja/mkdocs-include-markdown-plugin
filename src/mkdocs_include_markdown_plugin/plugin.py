@@ -22,7 +22,10 @@ if TYPE_CHECKING:
     from mkdocs.structure.files import Files
     from mkdocs.structure.pages import Page
 
-from mkdocs_include_markdown_plugin.config import CONFIG_SCHEME
+from mkdocs_include_markdown_plugin.config import (
+    CONFIG_SCHEME,
+    create_include_tag,
+)
 from mkdocs_include_markdown_plugin.event import (
     on_page_markdown as _on_page_markdown,
 )
@@ -35,6 +38,20 @@ FILES_WATCHER: FilesWatcher | None = None
 
 class IncludeMarkdownPlugin(BasePlugin):
     config_scheme = CONFIG_SCHEME
+
+    def on_config(self, config: MkDocsConfig, **kwargs: Any) -> MkDocsConfig:
+        self.config['_include_tag'] = create_include_tag(
+            self.config['opening_tag'],
+            self.config['closing_tag'],
+        )
+
+        self.config['_include_markdown_tag'] = create_include_tag(
+            self.config['opening_tag'],
+            self.config['closing_tag'],
+            tag='include-markdown',
+        )
+
+        return config
 
     def _watch_included_files(self) -> None:
         global FILES_WATCHER, SERVER

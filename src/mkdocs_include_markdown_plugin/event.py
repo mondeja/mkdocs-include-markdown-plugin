@@ -7,17 +7,23 @@ import html
 import logging
 import os
 import re
-import string
 import textwrap
 from collections.abc import MutableMapping
 from typing import TYPE_CHECKING, Any
 
 from mkdocs_include_markdown_plugin import process
 from mkdocs_include_markdown_plugin.config import (
-    CONFIG_DEFAULT_COMMENTS,
     CONFIG_DEFAULTS,
+    DEFAULT_CLOSING_TAG,
+    DEFAULT_COMMENTS,
+    DEFAULT_OPENING_TAG,
+    create_include_tag,
 )
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
+from mkdocs_include_markdown_plugin.regexes import (
+    DOUBLE_QUOTED_STR_RE,
+    SINGLE_QUOTED_STR_RE,
+)
 
 
 if TYPE_CHECKING:  # remove this for mypyc compiling
@@ -47,44 +53,18 @@ TRUE_FALSE_BOOL_STR = {
     False: 'false',
 }
 
-BOOL_ARGUMENT_PATTERN = r'\w+'
-DOUBLE_QUOTED_STR_ARGUMENT_PATTERN = r'([^"]|(?<=\\)["])+'
-SINGLE_QUOTED_STR_ARGUMENT_PATTERN = r"([^']|(?<=\\)['])+"
 
-# In the following regexp, he substrings "$OPENING_TAG" and "$CLOSING_TAG"
-# will be replaced by the effective opening and closing tags in the
-# `on_page_markdown` method below.
-INCLUDE_TAG_REGEX = re.compile(
-    rf"""
-        (?P<_includer_indent>[ \t\f\v\w{re.escape(string.punctuation)}]*?)$OPENING_TAG
-        \s*
-        include
-        \s+
-        (?:"(?P<double_quoted_filename>{DOUBLE_QUOTED_STR_ARGUMENT_PATTERN})")?(?:'(?P<single_quoted_filename>{SINGLE_QUOTED_STR_ARGUMENT_PATTERN})')?
-        (?P<arguments>.*?)
-        \s*
-        $CLOSING_TAG
-    """,  # noqa: E501
-    flags=re.VERBOSE | re.DOTALL,
-)
-
-INCLUDE_MARKDOWN_TAG_REGEX = re.compile(
-    INCLUDE_TAG_REGEX.pattern.replace(' include', ' include-markdown'),
-    flags=INCLUDE_TAG_REGEX.flags,
-)
+def bool_arg(arg: str) -> re.Pattern[str]:
+    """Return a compiled regexp to match a boolean argument."""
+    return re.compile(rf'{arg}=(\w+)')
 
 
 def str_arg(arg: str) -> re.Pattern[str]:
     """Return a compiled regexp to match a string argument."""
     return re.compile(
-        rf'{arg}=(?:"({DOUBLE_QUOTED_STR_ARGUMENT_PATTERN})")?'
-        rf"(?:'({SINGLE_QUOTED_STR_ARGUMENT_PATTERN})')?",
+        rf'{arg}=(?:"({DOUBLE_QUOTED_STR_RE})")?'
+        rf"(?:'({SINGLE_QUOTED_STR_RE})')?",
     )
-
-
-def bool_arg(arg: str) -> re.Pattern[str]:
-    """Return a compiled regexp to match a boolean argument."""
-    return re.compile(rf'{arg}=({BOOL_ARGUMENT_PATTERN})')
 
 
 ARGUMENT_REGEXES = {
@@ -154,7 +134,7 @@ def get_file_content(
     default_preserve_includer_indent: bool,
     default_dedent: bool,
     default_trailing_newlines: bool,
-    default_comments: bool = CONFIG_DEFAULT_COMMENTS,
+    default_comments: bool = DEFAULT_COMMENTS,
     cumulative_heading_offset: int = 0,
     files_watcher: FilesWatcher | None = None,
 ) -> str:
@@ -187,10 +167,7 @@ def get_file_content(
                 filename,
             )
 
-        exclude_match = re.search(
-            ARGUMENT_REGEXES['exclude'],
-            arguments_string,
-        )
+        exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         if exclude_match is None:
             ignore_paths: list[str] = []
         else:
@@ -274,7 +251,7 @@ def get_file_content(
                 )
                 return ''
 
-        start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
+        start_match = ARGUMENT_REGEXES['start'].search(arguments_string)
         if start_match:
             start = parse_string_argument(start_match)
             if start is None:
@@ -289,7 +266,7 @@ def get_file_content(
         else:
             start = None
 
-        end_match = re.search(ARGUMENT_REGEXES['end'], arguments_string)
+        end_match = ARGUMENT_REGEXES['end'].search(arguments_string)
         if end_match:
             end = parse_string_argument(end_match)
             if end is None:
@@ -304,10 +281,7 @@ def get_file_content(
         else:
             end = None
 
-        encoding_match = re.search(
-            ARGUMENT_REGEXES['encoding'],
-            arguments_string,
-        )
+        encoding_match = ARGUMENT_REGEXES['encoding'].search(arguments_string)
         if encoding_match:
             encoding = parse_string_argument(encoding_match)
             if encoding is None:
@@ -429,10 +403,7 @@ def get_file_content(
                 filename,
             )
 
-        exclude_match = re.search(
-            ARGUMENT_REGEXES['exclude'],
-            arguments_string,
-        )
+        exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         if exclude_match is None:
             ignore_paths: list[str] = []
         else:
@@ -503,7 +474,7 @@ def get_file_content(
         }
 
         for arg_name, arg in bool_options.items():
-            bool_arg_match = re.search(arg['regex'], arguments_string)
+            bool_arg_match = arg['regex'].search(arguments_string)
             if bool_arg_match is None:
                 continue
             try:
@@ -526,7 +497,7 @@ def get_file_content(
                 return ''
 
         # start and end arguments
-        start_match = re.search(ARGUMENT_REGEXES['start'], arguments_string)
+        start_match = ARGUMENT_REGEXES['start'].search(arguments_string)
         if start_match:
             start = parse_string_argument(start_match)
             if start is None:
@@ -542,7 +513,7 @@ def get_file_content(
         else:
             start = None
 
-        end_match = re.search(ARGUMENT_REGEXES['end'], arguments_string)
+        end_match = ARGUMENT_REGEXES['end'].search(arguments_string)
         if end_match:
             end = parse_string_argument(end_match)
             if end is None:
@@ -558,10 +529,7 @@ def get_file_content(
         else:
             end = None
 
-        encoding_match = re.search(
-            ARGUMENT_REGEXES['encoding'],
-            arguments_string,
-        )
+        encoding_match = ARGUMENT_REGEXES['encoding'].search(arguments_string)
         if encoding_match:
             encoding = parse_string_argument(encoding_match)
             if encoding is None:
@@ -580,8 +548,7 @@ def get_file_content(
 
         # heading offset
         offset = 0
-        offset_match = re.search(
-            ARGUMENT_REGEXES['heading-offset'],
+        offset_match = ARGUMENT_REGEXES['heading-offset'].search(
             arguments_string,
         )
         if offset_match:
@@ -703,13 +670,11 @@ def get_file_content(
 
         return text_to_include
 
-    markdown = re.sub(
-        include_tag_regex,
+    markdown = include_tag_regex.sub(
         found_include_tag,
         markdown,
     )
-    markdown = re.sub(
-        include_markdown_tag_regex,
+    markdown = include_markdown_tag_regex.sub(
         found_include_markdown_tag,
         markdown,
     )
@@ -727,36 +692,25 @@ def on_page_markdown(
     if config is None:
         config = {}
 
-    escaped_opening_tag = re.escape(
-        config.get('opening_tag', CONFIG_DEFAULTS['opening_tag']),
-    )
-    escaped_closing_tag = re.escape(
-        config.get('closing_tag', CONFIG_DEFAULTS['closing_tag']),
-    )
-
-    # Replace the substrings OPENING_TAG and CLOSING_TAG from
-    # INCLUDE_TAG_REGEX and INCLUDE_MARKDOWN_TAG_REGEX by the
-    # effective tags
-    include_tag_regex = re.compile(
-        INCLUDE_TAG_REGEX.pattern.replace(
-            '$OPENING_TAG', escaped_opening_tag,
-        ).replace('$CLOSING_TAG', escaped_closing_tag),
-        flags=INCLUDE_TAG_REGEX.flags,
-    )
-
-    include_markdown_tag_regex = re.compile(
-        INCLUDE_MARKDOWN_TAG_REGEX.pattern.replace(
-            '$OPENING_TAG', escaped_opening_tag,
-        ).replace('$CLOSING_TAG', escaped_closing_tag),
-        flags=INCLUDE_MARKDOWN_TAG_REGEX.flags,
-    )
-
     return get_file_content(
         markdown,
         page.file.abs_src_path,
         docs_dir,
-        include_tag_regex,
-        include_markdown_tag_regex,
+        config.get(
+            '_include_tag',
+            create_include_tag(
+                config.get('opening_tag', DEFAULT_OPENING_TAG),
+                config.get('closing_tag', DEFAULT_CLOSING_TAG),
+            ),
+        ),
+        config.get(
+            '_include_markdown_tag',
+            create_include_tag(
+                config.get('opening_tag', DEFAULT_OPENING_TAG),
+                config.get('closing_tag', DEFAULT_CLOSING_TAG),
+                tag='include-markdown',
+            ),
+        ),
         config.get('encoding', CONFIG_DEFAULTS['encoding']),
         config.get(
             'preserve_includer_indent',

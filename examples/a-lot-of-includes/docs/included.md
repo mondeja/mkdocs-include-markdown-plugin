@@ -4,4 +4,6 @@ Some ignored content.
 
 Some included content.
 
+![Image](barbaz.svg)
+
 <!--end-->
