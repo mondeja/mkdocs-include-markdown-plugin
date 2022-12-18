@@ -40,9 +40,6 @@ class IncludeMarkdownPlugin(BasePlugin):
     config_scheme = CONFIG_SCHEME
 
     def on_config(self, config: MkDocsConfig, **kwargs: Any) -> MkDocsConfig:
-        # Replace the substrings OPENING_TAG and CLOSING_TAG from
-        # INCLUDE_TAG_REGEX and INCLUDE_MARKDOWN_TAG_REGEX by the
-        # effective tags
         self.config['_include_tag'] = create_include_tag(
             self.config['opening_tag'],
             self.config['closing_tag'],
