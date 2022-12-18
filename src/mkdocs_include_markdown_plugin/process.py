@@ -62,20 +62,20 @@ MARKDOWN_LINK_REGEX = re.compile(  # noqa: DUO138
 MARKDOWN_IMAGE_REGEX = re.compile(
     r"""
         (                # wrap whole match in $1
-        !\[
+          !\[
             (.*?)        # alt text = $2
-        \]
-            \(             # literal paren
+          \]
+          \(             # literal paren
             [ \t]*
             <?(\S+?)>?   # src url = $3
             [ \t]*
             (            # $4
-                (['"])     # quote char = $5
-                (.*?)      # title = $6
-                \5         # matching quote
-                [ \t]*
+              (['"])     # quote char = $5
+              (.*?)      # title = $6
+              \5         # matching quote
+              [ \t]*
             )?           # title is optional
-        \)
+          \)
         )
     """,
     flags=re.VERBOSE,
