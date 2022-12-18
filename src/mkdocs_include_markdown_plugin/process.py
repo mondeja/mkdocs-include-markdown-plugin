@@ -181,7 +181,7 @@ def transform_line_by_line_skipping_codeblocks(
     _current_fcodeblock_delimiter = ''
 
     lines = []
-    for line in markdown.splitlines(keepends=True):
+    for line in io.StringIO(markdown):
         if not _current_fcodeblock_delimiter:
             lstripped_line = line.lstrip()
             if (
