@@ -1,5 +1,5 @@
-```yaml
-{ % include '../mkdocs.yml'% }
+```text
+{% include '../mkdocs.yml'%}
 ```
 
 {% include-markdown 'included.md' start='<!--start-->' end='<!--end-->' dedent=true heading-offset=2 %}
