@@ -8,10 +8,10 @@ import logging
 import os
 import re
 import textwrap
-import requests
 from collections.abc import MutableMapping
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
+import urllib.request
 
 from mkdocs_include_markdown_plugin import process
 from mkdocs_include_markdown_plugin.config import (
@@ -133,10 +133,10 @@ def read_file(file_path: str, encoding: str) -> str:
 
 def read_http(target_url: str, encoding: str) -> str:
     """Read an http location and return its content."""
-    response = requests.get(target_url)
-    # print(response.text)
-    return response.text
-
+    req = urllib.request.Request('http://python.org/')
+    with urllib.request.urlopen(req) as response:
+        return response.read()
+    
 def get_file_content(
     markdown: str,
     page_src_path: str,
@@ -234,7 +234,12 @@ def get_file_content(
             if not is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
             else:
-                print('not adding a watcher')
+                logger.warning(
+                    f"Not adding a watcher for {file_path_glob} of 'include-markdown'"
+                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                    f':{lineno} not detected in the file{plural_suffix}'
+                    f' {readable_files_to_include}',
+                )
 
         bool_options: dict[str, DirectiveBoolArgument] = {
             'preserve-includer-indent': {
@@ -482,7 +487,12 @@ def get_file_content(
             if not is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
             else:
-                print('not a file to watch')
+                logger.warning(
+                    f"Not adding a watcher for {file_path_glob} of 'include-markdown'"
+                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                    f':{lineno} not detected in the file{plural_suffix}'
+                    f' {readable_files_to_include}',
+                )
 
         bool_options: dict[str, DirectiveBoolArgument] = {
             'rewrite-relative-urls': {
