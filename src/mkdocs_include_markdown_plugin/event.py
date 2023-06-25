@@ -133,9 +133,9 @@ def read_file(file_path: str, encoding: str) -> str:
 
 def read_http(target_url: str, encoding: str) -> str:
     """Read an http location and return its content."""
-    req = urllib.request.Request('http://python.org/')
+    req = urllib.request.Request(target_url)
     with urllib.request.urlopen(req) as response:
-        return response.read()
+        return response.read().decode('UTF-8')
     
 def get_file_content(
     markdown: str,
@@ -234,6 +234,12 @@ def get_file_content(
             if not is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
             else:
+                readable_files_to_include = ', '.join(file_paths_to_include)
+                plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
+                )
                 logger.warning(
                     f"Not adding a watcher for {file_path_glob} of 'include-markdown'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
@@ -487,6 +493,12 @@ def get_file_content(
             if not is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
             else:
+                readable_files_to_include = ', '.join(file_paths_to_include)
+                plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
+                )
                 logger.warning(
                     f"Not adding a watcher for {file_path_glob} of 'include-markdown'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
