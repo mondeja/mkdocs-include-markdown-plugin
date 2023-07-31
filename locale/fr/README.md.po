@@ -20,14 +20,6 @@ msgstr "Préparation"
 msgid "Enable the plugin in your `mkdocs.yml`:"
 msgstr "Activer le plugin dans votre fichier `mkdocs.yml`:"
 
-msgid ""
-"Make sure that you define `include-markdown` before other plugins that could"
-" conflict, like [`mkdocs-macros-plugin`][mkdocs-macros-plugin-link]."
-msgstr ""
-"Assurez-vous de définir `include-markdown` avant d'autres plugins qui "
-"pourraient entrer en conflit, comme [`mkdocs-macros-plugin`][mkdocs-macros-"
-"plugin-link]."
-
 msgid "Reference"
 msgstr "Référence"
 
@@ -83,11 +75,6 @@ msgstr ""
 
 msgid "[cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel"
 msgstr "[cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel"
-
-msgid ""
-"[mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io"
-msgstr ""
-"[mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io"
 
 msgid ""
 "[es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-"

@@ -28,9 +28,6 @@ plugins:
   - include-markdown
 ```
 
-> Asegúrate que defines `include-markdown` antes de otros plugins que pudieran
-entrar en conflicto, como [`mkdocs-macros-plugin`][mkdocs-macros-plugin-link].
-
 ### Configuración
 
 El comportamiento global del plugin puede ser personalizado en la configuración.
@@ -244,6 +241,5 @@ separar este plugin de la documentación de
 [platformdirs]: https://pypi.org/project/platformdirs/
 [cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
-[mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md

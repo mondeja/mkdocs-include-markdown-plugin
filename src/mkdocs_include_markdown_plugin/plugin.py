@@ -3,20 +3,12 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from mkdocs.exceptions import BuildError
 from mkdocs.livereload import LiveReloadServer
-from mkdocs.plugins import BasePlugin
+from mkdocs.plugins import BasePlugin, event_priority
 
-
-try:
-    from mkdocs.plugins import event_priority
-except ImportError:
-    T = TypeVar('T')
-
-    def event_priority(priority: float) -> Callable[[T], T]:  # noqa: D103
-        return lambda f: f
 
 if TYPE_CHECKING:
     from mkdocs.config.defaults import MkDocsConfig

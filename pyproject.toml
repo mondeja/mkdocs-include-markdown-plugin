@@ -1,6 +1,6 @@
 [project]
 name = "mkdocs-include-markdown-plugin"
-version = "4.0.4"
+version = "5.0.0"
 description = "Mkdocs Markdown includer plugin."
 readme = "README.md"
 license = "Apache-2.0"
@@ -70,15 +70,15 @@ dependencies = ["pytest~=7.0", "coverage~=6.4", "covdefaults"]
 
 [[tool.hatch.envs.tests.matrix]]
 python = ["py38", "py39", "py310", "py311", "py312"]
-mkdocs = ["1.2.4", "1.3.1", "1.4.0", "1.4.2"]
+mkdocs = ["1.4.0", "1.4.3", "1.5.0", "1.5.1"]
 cache = ["yes", "no"]
 
 [tool.hatch.envs.tests.overrides]
 matrix.mkdocs.dependencies = [
-  { value = "mkdocs==1.2.4", if = ["1.2.4"] },
-  { value = "mkdocs==1.3.1", if = ["1.3.1"] },
   { value = "mkdocs==1.4.0", if = ["1.4.0"] },
-  { value = "mkdocs==1.4.2", if = ["1.4.2"] },
+  { value = "mkdocs==1.4.3", if = ["1.4.3"] },
+  { value = "mkdocs==1.5.0", if = ["1.5.0"] },
+  { value = "mkdocs==1.5.1", if = ["1.5.1"] },
 ]
 matrix.cache.dependencies = [
   { value = "platformdirs", if = ["yes"] },
