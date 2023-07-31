@@ -6,7 +6,6 @@
 
 [![PyPI][pypi-version-badge-link]][pypi-link]
 [![License][license-image]][license-link]
-
 [![Tests][tests-image]][tests-link]
 [![Coverage status][coverage-image]][coverage-link]
 
