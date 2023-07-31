@@ -1,0 +1,4 @@
+site_name: Foo
+plugins:
+  - include-markdown:
+      cache: 600

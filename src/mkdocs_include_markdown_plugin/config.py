@@ -21,6 +21,7 @@ CONFIG_DEFAULTS = {
     'dedent': False,
     'trailing_newlines': True,
     'comments': DEFAULT_COMMENTS,
+    'cache': 0,
 }
 
 CONFIG_SCHEME = (
@@ -51,6 +52,10 @@ CONFIG_SCHEME = (
     (
         'comments',
         MkType(bool, default=DEFAULT_COMMENTS),
+    ),
+    (
+        'cache',
+        MkType(int, default=CONFIG_DEFAULTS['cache']),
     ),
 )
 

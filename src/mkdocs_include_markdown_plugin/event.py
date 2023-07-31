@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 from mkdocs.exceptions import BuildError
 
 from mkdocs_include_markdown_plugin import process
+from mkdocs_include_markdown_plugin.cache import Cache
 from mkdocs_include_markdown_plugin.config import (
     CONFIG_DEFAULTS,
     DEFAULT_CLOSING_TAG,
@@ -137,11 +138,18 @@ def read_file(file_path: str, encoding: str) -> str:
         return f.read()
 
 
-def read_http(target_url: str, encoding: str) -> Any:  # noqa: U100
+def read_http(target_url: str, http_cache: Cache | None) -> Any:  # noqa: U100
     """Read an http location and return its content."""
+    if http_cache is not None:
+        cached_content = http_cache.get_(target_url)
+        if cached_content is not None:
+            return cached_content
     req = urllib.request.Request(target_url)
     with urllib.request.urlopen(req) as response:
-        return response.read().decode('UTF-8')
+        content = response.read().decode('UTF-8')
+    if http_cache is not None:
+        http_cache.set_(target_url, content)
+    return content
 
 
 def get_file_content(
@@ -157,6 +165,7 @@ def get_file_content(
     default_comments: bool = DEFAULT_COMMENTS,
     cumulative_heading_offset: int = 0,
     files_watcher: FilesWatcher | None = None,
+    http_cache: Cache | None = None,
 ) -> str:
     """Return the content of the file to include."""
     def found_include_tag(match: re.Match[str]) -> str:
@@ -235,20 +244,6 @@ def get_file_content(
         elif files_watcher is not None:
             if not is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
-            else:
-                readable_files_to_include = ', '.join(file_paths_to_include)
-                plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
-                )
-                logger.warning(
-                    f'Not adding a watcher for {file_path_glob} of'
-                    " 'include-markdown' directive at"
-                    f' {os.path.relpath(page_src_path, docs_dir)}'
-                    f':{lineno} not detected in the file{plural_suffix}'
-                    f' {readable_files_to_include}',
-                )
 
         bool_options: dict[str, DirectiveBoolArgument] = {
             'preserve-includer-indent': {
@@ -336,7 +331,7 @@ def get_file_content(
         expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
             if is_url(filename):
-                new_text_to_include = read_http(file_path, encoding)
+                new_text_to_include = read_http(file_path, http_cache)
             else:
                 new_text_to_include = read_file(file_path, encoding)
 
@@ -364,6 +359,7 @@ def get_file_content(
                 default_dedent,
                 default_trailing_newlines,
                 files_watcher=files_watcher,
+                http_cache=http_cache,
             )
 
             # trailing newlines right stripping
@@ -489,20 +485,6 @@ def get_file_content(
         elif files_watcher is not None:
             if not is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
-            else:
-                readable_files_to_include = ', '.join(file_paths_to_include)
-                plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
-                )
-                logger.warning(
-                    f'Not adding a watcher for {file_path_glob}'
-                    " of 'include-markdown' directive at"
-                    f' {os.path.relpath(page_src_path, docs_dir)}'
-                    f':{lineno} not detected in the file{plural_suffix}'
-                    f' {readable_files_to_include}',
-                )
 
         bool_options: dict[str, DirectiveBoolArgument] = {
             'rewrite-relative-urls': {
@@ -624,7 +606,7 @@ def get_file_content(
         text_to_include = ''
         for file_path in file_paths_to_include:
             if is_url(filename):
-                new_text_to_include = read_http(file_path, encoding)
+                new_text_to_include = read_http(file_path, http_cache)
             else:
                 new_text_to_include = read_file(file_path, encoding)
 
@@ -653,6 +635,7 @@ def get_file_content(
                 default_trailing_newlines,
                 default_comments=default_comments,
                 files_watcher=files_watcher,
+                http_cache=http_cache,
             )
 
             # trailing newlines right stripping
@@ -743,6 +726,7 @@ def on_page_markdown(
     docs_dir: str,
     config: MutableMapping[str, Any] | None = None,
     files_watcher: FilesWatcher | None = None,
+    http_cache: Cache | None = None,
 ) -> str:
     """Process markdown content of a page."""
     if config is None:
@@ -776,4 +760,5 @@ def on_page_markdown(
         config.get('trailing_newlines', CONFIG_DEFAULTS['trailing_newlines']),
         default_comments=config.get('comments', CONFIG_DEFAULTS['comments']),
         files_watcher=files_watcher,
+        http_cache=config.get('_cache', http_cache),
     )

@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
+from mkdocs.exceptions import BuildError
 from mkdocs.livereload import LiveReloadServer
 from mkdocs.plugins import BasePlugin
 
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
     from mkdocs.structure.files import Files
     from mkdocs.structure.pages import Page
 
+from mkdocs_include_markdown_plugin.cache import initialize_cache
 from mkdocs_include_markdown_plugin.config import (
     CONFIG_SCHEME,
     create_include_tag,
@@ -50,6 +52,19 @@ class IncludeMarkdownPlugin(BasePlugin):
             self.config['closing_tag'],
             tag='include-markdown',
         )
+
+        if self.config['cache'] > 0:
+            cache = initialize_cache(self.config['cache'])
+            if cache is None:
+                raise BuildError(
+                    'The "platformdirs" package is required to use the'
+                    ' "cache" option. Install'
+                    ' mkdocs-include-markdown-plugin with the "cache"'
+                    ' extra to install it.',
+                )
+            else:
+                cache.clean()
+                self.config['_cache'] = cache
 
         return config
 
