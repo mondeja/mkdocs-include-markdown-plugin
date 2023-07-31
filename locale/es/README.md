@@ -39,8 +39,9 @@ El comportamiento global del plugin puede ser personalizado en la configuración
 **closing_tag**: Las etiquetas de apertura y cierre. Por defecto son `{%` y
 `%}`.
 
-El resto de las opciones definirán los valores por defecto pasados a los
-argumentos de las directivas y están documentados en la [referencia](#reference).
+La mayoría de los parámetros de configuración definirán los valores por defecto
+pasados a los argumentos de las directivas y están documentados en la
+[referencia](#referencia).
 
 ```yaml
 plugins:
@@ -49,9 +50,26 @@ plugins:
       closing_tag: "!}"
       encoding: ascii
       preserve_includer_indent: false
-      dedent: true
-      trailing_newlines: false
-      comments: false
+      dedent: false
+      trailing_newlines: true
+      comments: true
+```
+
+La configuración `cache` define un tiempo de expiración en segundos para las
+peticiones HTTP cuando se incluye desde URLs.
+
+```yaml
+plugins:
+  - include-markdown:
+      cache: 600
+```
+
+Para usar esta funcionalidad, la dependencia [platformdirs] debe ser instalada.
+Puedes incluirla en la instalación del plugin añadiendo el extra `cache`:
+
+```txt
+# requirements.txt
+mkdocs-include-markdown-plugin[cache]
 ```
 
 ### Referencia
@@ -59,9 +77,12 @@ plugins:
 Este plugin provee dos directivas, una para incluir archivos Markdown y otra para
 incluir archivos de cualquier tipo.
 
-Las rutas de los archivos incluidos pueden ser absolutas o relativas a la ruta
-del archivo que las incluye. Este argumento también acepta globs, en cuyo caso
-ciertas rutas pueden ser ignoradas usando el argumento `exclude`.
+Las rutas de los archivos a incluir pueden ser:
+
+- Archivos locales con rutas absolutas o relativas al archivo que los incluye.
+- Globs coincidiendo con múltiples archivos, en cuyo caso ciertas rutas pueden
+ser ignoradas usando el argumento `exclude`.
+- URLs para incluir contenido remoto.
 
 Las rutas de archivo para incluir y los argumentos de cadena se pueden envolver
 con comillas dobles `"` o simples `'`, que se pueden escapar anteponiendo un
@@ -220,6 +241,7 @@ separar este plugin de la documentación de
 [coverage-link]: https://app.codecov.io/gh/mondeja/mkdocs-include-markdown-plugin
 [license-image]: https://img.shields.io/pypi/l/mkdocs-include-markdown-plugin?color=light-green&logo=apache&logoColor=white
 [license-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/LICENSE
+[platformdirs]: https://pypi.org/project/platformdirs/
 [cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
 [mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io

@@ -51,7 +51,7 @@ The global behaviour of the plugin can be customized in the configuration.
   **closing_tag**: The default opening and closing tags. By default are
   `{%` and `%}`.
 
-The rest of the options will define the default values passed to arguments
+Most of the settings will define the default values passed to arguments
 of directives and are documented in the [reference](#reference).
 
 ```yaml
@@ -61,9 +61,26 @@ plugins:
       closing_tag: "!}"
       encoding: ascii
       preserve_includer_indent: false
-      dedent: true
-      trailing_newlines: false
-      comments: false
+      dedent: false
+      trailing_newlines: true
+      comments: true
+```
+
+The `cache` setting defines a expiration time in seconds for HTTP requests
+when including from URLs.
+
+```yaml
+plugins:
+  - include-markdown:
+      cache: 600
+```
+
+In order to use this feature, the dependency [platformdirs] must be installed.
+You can include it in the installation of the plugin adding the `cache` extra:
+
+```txt
+# requirements.txt
+mkdocs-include-markdown-plugin[cache]
 ```
 
 ### Reference
@@ -71,9 +88,12 @@ plugins:
 This plugin provides two directives, one to include Markdown files and another
 to include files of any type.
 
-Paths of included files can be absolute or relative to the path of the file
-that includes them. This argument also accept globs, in which case certain
-paths can be ignored using the `exclude` argument.
+Paths of included files can be either:
+
+- Local files with absolute or relative paths to the file that includes them.
+- Globs matching multiples files, in which case certain paths can be ignored
+  using the `exclude` argument.
+- URLs to include remote content.
 
 File paths to include and string arguments can be wrapped by double `"` or
 single `'` quotes, which can be escaped prepending them a `\` character as
@@ -228,6 +248,7 @@ Includes the content of a file or a group of files.
 [coverage-link]: https://app.codecov.io/gh/mondeja/mkdocs-include-markdown-plugin
 [license-image]: https://img.shields.io/pypi/l/mkdocs-include-markdown-plugin?color=light-green&logo=apache&logoColor=white
 [license-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/LICENSE
+[platformdirs]: https://pypi.org/project/platformdirs/
 [cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
 [mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io
