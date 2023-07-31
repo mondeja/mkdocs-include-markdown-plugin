@@ -3,6 +3,7 @@ import os
 import re
 
 import pytest
+from mkdocs.exceptions import BuildError
 from testing_helpers import parametrize_directives, unix_only
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
@@ -40,23 +41,20 @@ def test_invalid_bool_arguments(directive, arguments, page, tmp_path, caplog):
 
         filename = 'includer.md'
 
-        result = on_page_markdown(
-            f'''{{%
+        with pytest.raises(BuildError) as exc:
+            on_page_markdown(
+                f'''{{%
     {directive} "{page_to_include_filepath}"
     {argument_name}=invalidoption
     %}}''',
-            page(tmp_path / filename),
-            tmp_path,
-        )
-        assert result == ''
-
-        assert len(caplog.records) == 1
-        assert caplog.records[0].msg == (
+                page(tmp_path / filename),
+                tmp_path,
+            )
+        assert str(exc.value) == (
             f"Invalid value for '{argument_name}' argument of '{directive}'"
             f' directive at {filename}:1. Possible values are true or false.'
         )
-
-        caplog.clear()
+        assert len(caplog.records) == 0
 
 
 @parametrize_directives
@@ -84,8 +82,15 @@ More content that should be ignored
     assert len(caplog.records) == 0
 
 
+@pytest.mark.parametrize('argument', ('start', 'end'))
 @parametrize_directives
-def test_invalid_start_end_arguments(directive, page, caplog, tmp_path):
+def test_invalid_start_end_arguments(
+    argument,
+    directive,
+    page,
+    caplog,
+    tmp_path,
+):
     page_to_include_filepath = tmp_path / 'included.md'
     included_content = '''Content that should be ignored
 <!-- start -->
@@ -95,27 +100,23 @@ More content that should be ignored
 '''
     page_to_include_filepath.write_text(included_content)
 
-    result = on_page_markdown(
-        f'''
+    with pytest.raises(BuildError) as exc:
+        on_page_markdown(
+            f'''
 {{%
   {directive} "{page_to_include_filepath}"
   comments=false
-  start=''
-  end=""
+  {argument}=''
 %}}''',
-        page(tmp_path / 'includer.md'),
-        tmp_path,
+            page(tmp_path / 'includer.md'),
+            tmp_path,
+        )
+    assert str(exc.value) == (
+        f"Invalid empty '{argument}' argument in '{directive}'"
+        ' directive at includer.md:2'
     )
-    assert result == f'\n{included_content}'
 
-    records_messages = [record.msg for record in caplog.records]
-    expected_args = ['start', 'end']
-    for arg_name in expected_args:
-        assert (
-            f"Invalid empty '{arg_name}' argument in '{directive}'"
-            ' directive at includer.md:2'
-        ) in records_messages
-    assert len(records_messages) == len(expected_args)
+    assert len([record.msg for record in caplog.records]) == 0
 
 
 @unix_only
@@ -159,22 +160,19 @@ def test_invalid_exclude_argument(directive, page, tmp_path, caplog):
     page_to_exclude_filepath.write_text('Content that should be excluded\n')
 
     includer_glob = os.path.join(str(drectory_to_include), '*.md')
-    result = on_page_markdown(
-        f'''{{%
+    with pytest.raises(BuildError) as exc:
+        on_page_markdown(
+            f'''{{%
   {directive} "{includer_glob}"
   comments=false
   exclude=
 %}}''',
-        page(tmp_path / 'includer.md'),
-        tmp_path,
-    )
-    assert result == (
-        'Content that should be excluded\n'
-        'Content that should be included\n'
-    )
+            page(tmp_path / 'includer.md'),
+            tmp_path,
+        )
 
-    assert len(caplog.records) == 1
-    assert caplog.records[0].msg == (
+    assert len(caplog.records) == 0
+    assert str(exc.value) == (
         f"Invalid empty 'exclude' argument in '{directive}' directive"
         ' at includer.md:1'
     )
@@ -185,19 +183,19 @@ def test_empty_encoding_argument(directive, page, tmp_path, caplog):
     page_to_include_filepath = tmp_path / 'included.md'
     page_to_include_filepath.write_text('Content to include')
 
-    result = on_page_markdown(
-        f'''{{%
+    with pytest.raises(BuildError) as exc:
+        on_page_markdown(
+            f'''{{%
   {directive} "{page_to_include_filepath}"
   comments=false
   encoding=
 %}}''',
-        page(tmp_path / 'includer.md'),
-        tmp_path,
-    )
-    assert result == 'Content to include'
+            page(tmp_path / 'includer.md'),
+            tmp_path,
+        )
 
-    assert len(caplog.records) == 1
-    assert caplog.records[0].msg == (
+    assert len(caplog.records) == 0
+    assert str(exc.value) == (
         f"Invalid empty 'encoding' argument in '{directive}'"
         ' directive at includer.md:1'
     )
@@ -220,17 +218,17 @@ class TestFilename:
         page_to_include_filepath = tmp_path / filename
         page_to_include_filepath.write_text('Foo\n')
 
-        result = on_page_markdown(
-            f'{{% {directive} "{page_to_include_filepath}" %}}',
-            page(tmp_path / 'includer.md'),
-            tmp_path,
-        )
-        assert not result
+        with pytest.raises(BuildError) as exc:
+            on_page_markdown(
+                f'{{% {directive} "{page_to_include_filepath}" %}}',
+                page(tmp_path / 'includer.md'),
+                tmp_path,
+            )
 
-        assert len(caplog.records) == 1
+        assert len(caplog.records) == 0
         assert re.match(
             r'^No files found including ',
-            caplog.records[0].msg,
+            str(exc.value),
         )
 
     @unix_only
@@ -358,31 +356,31 @@ class TestFilename:
 
         if escape:
             assert func() == included_content
-            assert len(caplog.records) == 0
         else:
-            assert func() == ''
-            assert len(caplog.records) == 1
+            with pytest.raises(BuildError) as exc:
+                func()
             assert re.match(
                 r'No files found including ',
-                caplog.records[0].msg,
+                str(exc.value),
             )
+        assert len(caplog.records) == 0
 
     @parametrize_directives
     def test_no_filename(self, directive, page, tmp_path, caplog):
         filename = 'includer.md'
 
-        # shouldn't raise errors
-        on_page_markdown(
-            f'\n\n{{% {directive} %}}',
-            page(tmp_path / filename),
-            tmp_path,
-        )
+        with pytest.raises(BuildError) as exc:
+            on_page_markdown(
+                f'\n\n{{% {directive} %}}',
+                page(tmp_path / filename),
+                tmp_path,
+            )
 
-        assert caplog.records[0].msg == (
+        assert str(exc.value) == (
             f"Found no path passed including with '{directive}' directive"
             f' at {filename}:3'
         )
-        assert len(caplog.records) == 1
+        assert len(caplog.records) == 0
 
     @parametrize_directives
     def test_non_existent_filename(self, directive, page, tmp_path, caplog):
@@ -395,11 +393,12 @@ class TestFilename:
         page_filepath = tmp_path / 'example.md'
         page_filepath.write_text(page_content)
 
-        assert on_page_markdown(
-            page_content,
-            page(page_filepath),
-            tmp_path,
-        ) == ''
+        with pytest.raises(BuildError) as exc:
+            on_page_markdown(
+                page_content,
+                page(page_filepath),
+                tmp_path,
+            )
 
-        assert len(caplog.records) == 1
-        assert re.match(r'No files found including ', caplog.records[0].msg)
+        assert len(caplog.records) == 0
+        assert re.match(r'No files found including ', str(exc.value))

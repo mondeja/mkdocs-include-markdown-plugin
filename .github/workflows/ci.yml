@@ -79,7 +79,7 @@ jobs:
         run: hatch run +py=${{ matrix.py }} tests:all
       - name: Convert coverage to XML
         run: |
-          pip install coverage
+          pip install coverage covdefaults
           coverage xml
       - name: Upload coverage
         uses: codecov/codecov-action@v3
