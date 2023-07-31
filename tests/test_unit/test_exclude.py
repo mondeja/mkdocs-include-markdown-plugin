@@ -5,6 +5,7 @@ import os
 import re
 
 import pytest
+from mkdocs.exceptions import BuildError
 from testing_helpers import parametrize_directives
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
@@ -97,10 +98,9 @@ def test_exclude(
     )
 
     if expected_result is None:
-        assert func() == ''
-        assert len(caplog.records) == 1
-        for record in caplog.records:
-            assert re.match(r'No files found including ', record.msg)
+        with pytest.raises(BuildError) as exc:
+            func()
+        assert re.match(r'No files found including ', str(exc.value))
     else:
         assert func() == expected_result
-        assert len(caplog.records) == 0
+    assert len(caplog.records) == 0

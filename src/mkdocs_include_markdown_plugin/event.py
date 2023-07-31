@@ -11,6 +11,8 @@ import textwrap
 from collections.abc import MutableMapping
 from typing import TYPE_CHECKING, Any
 
+from mkdocs.exceptions import BuildError
+
 from mkdocs_include_markdown_plugin import process
 from mkdocs_include_markdown_plugin.config import (
     CONFIG_DEFAULTS,
@@ -150,12 +152,11 @@ def get_file_content(
                 markdown,
                 directive_match_start,
             )
-            logger.error(
+            raise BuildError(
                 "Found no path passed including with 'include'"
                 f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}',
             )
-            return ''
 
         arguments_string = match.group('arguments')
 
@@ -177,11 +178,10 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                logger.error(
+                raise BuildError(
                     "Invalid empty 'exclude' argument in 'include' directive"
                     f' at {os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
-                ignore_paths = []
             else:
 
                 if os.path.isabs(exclude_string):
@@ -205,12 +205,11 @@ def get_file_content(
                 markdown,
                 directive_match_start,
             )
-            logger.error(
+            raise BuildError(
                 f"No files found including '{raw_filename}'"
                 f' at {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}',
             )
-            return ''
         elif files_watcher is not None:
             files_watcher.included_files.extend(file_paths_to_include)
 
@@ -244,12 +243,11 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                logger.error(
+                raise BuildError(
                     f"Invalid value for '{arg_name}' argument of 'include'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}. Possible values are true or false.',
                 )
-                return ''
 
         start_match = ARGUMENT_REGEXES['start'].search(arguments_string)
         if start_match:
@@ -259,7 +257,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                logger.error(
+                raise BuildError(
                     "Invalid empty 'start' argument in 'include' directive at "
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
@@ -274,7 +272,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                logger.error(
+                raise BuildError(
                     "Invalid empty 'end' argument in 'include' directive at "
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
@@ -289,12 +287,11 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                logger.error(
+                raise BuildError(
                     "Invalid empty 'encoding' argument in 'include'"
                     ' directive at '
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
-                encoding = 'utf-8'
         else:
             encoding = default_encoding
 
@@ -386,12 +383,11 @@ def get_file_content(
                 markdown,
                 directive_match_start,
             )
-            logger.error(
+            raise BuildError(
                 "Found no path passed including with 'include-markdown'"
                 f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}',
             )
-            return ''
 
         arguments_string = match.group('arguments')
 
@@ -413,12 +409,11 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                logger.error(
+                raise BuildError(
                     "Invalid empty 'exclude' argument in 'include-markdown'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}',
                 )
-                ignore_paths = []
             else:
                 if os.path.isabs(exclude_string):
                     exclude_globstr = exclude_string
@@ -441,12 +436,11 @@ def get_file_content(
                 markdown,
                 directive_match_start,
             )
-            logger.error(
+            raise BuildError(
                 f"No files found including '{raw_filename}' at"
                 f' {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}',
             )
-            return ''
         elif files_watcher is not None:
             files_watcher.included_files.extend(file_paths_to_include)
 
@@ -488,13 +482,12 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                logger.error(
+                raise BuildError(
                     f"Invalid value for '{arg_name}' argument of"
                     " 'include-markdown' directive at"
                     f' {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}. Possible values are true or false.',
                 )
-                return ''
 
         # start and end arguments
         start_match = ARGUMENT_REGEXES['start'].search(arguments_string)
@@ -505,7 +498,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                logger.error(
+                raise BuildError(
                     "Invalid empty 'start' argument in 'include-markdown'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}',
@@ -521,7 +514,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                logger.error(
+                raise BuildError(
                     "Invalid empty 'end' argument in 'include-markdown'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}',
@@ -537,7 +530,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                logger.error(
+                raise BuildError(
                     "Invalid empty 'encoding' argument in 'include-markdown'"
                     ' directive at '
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
