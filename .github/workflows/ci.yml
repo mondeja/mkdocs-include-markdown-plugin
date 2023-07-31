@@ -47,7 +47,7 @@ jobs:
             python-version: "3.11"
             py: py311
           - platform: ubuntu-latest
-            python-version: "3.12"
+            python-version: 3.12.0-beta.4
             py: py312
           - platform: macos-latest
             python-version: 3.7
@@ -56,7 +56,7 @@ jobs:
             python-version: "3.11"
             py: py311
           - platform: macos-latest
-            python-version: "3.12"
+            python-version: 3.12.0-beta.4
             py: py312
           - platform: windows-latest
             python-version: 3.7
@@ -65,7 +65,7 @@ jobs:
             python-version: "3.11"
             py: py311
           - platform: windows-latest
-            python-version: "3.12"
+            python-version: 3.12.0-beta.4
             py: py312
     steps:
       - uses: actions/checkout@v3
