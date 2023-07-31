@@ -40,8 +40,8 @@ Le comportement global du plugin peut être personnalisé dans la configuration.
 **closing_tag**: Les balises d'ouverture et de fermeture par défaut. Par
 défaut sont `{%` et `%}`.
 
-Le reste des options définira les valeurs par défaut passées aux arguments des
-directives et sont documentées dans la [référence](#reference).
+La plupart des paramètres définissent les valeurs par défaut transmises aux
+arguments des directives et sont documentés dans la [référence](#référence).
 
 ```yaml
 plugins:
@@ -50,9 +50,27 @@ plugins:
       closing_tag: "!}"
       encoding: ascii
       preserve_includer_indent: false
-      dedent: true
-      trailing_newlines: false
-      comments: false
+      dedent: false
+      trailing_newlines: true
+      comments: true
+```
+
+Le paramètre `cache` définit un délai d'expiration en secondes pour les requêtes
+HTTP lors de l'inclusion d'URL.
+
+```yaml
+plugins:
+  - include-markdown:
+      cache: 600
+```
+
+Pour utiliser cette fonctionnalité, la dépendance [platformdirs] doit être
+installée. Vous pouvez l'inclure dans l'installation du plugin en ajoutant le
+supplément `cache`:
+
+```txt
+# requirements.txt
+mkdocs-include-markdown-plugin[cache]
 ```
 
 ### Référence
@@ -60,9 +78,13 @@ plugins:
 Ce plugin fournit deux directives, une pour inclure des fichiers Markdown et une
 autre pour inclure des fichiers de tout type.
 
-Les paths des fichiers inclus peuvent être absolus ou relatifs au le path du
-fichier qui les inclut. Cet argument accepte également des globs, auquel cas
-certains paths peuvent être ignorés à l'aide de l'argument `exclude`.
+Les chemins des fichiers inclus peuvent être soit:
+
+- Fichiers locaux avec des chemins absolus ou relatifs vers le fichier qui les
+contient.
+- Globs correspondant à plusieurs fichiers, auquel cas certains chemins peuvent
+être ignorés en utilisant l'argument `exclude`.
+- URL pour inclure du contenu distant.
 
 Les chemins d'accès aux fichiers à inclure et les arguments de chaîne peuvent
 être entourés de guillemets doubles `"` ou simples `'`, qui peuvent être
@@ -220,6 +242,7 @@ autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
 [coverage-link]: https://app.codecov.io/gh/mondeja/mkdocs-include-markdown-plugin
 [license-image]: https://img.shields.io/pypi/l/mkdocs-include-markdown-plugin?color=light-green&logo=apache&logoColor=white
 [license-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/LICENSE
+[platformdirs]: https://pypi.org/project/platformdirs/
 [cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
 [mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io
