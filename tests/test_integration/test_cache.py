@@ -1,3 +1,4 @@
+import importlib
 import os
 
 import pytest
@@ -42,7 +43,7 @@ def test_page_included_by_url_is_cached(
 ):
     cache_dir = get_cache_directory()
     try:
-        pass
+        importlib.import_module('platformdirs')
     except ImportError:
         assert cache_dir is None
         assert initialize_cache(600) is None

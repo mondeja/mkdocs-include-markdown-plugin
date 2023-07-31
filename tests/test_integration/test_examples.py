@@ -1,3 +1,4 @@
+import importlib
 import os
 import subprocess
 import sys
@@ -18,7 +19,7 @@ def test_examples(dirname):
     with open(config_file, encoding='utf-8') as f:
         if 'cache:' in f.read():
             try:
-                pass
+                importlib.import_module('platformdirs')
             except ImportError:
                 expected_returncode = 1
 
