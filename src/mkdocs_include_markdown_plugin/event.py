@@ -221,7 +221,6 @@ def get_file_content(
         )
         if is_url(filename):
             file_paths_to_include = [file_path_glob]
-            logger.info('url found: ' + file_path_glob)
 
         if not file_paths_to_include:
             lineno = lineno_from_content_start(
@@ -476,7 +475,6 @@ def get_file_content(
 
         if is_url(filename):
             file_paths_to_include = [file_path_glob]
-            logger.info('url found: ' + file_path_glob)
 
         if not file_paths_to_include:
             lineno = lineno_from_content_start(
