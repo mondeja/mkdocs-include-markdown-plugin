@@ -1,0 +1,37 @@
+{
+  "results": [
+    [
+      "flake8-docstrings",
+      "D101",
+      43,
+      0,
+      "Missing docstring in public class",
+      "    class DirectiveBoolArgument(TypedDict):  # noqa: D101\n"
+    ],
+    [
+      "flake8-unused-arguments",
+      "U100",
+      140,
+      31,
+      "Unused argument 'encoding'",
+      "def read_http(target_url: str, encoding: str) -> Any:  # noqa: U100\n"
+    ],
+    [
+      "pycodestyle",
+      "W503",
+      384,
+      24,
+      "line break before binary operator",
+      "                        or ['']\n"
+    ],
+    [
+      "pycodestyle",
+      "W503",
+      695,
+      24,
+      "line break before binary operator",
+      "                        or [''],\n"
+    ]
+  ],
+  "digest": "6c79c8a123600ebaf17605ebd21355d7"
+}

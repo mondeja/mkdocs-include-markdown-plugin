@@ -1,0 +1,29 @@
+{
+  "results": [
+    [
+      "flake8-docstrings",
+      "D103",
+      362,
+      0,
+      "Missing docstring in public function",
+      "def test_include(\n"
+    ],
+    [
+      "pycodestyle",
+      "E501",
+      307,
+      80,
+      "line too long (127 > 80 characters)",
+      "            '''# Header\n\n{% include \"https://raw.githubusercontent.com/mondeja/mkdocs-include-markdown-plugin/master/examples/basic/docs/included.md\" %}\n''',  # noqa: E501\n"
+    ],
+    [
+      "flake8-no-pep420",
+      "INP001",
+      1,
+      0,
+      "File is part of an implicit namespace package. Add an __init__.py?",
+      "\"\"\"``include`` directive tests.\"\"\"\n"
+    ]
+  ],
+  "digest": "bcc31b4cfe539144e08652270782b895"
+}

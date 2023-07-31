@@ -198,7 +198,7 @@ extra_standard_library = [
 
 [tool.mypy]
 strict = true
-python_version = "3.10"
+python_version = "3.11"
 allow_untyped_calls = true
 allow_any_generics = true
 
