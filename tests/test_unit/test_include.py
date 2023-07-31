@@ -300,6 +300,26 @@ Some text
             id='dedent=true',
         ),
 
+        # Include from URL
+        pytest.param(
+            '''# Header
+
+{% include "https://raw.githubusercontent.com/mondeja/mkdocs-include-markdown-plugin/master/examples/basic/docs/included.md" %}
+''',  # noqa: E501
+            '(not used)\n',
+            '''# Header
+
+Some ignored content.
+
+<--start-->
+
+Some included content.
+
+''',
+            [],
+            id='url',
+        ),
+
         # Content unindentation + preserve includer indent
         pytest.param(
             '''# Header
@@ -336,6 +356,7 @@ Some text
             [],
             id='rstrip-windows-trailing-newlines',
         ),
+
     ),
 )
 def test_include(

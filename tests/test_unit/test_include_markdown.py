@@ -590,6 +590,34 @@ Example data
             id='heading-offset=-90',
         ),
 
+        # Include from URL
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "https://raw.githubusercontent.com/mondeja/mkdocs-include-markdown-plugin/master/examples/basic/docs/included.md"
+%}
+
+After include.
+''',  # noqa: E501
+            'foo (not used)\n',
+            '''# Header
+
+<!-- BEGIN INCLUDE https://raw.githubusercontent.com/mondeja/mkdocs-include-markdown-plugin/master/examples/basic/docs/included.md -->
+Some ignored content.
+
+<--start-->
+
+Some included content.
+
+<!-- END INCLUDE -->
+
+After include.
+''',  # noqa: E501
+            [],
+            id='url',
+        ),
+
         # Custom encoding
         pytest.param(
             '''# Header

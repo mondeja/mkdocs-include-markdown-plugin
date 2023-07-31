@@ -63,7 +63,7 @@ lint = "pre-commit run -a"
 
 [tool.hatch.envs.tests]
 matrix-name-format = "{variable}-{value}"
-dependencies = ["pytest~=7.0", "coverage~=6.4"]
+dependencies = ["pytest~=7.0", "coverage~=6.4", "covdefaults"]
 
 [[tool.hatch.envs.tests.matrix]]
 python = ["py37", "py38", "py39", "py310", "py311"]
@@ -94,28 +94,25 @@ targets = [{ file = "pyproject.toml" }]
 [tool.project-config]
 cache = "2 days"
 style = [
-  "gh://mondeja/project-config-styles@v4.2/base/pre-commit/md2po2md.json5",
-  "gh://mondeja/project-config-styles@v4.2/python/base.json5",
-  "gh://mondeja/project-config-styles@v4.2/python/single-quotes.json5",
-  "gh://mondeja/project-config-styles@v4.2/python/line-length-80.json5",
-  "gh://mondeja/project-config-styles@v4.2/python/tests.json5",
-  "gh://mondeja/project-config-styles@v4.2/python/google-docstrings.json5",
-  "gh://mondeja/project-config-styles@v4.2/python/mypy.json5",
+  "gh://mondeja/project-config-styles@v4.3/base/pre-commit/md2po2md.json5",
+  "gh://mondeja/project-config-styles@v4.3/python/base.json5",
+  "gh://mondeja/project-config-styles@v4.3/python/single-quotes.json5",
+  "gh://mondeja/project-config-styles@v4.3/python/tests.json5",
+  "gh://mondeja/project-config-styles@v4.3/python/google-docstrings.json5",
+  "gh://mondeja/project-config-styles@v4.3/python/mypy.json5",
 ]
 
 [tool.coverage.run]
 source = ["src"]
 omit = ["src/mkdocs_include_markdown_plugin/plugin.py"]
+plugins = ["covdefaults"]
 
 [tool.coverage.report]
 exclude_lines = [
-  "pragma: no cover",
   "def __repr__\\(",
-  "raise NotImplementedError",
   "@(abc\\.)?abstractmethod",
-  "class .*\\bProtocol\\):",
-  "if TYPE_CHECKING:",
 ]
+fail_under = 1
 
 [tool.flakeheaven]
 inline-quotes = "single"

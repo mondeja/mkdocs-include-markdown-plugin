@@ -1,9 +1,12 @@
 # mkdocs-include-markdown-plugin
 
-Plugin de inclusiones Markdown para Mkdocs.
+[![PyPI][pypi-version-badge-link]][pypi-link]
+[![License][license-image]][license-link]
 
-[![PyPI][pypi-version-badge-link]][pypi-link] [![Tests][tests-image]][tests-link]
-[![Coverage status][coverage-image]][coverage-link]
+[![Tests][tests-image]][tests-link] [![Coverage
+status][coverage-image]][coverage-link]
+
+Plugin de inclusiones Markdown para Mkdocs.
 
 > Lee este documento en otros idiomas:
 >
@@ -213,10 +216,12 @@ separar este plugin de la documentación de
 
 [pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin
 [pypi-version-badge-link]: https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white
-[tests-image]: https://img.shields.io/github/actions/workflow/status/mondeja/mkdocs-include-markdown-plugin/ci.yml?branch=master&logo=github&label=tests
+[tests-image]: https://img.shields.io/github/actions/workflow/status/mondeja/mkdocs-include-markdown-plugin/ci.yml?logo=github&label=tests&branch=master
 [tests-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/actions?query=workflow%3ACI
 [coverage-image]: https://img.shields.io/codecov/c/github/mondeja/mkdocs-include-markdown-plugin?logo=codecov&logoColor=white
 [coverage-link]: https://app.codecov.io/gh/mondeja/mkdocs-include-markdown-plugin
+[license-image]: https://img.shields.io/pypi/l/mkdocs-include-markdown-plugin?color=light-green&logo=apache&logoColor=white
+[license-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/LICENSE
 [cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
 [mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io
