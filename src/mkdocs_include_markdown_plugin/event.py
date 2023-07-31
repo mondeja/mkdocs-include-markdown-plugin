@@ -10,6 +10,8 @@ import re
 import textwrap
 from collections.abc import MutableMapping
 from typing import TYPE_CHECKING, Any
+from urllib.parse import urlparse
+import urllib.request
 
 from mkdocs.exceptions import BuildError
 
@@ -55,6 +57,12 @@ TRUE_FALSE_BOOL_STR = {
     False: 'false',
 }
 
+def is_url(string):
+    try:
+        result = urlparse(string)
+        return all([result.scheme, result.netloc])
+    except ValueError:
+        return False
 
 def bool_arg(arg: str) -> re.Pattern[str]:
     """Return a compiled regexp to match a boolean argument."""
@@ -125,7 +133,12 @@ def read_file(file_path: str, encoding: str) -> str:
     with open(file_path, encoding=encoding) as f:
         return f.read()
 
-
+def read_http(target_url: str, encoding: str) -> str:
+    """Read an http location and return its content."""
+    req = urllib.request.Request(target_url)
+    with urllib.request.urlopen(req) as response:
+        return response.read().decode('UTF-8')
+    
 def get_file_content(
     markdown: str,
     page_src_path: str,
@@ -161,6 +174,8 @@ def get_file_content(
         arguments_string = match.group('arguments')
 
         if os.path.isabs(filename):
+            file_path_glob = filename
+        elif is_url(filename):
             file_path_glob = filename
         else:
             file_path_glob = os.path.join(
@@ -199,6 +214,10 @@ def get_file_content(
             glob.iglob(file_path_glob, recursive=True),
             ignore_paths=ignore_paths,
         )
+        if is_url(filename):
+            file_paths_to_include=[file_path_glob]
+            logger.info('url found: ' + file_path_glob)
+
 
         if not file_paths_to_include:
             lineno = lineno_from_content_start(
@@ -211,7 +230,21 @@ def get_file_content(
                 f':{lineno}',
             )
         elif files_watcher is not None:
-            files_watcher.included_files.extend(file_paths_to_include)
+            if not is_url(file_path_glob):
+                files_watcher.included_files.extend(file_paths_to_include)
+            else:
+                readable_files_to_include = ', '.join(file_paths_to_include)
+                plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
+                )
+                logger.warning(
+                    f"Not adding a watcher for {file_path_glob} of 'include-markdown'"
+                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                    f':{lineno} not detected in the file{plural_suffix}'
+                    f' {readable_files_to_include}',
+                )
 
         bool_options: dict[str, DirectiveBoolArgument] = {
             'preserve-includer-indent': {
@@ -298,7 +331,10 @@ def get_file_content(
         text_to_include = ''
         expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
-            new_text_to_include = read_file(file_path, encoding)
+            if is_url(filename):
+                new_text_to_include = read_http(file_path, encoding)
+            else:
+                new_text_to_include = read_file(file_path, encoding)
 
             if start is not None or end is not None:
                 new_text_to_include, *expected_not_found = (
@@ -349,7 +385,7 @@ def get_file_content(
 
             text_to_include += new_text_to_include
 
-        # warn if expected start or ends haven't been found in included content
+        # warn if expected start or ends haven't been found in included content        
         for i, argname in enumerate(['start', 'end']):
             if expected_but_any_found[i]:
                 value = locals()[argname]
@@ -393,6 +429,8 @@ def get_file_content(
 
         if os.path.isabs(filename):
             file_path_glob = filename
+        elif is_url(filename):
+            file_path_glob = filename
         else:
             file_path_glob = os.path.join(
                 os.path.abspath(os.path.dirname(page_src_path)),
@@ -431,6 +469,10 @@ def get_file_content(
             ignore_paths=ignore_paths,
         )
 
+        if is_url(filename):
+            file_paths_to_include=[file_path_glob]
+            logger.info('url found: ' + file_path_glob)
+
         if not file_paths_to_include:
             lineno = lineno_from_content_start(
                 markdown,
@@ -442,7 +484,21 @@ def get_file_content(
                 f':{lineno}',
             )
         elif files_watcher is not None:
-            files_watcher.included_files.extend(file_paths_to_include)
+            if not is_url(file_path_glob):
+                files_watcher.included_files.extend(file_paths_to_include)
+            else:
+                readable_files_to_include = ', '.join(file_paths_to_include)
+                plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
+                )
+                logger.warning(
+                    f"Not adding a watcher for {file_path_glob} of 'include-markdown'"
+                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                    f':{lineno} not detected in the file{plural_suffix}'
+                    f' {readable_files_to_include}',
+                )
 
         bool_options: dict[str, DirectiveBoolArgument] = {
             'rewrite-relative-urls': {
@@ -563,7 +619,10 @@ def get_file_content(
 
         text_to_include = ''
         for file_path in file_paths_to_include:
-            new_text_to_include = read_file(file_path, encoding)
+            if is_url(filename):
+                new_text_to_include = read_http(file_path, encoding)
+            else:
+                new_text_to_include = read_file(file_path, encoding)
 
             if start is not None or end is not None:
                 new_text_to_include, *expected_not_found = (
