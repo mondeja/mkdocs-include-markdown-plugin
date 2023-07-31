@@ -40,9 +40,6 @@ plugins:
   - include-markdown
 ```
 
-> Make sure that you define `include-markdown` before other plugins that could
-> conflict, like [`mkdocs-macros-plugin`][mkdocs-macros-plugin-link].
-
 ### Configuration
 
 The global behaviour of the plugin can be customized in the configuration.
@@ -251,6 +248,5 @@ Includes the content of a file or a group of files.
 [platformdirs]: https://pypi.org/project/platformdirs/
 [cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
-[mkdocs-macros-plugin-link]: https://mkdocs-macros-plugin.readthedocs.io
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
