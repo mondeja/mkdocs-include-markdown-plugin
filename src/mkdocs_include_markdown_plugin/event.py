@@ -8,10 +8,10 @@ import logging
 import os
 import re
 import textwrap
+import urllib.request
 from collections.abc import MutableMapping
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
-import urllib.request
 
 from mkdocs.exceptions import BuildError
 
@@ -57,12 +57,15 @@ TRUE_FALSE_BOOL_STR = {
     False: 'false',
 }
 
-def is_url(string):
+
+def is_url(string: str) -> bool:
+    """Determines if a string is a URL."""
     try:
         result = urlparse(string)
         return all([result.scheme, result.netloc])
     except ValueError:
         return False
+
 
 def bool_arg(arg: str) -> re.Pattern[str]:
     """Return a compiled regexp to match a boolean argument."""
@@ -133,12 +136,14 @@ def read_file(file_path: str, encoding: str) -> str:
     with open(file_path, encoding=encoding) as f:
         return f.read()
 
-def read_http(target_url: str, encoding: str) -> str:
+
+def read_http(target_url: str, encoding: str) -> Any:  # noqa: U100
     """Read an http location and return its content."""
     req = urllib.request.Request(target_url)
     with urllib.request.urlopen(req) as response:
         return response.read().decode('UTF-8')
-    
+
+
 def get_file_content(
     markdown: str,
     page_src_path: str,
@@ -215,9 +220,8 @@ def get_file_content(
             ignore_paths=ignore_paths,
         )
         if is_url(filename):
-            file_paths_to_include=[file_path_glob]
+            file_paths_to_include = [file_path_glob]
             logger.info('url found: ' + file_path_glob)
-
 
         if not file_paths_to_include:
             lineno = lineno_from_content_start(
@@ -240,8 +244,9 @@ def get_file_content(
                     directive_match_start,
                 )
                 logger.warning(
-                    f"Not adding a watcher for {file_path_glob} of 'include-markdown'"
-                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                    f'Not adding a watcher for {file_path_glob} of'
+                    " 'include-markdown' directive at"
+                    f' {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno} not detected in the file{plural_suffix}'
                     f' {readable_files_to_include}',
                 )
@@ -385,7 +390,7 @@ def get_file_content(
 
             text_to_include += new_text_to_include
 
-        # warn if expected start or ends haven't been found in included content        
+        # warn if expected start or ends haven't been found in included content
         for i, argname in enumerate(['start', 'end']):
             if expected_but_any_found[i]:
                 value = locals()[argname]
@@ -470,7 +475,7 @@ def get_file_content(
         )
 
         if is_url(filename):
-            file_paths_to_include=[file_path_glob]
+            file_paths_to_include = [file_path_glob]
             logger.info('url found: ' + file_path_glob)
 
         if not file_paths_to_include:
@@ -494,8 +499,9 @@ def get_file_content(
                     directive_match_start,
                 )
                 logger.warning(
-                    f"Not adding a watcher for {file_path_glob} of 'include-markdown'"
-                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                    f'Not adding a watcher for {file_path_glob}'
+                    " of 'include-markdown' directive at"
+                    f' {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno} not detected in the file{plural_suffix}'
                     f' {readable_files_to_include}',
                 )
