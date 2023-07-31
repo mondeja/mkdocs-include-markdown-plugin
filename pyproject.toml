@@ -70,13 +70,12 @@ dependencies = ["pytest~=7.0", "coverage~=6.4", "covdefaults"]
 
 [[tool.hatch.envs.tests.matrix]]
 python = ["py38", "py39", "py310", "py311", "py312"]
-mkdocs = ["1.4.0", "1.4.2", "1.4.3", "1.5.0", "1.5.1"]
+mkdocs = ["1.4.0", "1.4.3", "1.5.0", "1.5.1"]
 cache = ["yes", "no"]
 
 [tool.hatch.envs.tests.overrides]
 matrix.mkdocs.dependencies = [
   { value = "mkdocs==1.4.0", if = ["1.4.0"] },
-  { value = "mkdocs==1.4.2", if = ["1.4.2"] },
   { value = "mkdocs==1.4.3", if = ["1.4.3"] },
   { value = "mkdocs==1.5.0", if = ["1.5.0"] },
   { value = "mkdocs==1.5.1", if = ["1.5.1"] },

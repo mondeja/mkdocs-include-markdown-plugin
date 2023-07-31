@@ -33,3 +33,7 @@ git push origin master
 git tag -a "v$version"
 git push origin "v$version"
 ```
+
+## Compatibility
+
+Latest version supporting Python3.7 and Mkdocs<1.4.0 is v4.0.4.
