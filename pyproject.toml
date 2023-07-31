@@ -4,7 +4,7 @@ version = "4.0.4"
 description = "Mkdocs Markdown includer plugin."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.7,<3.13"
+requires-python = ">=3.8,<3.13"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Operating System :: OS Independent",
@@ -15,7 +15,6 @@ classifiers = [
   "Topic :: Text Processing",
   "Topic :: Text Processing :: Markup :: Markdown",
   "Environment :: Console",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -70,7 +69,7 @@ matrix-name-format = "{variable}-{value}"
 dependencies = ["pytest~=7.0", "coverage~=6.4", "covdefaults"]
 
 [[tool.hatch.envs.tests.matrix]]
-python = ["py37", "py38", "py39", "py310", "py311", "py312"]
+python = ["py38", "py39", "py310", "py311", "py312"]
 mkdocs = ["1.2.4", "1.3.1", "1.4.0", "1.4.2"]
 cache = ["yes", "no"]
 
@@ -188,7 +187,7 @@ sections = [
   "TESTS",
   "LOCALFOLDER"
 ]
-py_version = 37
+py_version = 38
 extra_standard_library = [
   "contextvars",
   "dataclasses",

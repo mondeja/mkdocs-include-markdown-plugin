@@ -32,12 +32,7 @@ from mkdocs_include_markdown_plugin.regexes import (
 
 
 if TYPE_CHECKING:  # remove this for mypyc compiling
-    import sys
-
-    if sys.version_info >= (3, 8):
-        from typing import TypedDict
-    else:
-        from typing_extensions import TypedDict
+    from typing import TypedDict
 
     from mkdocs.structure.pages import Page
 
