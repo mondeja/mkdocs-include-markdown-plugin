@@ -8,20 +8,14 @@ import logging
 import os
 import re
 import textwrap
-import urllib.request
 from collections.abc import MutableMapping
 from typing import TYPE_CHECKING, Any
-from urllib.parse import urlparse
 
 from mkdocs.exceptions import BuildError
 
 from mkdocs_include_markdown_plugin import process
 from mkdocs_include_markdown_plugin.cache import Cache
-from mkdocs_include_markdown_plugin.config import (
-    CONFIG_DEFAULTS,
-    DEFAULT_CLOSING_TAG,
-    DEFAULT_OPENING_TAG,
-)
+from mkdocs_include_markdown_plugin.config import CONFIG_DEFAULTS
 from mkdocs_include_markdown_plugin.directive import (
     ARGUMENT_REGEXES,
     create_include_tag,
@@ -47,12 +41,15 @@ if TYPE_CHECKING:  # remove this for mypyc compiling
         },
     )
 
-    class DefaultValues(TypedDict):  # noqa: D101
-        encoding: str
-        preserve_includer_indent: bool
-        dedent: bool
-        trailing_newlines: bool
-        comments: bool
+    DefaultValues = TypedDict(
+        'DefaultValues', {
+            'encoding': str,
+            'preserve-includer-indent': bool,
+            'dedent': bool,
+            'trailing-newlines': bool,
+            'comments': bool,
+        },
+    )
 
 
 logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
@@ -68,38 +65,9 @@ TRUE_FALSE_BOOL_STR = {
 }
 
 
-def is_url(string: str) -> bool:
-    """Determine if a string is an URL."""
-    try:
-        result = urlparse(string)
-        return all([result.scheme, result.netloc])
-    except ValueError:
-        return False
-
-
 def lineno_from_content_start(content: str, start: int) -> int:
     """Return the line number of the first line of ``start`` in ``content``."""
     return content[:start].count('\n') + 1
-
-
-def read_file(file_path: str, encoding: str) -> str:
-    """Read a file and return its content."""
-    with open(file_path, encoding=encoding) as f:
-        return f.read()
-
-
-def read_http(target_url: str, http_cache: Cache | None) -> Any:  # noqa: U100
-    """Read an http location and return its content."""
-    if http_cache is not None:
-        cached_content = http_cache.get_(target_url)
-        if cached_content is not None:
-            return cached_content
-    req = urllib.request.Request(target_url)
-    with urllib.request.urlopen(req) as response:
-        content = response.read().decode('UTF-8')
-    if http_cache is not None:
-        http_cache.set_(target_url, content)
-    return content
 
 
 def get_file_content(
@@ -132,9 +100,7 @@ def get_file_content(
 
         arguments_string = match.group('arguments')
 
-        if os.path.isabs(filename):
-            file_path_glob = filename
-        elif is_url(filename):
+        if os.path.isabs(filename) or process.is_url(filename):
             file_path_glob = filename
         else:
             file_path_glob = os.path.join(
@@ -169,12 +135,13 @@ def get_file_content(
                     )
                 ignore_paths = glob.glob(exclude_globstr)
 
-        file_paths_to_include = process.filter_paths(
-            glob.iglob(file_path_glob, recursive=True),
-            ignore_paths=ignore_paths,
-        )
-        if is_url(filename):
+        if process.is_url(filename):
             file_paths_to_include = [file_path_glob]
+        else:
+            file_paths_to_include = process.filter_paths(
+                glob.iglob(file_path_glob, recursive=True),
+                ignore_paths=ignore_paths,
+            )
 
         if not file_paths_to_include:
             lineno = lineno_from_content_start(
@@ -187,12 +154,12 @@ def get_file_content(
                 f':{lineno}',
             )
         elif files_watcher is not None:
-            if not is_url(file_path_glob):
+            if not process.is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
 
         bool_options: dict[str, DirectiveBoolArgument] = {
             'preserve-includer-indent': {
-                'value': defaults['preserve_includer_indent'],
+                'value': defaults['preserve-includer-indent'],
                 'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
             },
             'dedent': {
@@ -200,7 +167,7 @@ def get_file_content(
                 'regex': ARGUMENT_REGEXES['dedent'],
             },
             'trailing-newlines': {
-                'value': defaults['trailing_newlines'],
+                'value': defaults['trailing-newlines'],
                 'regex': ARGUMENT_REGEXES['trailing-newlines'],
             },
         }
@@ -275,10 +242,10 @@ def get_file_content(
         text_to_include = ''
         expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
-            if is_url(filename):
-                new_text_to_include = read_http(file_path, http_cache)
+            if process.is_url(filename):
+                new_text_to_include = process.read_url(file_path, http_cache)
             else:
-                new_text_to_include = read_file(file_path, encoding)
+                new_text_to_include = process.read_file(file_path, encoding)
 
             if start is not None or end is not None:
                 new_text_to_include, *expected_not_found = (
@@ -368,9 +335,7 @@ def get_file_content(
 
         arguments_string = match.group('arguments')
 
-        if os.path.isabs(filename):
-            file_path_glob = filename
-        elif is_url(filename):
+        if os.path.isabs(filename) or process.is_url(filename):
             file_path_glob = filename
         else:
             file_path_glob = os.path.join(
@@ -405,13 +370,13 @@ def get_file_content(
                     )
                 ignore_paths = glob.glob(exclude_globstr)
 
-        file_paths_to_include = process.filter_paths(
-            glob.iglob(file_path_glob, recursive=True),
-            ignore_paths=ignore_paths,
-        )
-
-        if is_url(filename):
+        if process.is_url(filename):
             file_paths_to_include = [file_path_glob]
+        else:
+            file_paths_to_include = process.filter_paths(
+                glob.iglob(file_path_glob, recursive=True),
+                ignore_paths=ignore_paths,
+            )
 
         if not file_paths_to_include:
             lineno = lineno_from_content_start(
@@ -424,7 +389,7 @@ def get_file_content(
                 f':{lineno}',
             )
         elif files_watcher is not None:
-            if not is_url(file_path_glob):
+            if not process.is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
 
         bool_options: dict[str, DirectiveBoolArgument] = {
@@ -437,7 +402,7 @@ def get_file_content(
                 'regex': ARGUMENT_REGEXES['comments'],
             },
             'preserve-includer-indent': {
-                'value': defaults['preserve_includer_indent'],
+                'value': defaults['preserve-includer-indent'],
                 'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
             },
             'dedent': {
@@ -445,7 +410,7 @@ def get_file_content(
                 'regex': ARGUMENT_REGEXES['dedent'],
             },
             'trailing-newlines': {
-                'value': defaults['trailing_newlines'],
+                'value': defaults['trailing-newlines'],
                 'regex': ARGUMENT_REGEXES['trailing-newlines'],
             },
         }
@@ -546,10 +511,10 @@ def get_file_content(
 
         text_to_include = ''
         for file_path in file_paths_to_include:
-            if is_url(filename):
-                new_text_to_include = read_http(file_path, http_cache)
+            if process.is_url(filename):
+                new_text_to_include = process.read_url(file_path, http_cache)
             else:
-                new_text_to_include = read_file(file_path, encoding)
+                new_text_to_include = process.read_file(file_path, encoding)
 
             if start is not None or end is not None:
                 new_text_to_include, *expected_not_found = (
@@ -676,27 +641,27 @@ def on_page_markdown(
             'include': config.get(
                 '_include_tag',
                 create_include_tag(
-                    config.get('opening_tag', DEFAULT_OPENING_TAG),
-                    config.get('closing_tag', DEFAULT_CLOSING_TAG),
+                    config.get('opening_tag', CONFIG_DEFAULTS['opening-tag']),
+                    config.get('closing_tag', CONFIG_DEFAULTS['closing-tag']),
                 ),
             ),
             'include-markdown': config.get(
                 '_include_markdown_tag',
                 create_include_tag(
-                    config.get('opening_tag', DEFAULT_OPENING_TAG),
-                    config.get('closing_tag', DEFAULT_CLOSING_TAG),
+                    config.get('opening_tag', CONFIG_DEFAULTS['opening-tag']),
+                    config.get('closing_tag', CONFIG_DEFAULTS['closing-tag']),
                     tag='include-markdown',
                 ),
             ),
         },
         {
             'encoding': config.get('encoding', CONFIG_DEFAULTS['encoding']),
-            'preserve_includer_indent': config.get(
-                'preserve_includer_indent',
-                CONFIG_DEFAULTS['preserve_includer_indent'],
+            'preserve-includer-indent': config.get(
+                'preserve-includer-indent',
+                CONFIG_DEFAULTS['preserve-includer-indent'],
             ),
             'dedent': config.get('dedent', CONFIG_DEFAULTS['dedent']),
-            'trailing_newlines': config.get(
+            'trailing-newlines': config.get(
                 'trailing_newlines',
                 CONFIG_DEFAULTS['trailing_newlines'],
             ),

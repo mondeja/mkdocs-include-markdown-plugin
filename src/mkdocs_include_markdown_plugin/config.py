@@ -5,29 +5,25 @@ from __future__ import annotations
 from mkdocs.config.config_options import Type as MkType
 
 
-DEFAULT_COMMENTS = True
-DEFAULT_OPENING_TAG = '{%'
-DEFAULT_CLOSING_TAG = '%}'
-
 CONFIG_DEFAULTS = {
-    'opening_tag': DEFAULT_OPENING_TAG,
-    'closing_tag': DEFAULT_CLOSING_TAG,
+    'opening-tag': '{%',
+    'closing-tag': '%}',
     'encoding': 'utf-8',
-    'preserve_includer_indent': True,
+    'preserve-includer-indent': True,
     'dedent': False,
-    'trailing_newlines': True,
-    'comments': DEFAULT_COMMENTS,
+    'trailing-newlines': True,
+    'comments': True,
     'cache': 0,
 }
 
 CONFIG_SCHEME = (
     (
         'opening_tag',
-        MkType(str, default=DEFAULT_OPENING_TAG),
+        MkType(str, default=CONFIG_DEFAULTS['opening-tag']),
     ),
     (
         'closing_tag',
-        MkType(str, default=DEFAULT_CLOSING_TAG),
+        MkType(str, default=CONFIG_DEFAULTS['closing-tag']),
     ),
     (
         'encoding',
@@ -35,7 +31,7 @@ CONFIG_SCHEME = (
     ),
     (
         'preserve_includer_indent',
-        MkType(bool, default=CONFIG_DEFAULTS['preserve_includer_indent']),
+        MkType(bool, default=CONFIG_DEFAULTS['preserve-includer-indent']),
     ),
     (
         'dedent',
@@ -43,11 +39,11 @@ CONFIG_SCHEME = (
     ),
     (
         'trailing_newlines',
-        MkType(bool, default=CONFIG_DEFAULTS['trailing_newlines']),
+        MkType(bool, default=CONFIG_DEFAULTS['trailing-newlines']),
     ),
     (
         'comments',
-        MkType(bool, default=DEFAULT_COMMENTS),
+        MkType(bool, default=CONFIG_DEFAULTS['comments']),
     ),
     (
         'cache',
