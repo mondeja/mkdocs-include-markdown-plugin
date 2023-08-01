@@ -62,6 +62,7 @@ plugins:
       trailing_newlines: true
       comments: true
       rewrite_relative_urls: true
+      heading_offset: 0
 ```
 
 The `cache` setting defines a expiration time in seconds for HTTP requests

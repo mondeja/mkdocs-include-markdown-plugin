@@ -50,6 +50,7 @@ plugins:
       trailing_newlines: true
       comments: true
       rewrite_relative_urls: true
+      heading_offset: 0
 ```
 
 Le paramètre `cache` définit un délai d'expiration en secondes pour les requêtes
