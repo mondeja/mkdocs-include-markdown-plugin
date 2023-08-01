@@ -422,12 +422,24 @@ def get_file_content(
             encoding = defaults['encoding']
 
         # heading offset
-        offset = 0
         offset_match = ARGUMENT_REGEXES['heading-offset'].search(
             arguments_string,
         )
         if offset_match:
-            offset += int(offset_match.group(1))
+            try:
+                offset = int(offset_match.group(1))
+            except ValueError:
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
+                )
+                raise BuildError(
+                    "Invalid 'heading-offset' argument in 'include-markdown'"
+                    ' directive at '
+                    f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
+                )
+        else:
+            offset = defaults['heading-offset']
 
         separator = '\n' if bool_options['trailing-newlines']['value'] else ''
         if not start and not end:
@@ -603,6 +615,10 @@ def on_page_markdown(
             'rewrite-relative-urls': config.get(
                 'rewrite_relative_urls',
                 CONFIG_DEFAULTS['rewrite-relative-urls'],
+            ),
+            'heading-offset': config.get(
+                'heading_offset',
+                CONFIG_DEFAULTS['heading-offset'],
             ),
         },
         files_watcher=files_watcher,

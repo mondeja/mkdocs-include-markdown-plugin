@@ -24,6 +24,7 @@ if TYPE_CHECKING:
             'trailing-newlines': bool,
             'comments': bool,
             'rewrite-relative-urls': bool,
+            'heading-offset': int,
         },
     )
 

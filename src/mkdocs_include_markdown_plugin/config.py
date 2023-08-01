@@ -14,6 +14,7 @@ CONFIG_DEFAULTS = {
     'trailing-newlines': True,
     'comments': True,
     'rewrite-relative-urls': True,
+    'heading-offset': 0,
     'cache': 0,
 }
 
@@ -49,6 +50,10 @@ CONFIG_SCHEME = (
     (
         'rewrite_relative_urls',
         MkType(bool, default=CONFIG_DEFAULTS['rewrite-relative-urls']),
+    ),
+    (
+        'heading_offset',
+        MkType(int, default=CONFIG_DEFAULTS['heading-offset']),
     ),
     (
         'cache',
