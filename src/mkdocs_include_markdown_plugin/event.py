@@ -147,7 +147,7 @@ def get_file_content(
             )
             raise BuildError(
                 f"Invalid value for '{invalid_bool_args[0]}' argument of"
-                ' include directive at'
+                " 'include' directive at"
                 f' {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}. Possible values are true or false.',
             )
