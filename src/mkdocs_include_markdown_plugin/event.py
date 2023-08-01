@@ -20,7 +20,6 @@ from mkdocs_include_markdown_plugin.cache import Cache
 from mkdocs_include_markdown_plugin.config import (
     CONFIG_DEFAULTS,
     DEFAULT_CLOSING_TAG,
-    DEFAULT_COMMENTS,
     DEFAULT_OPENING_TAG,
     create_include_tag,
 )
@@ -39,6 +38,13 @@ if TYPE_CHECKING:  # remove this for mypyc compiling
     class DirectiveBoolArgument(TypedDict):  # noqa: D101
         value: bool
         regex: re.Pattern[str]
+
+    class DefaultValues(TypedDict):  # noqa: D101
+        encoding: str
+        preserve_includer_indent: bool
+        dedent: bool
+        trailing_newlines: bool
+        comments: bool
 
 
 logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
@@ -153,11 +159,7 @@ def get_file_content(
     docs_dir: str,
     include_tag_regex: re.Pattern[str],
     include_markdown_tag_regex: re.Pattern[str],
-    default_encoding: str,
-    default_preserve_includer_indent: bool,
-    default_dedent: bool,
-    default_trailing_newlines: bool,
-    default_comments: bool = DEFAULT_COMMENTS,
+    defaults: DefaultValues,
     cumulative_heading_offset: int = 0,
     files_watcher: FilesWatcher | None = None,
     http_cache: Cache | None = None,
@@ -242,15 +244,15 @@ def get_file_content(
 
         bool_options: dict[str, DirectiveBoolArgument] = {
             'preserve-includer-indent': {
-                'value': default_preserve_includer_indent,
+                'value': defaults['preserve_includer_indent'],
                 'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
             },
             'dedent': {
-                'value': default_dedent,
+                'value': defaults['dedent'],
                 'regex': ARGUMENT_REGEXES['dedent'],
             },
             'trailing-newlines': {
-                'value': default_trailing_newlines,
+                'value': defaults['trailing_newlines'],
                 'regex': ARGUMENT_REGEXES['trailing-newlines'],
             },
         }
@@ -320,7 +322,7 @@ def get_file_content(
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
         else:
-            encoding = default_encoding
+            encoding = defaults['encoding']
 
         text_to_include = ''
         expected_but_any_found = [start is not None, end is not None]
@@ -349,10 +351,7 @@ def get_file_content(
                 docs_dir,
                 include_tag_regex,
                 include_markdown_tag_regex,
-                default_encoding,
-                default_preserve_includer_indent,
-                default_dedent,
-                default_trailing_newlines,
+                defaults,
                 files_watcher=files_watcher,
                 http_cache=http_cache,
             )
@@ -487,19 +486,19 @@ def get_file_content(
                 'regex': ARGUMENT_REGEXES['rewrite-relative-urls'],
             },
             'comments': {
-                'value': default_comments,
+                'value': defaults['comments'],
                 'regex': ARGUMENT_REGEXES['comments'],
             },
             'preserve-includer-indent': {
-                'value': default_preserve_includer_indent,
+                'value': defaults['preserve_includer_indent'],
                 'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
             },
             'dedent': {
-                'value': default_dedent,
+                'value': defaults['dedent'],
                 'regex': ARGUMENT_REGEXES['dedent'],
             },
             'trailing-newlines': {
-                'value': default_trailing_newlines,
+                'value': defaults['trailing_newlines'],
                 'regex': ARGUMENT_REGEXES['trailing-newlines'],
             },
         }
@@ -574,7 +573,7 @@ def get_file_content(
                 )
                 encoding = 'utf-8'
         else:
-            encoding = default_encoding
+            encoding = defaults['encoding']
 
         # heading offset
         offset = 0
@@ -624,11 +623,7 @@ def get_file_content(
                 docs_dir,
                 include_tag_regex,
                 include_markdown_tag_regex,
-                default_encoding,
-                default_preserve_includer_indent,
-                default_dedent,
-                default_trailing_newlines,
-                default_comments=default_comments,
+                defaults,
                 files_watcher=files_watcher,
                 http_cache=http_cache,
             )
@@ -746,14 +741,19 @@ def on_page_markdown(
                 tag='include-markdown',
             ),
         ),
-        config.get('encoding', CONFIG_DEFAULTS['encoding']),
-        config.get(
-            'preserve_includer_indent',
-            CONFIG_DEFAULTS['preserve_includer_indent'],
-        ),
-        config.get('dedent', CONFIG_DEFAULTS['dedent']),
-        config.get('trailing_newlines', CONFIG_DEFAULTS['trailing_newlines']),
-        default_comments=config.get('comments', CONFIG_DEFAULTS['comments']),
+        {
+            'encoding': config.get('encoding', CONFIG_DEFAULTS['encoding']),
+            'preserve_includer_indent': config.get(
+                'preserve_includer_indent',
+                CONFIG_DEFAULTS['preserve_includer_indent'],
+            ),
+            'dedent': config.get('dedent', CONFIG_DEFAULTS['dedent']),
+            'trailing_newlines': config.get(
+                'trailing_newlines',
+                CONFIG_DEFAULTS['trailing_newlines'],
+            ),
+            'comments': config.get('comments', CONFIG_DEFAULTS['comments']),
+        },
         files_watcher=files_watcher,
         http_cache=config.get('_cache', http_cache),
     )
