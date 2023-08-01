@@ -141,14 +141,14 @@ def get_file_content(
             arguments_string,
         )
         if invalid_bool_args:
-            arg_name = invalid_bool_args[0]
             lineno = lineno_from_content_start(
                 markdown,
                 directive_match_start,
             )
             raise BuildError(
-                f"Invalid value for '{arg_name}' argument of 'include'"
-                f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                f"Invalid value for '{invalid_bool_args[0]}' argument of"
+                ' include directive at'
+                f' {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}. Possible values are true or false.',
             )
 
@@ -361,13 +361,12 @@ def get_file_content(
             arguments_string,
         )
         if invalid_bool_args:
-            arg_name = invalid_bool_args[0]
             lineno = lineno_from_content_start(
                 markdown,
                 directive_match_start,
             )
             raise BuildError(
-                f"Invalid value for '{arg_name}' argument of"
+                f"Invalid value for '{invalid_bool_args[0]}' argument of"
                 " 'include-markdown' directive at"
                 f' {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}. Possible values are true or false.',
