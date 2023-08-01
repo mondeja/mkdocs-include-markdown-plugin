@@ -51,6 +51,9 @@ plugins:
       comments: true
       rewrite_relative_urls: true
       heading_offset: 0
+      start: <!--start-->
+      end: <!--end-->
+      exclude: LICENSE.md
 ```
 
 Le paramètre `cache` définit un délai d'expiration en secondes pour les requêtes

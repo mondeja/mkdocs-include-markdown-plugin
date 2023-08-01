@@ -25,6 +25,9 @@ if TYPE_CHECKING:
             'comments': bool,
             'rewrite-relative-urls': bool,
             'heading-offset': int,
+            'start': str,
+            'end': str,
+            'exclude': str,
         },
     )
 

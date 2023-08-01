@@ -52,6 +52,9 @@ plugins:
       comments: true
       rewrite_relative_urls: true
       heading_offset: 0
+      start: <!--start-->
+      end: <!--end-->
+      exclude: LICENSE.md
 ```
 
 La configuración `cache` define un tiempo de expiración en segundos para las

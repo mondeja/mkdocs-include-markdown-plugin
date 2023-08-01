@@ -89,7 +89,10 @@ def get_file_content(
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         if exclude_match is None:
-            ignore_paths: list[str] = []
+            if defaults['exclude'] is None:
+                ignore_paths: list[str] = []
+            else:
+                ignore_paths = glob.glob(defaults['exclude'])
         else:
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
@@ -165,7 +168,7 @@ def get_file_content(
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
         else:
-            start = None
+            start = defaults['start']
 
         end_match = ARGUMENT_REGEXES['end'].search(arguments_string)
         if end_match:
@@ -180,7 +183,7 @@ def get_file_content(
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
         else:
-            end = None
+            end = defaults['end']
 
         encoding_match = ARGUMENT_REGEXES['encoding'].search(arguments_string)
         if encoding_match:
@@ -304,7 +307,10 @@ def get_file_content(
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         if exclude_match is None:
-            ignore_paths: list[str] = []
+            if defaults['exclude'] is None:
+                ignore_paths: list[str] = []
+            else:
+                ignore_paths = glob.glob(defaults['exclude'])
         else:
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
@@ -387,7 +393,7 @@ def get_file_content(
                     f':{lineno}',
                 )
         else:
-            start = None
+            start = defaults['start']
 
         end_match = ARGUMENT_REGEXES['end'].search(arguments_string)
         if end_match:
@@ -403,7 +409,7 @@ def get_file_content(
                     f':{lineno}',
                 )
         else:
-            end = None
+            end = defaults['end']
 
         encoding_match = ARGUMENT_REGEXES['encoding'].search(arguments_string)
         if encoding_match:
@@ -620,6 +626,9 @@ def on_page_markdown(
                 'heading_offset',
                 CONFIG_DEFAULTS['heading-offset'],
             ),
+            'start': config.get('start', CONFIG_DEFAULTS['start']),
+            'end': config.get('end', CONFIG_DEFAULTS['end']),
+            'exclude': config.get('exclude', CONFIG_DEFAULTS['exclude']),
         },
         files_watcher=files_watcher,
         http_cache=config.get('_cache', http_cache),

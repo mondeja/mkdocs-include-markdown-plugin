@@ -15,6 +15,9 @@ CONFIG_DEFAULTS = {
     'comments': True,
     'rewrite-relative-urls': True,
     'heading-offset': 0,
+    'start': None,
+    'end': None,
+    'exclude': None,
     'cache': 0,
 }
 
@@ -54,6 +57,18 @@ CONFIG_SCHEME = (
     (
         'heading_offset',
         MkType(int, default=CONFIG_DEFAULTS['heading-offset']),
+    ),
+    (
+        'start',
+        MkType(str, default=CONFIG_DEFAULTS['start']),
+    ),
+    (
+        'end',
+        MkType(str, default=CONFIG_DEFAULTS['end']),
+    ),
+    (
+        'exclude',
+        MkType(str, default=CONFIG_DEFAULTS['exclude']),
     ),
     (
         'cache',

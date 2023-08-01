@@ -47,6 +47,35 @@
               "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include-markdown_comments",
               "type": "boolean",
               "default": true
+            },
+            "rewrite_relative_urls": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include-markdown_trailing-newlines",
+              "type": "boolean",
+              "default": true
+            },
+            "heading_offset": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include-markdown_heading-offset",
+              "type": "integer",
+              "default": 0
+            },
+            "start": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include-markdown_start",
+              "type": "string",
+              "default": "<!--start-->"
+            },
+            "end": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include-markdown_end",
+              "type": "string",
+              "default": "<!--end-->"
+            },
+            "exclude": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include-markdown_exclude",
+              "type": "string"
+            },
+            "cache": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#configuration",
+              "type": "integer",
+              "default": 0
             }
           },
           "additionalProperties": false
