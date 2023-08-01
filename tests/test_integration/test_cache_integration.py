@@ -1,10 +1,10 @@
-import importlib
 import os
 
 import pytest
 from testing_helpers import parametrize_directives
 
 from mkdocs_include_markdown_plugin.cache import (
+    CACHE_AVAILABLE,
     Cache,
     get_cache_directory,
     initialize_cache,
@@ -42,9 +42,7 @@ def test_page_included_by_url_is_cached(
     tmp_path,
 ):
     cache_dir = get_cache_directory()
-    try:
-        importlib.import_module('platformdirs')
-    except ImportError:
+    if not CACHE_AVAILABLE:
         assert cache_dir is None
         assert initialize_cache(600) is None
         return

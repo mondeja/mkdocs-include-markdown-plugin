@@ -8,6 +8,14 @@ import os
 import time
 
 
+try:
+    from platformdirs import user_data_dir
+except ImportError:
+    CACHE_AVAILABLE = False
+else:
+    CACHE_AVAILABLE = True
+
+
 class Cache:
     """Cache for arbitrary content, one file per entry."""
 
@@ -18,7 +26,7 @@ class Cache:
     def get_creation_time_from_fpath(self, fpath: str) -> int:
         """Get creation time of an entry in the cache given its path."""
         with open(fpath, encoding='utf-8') as f:
-            return int(f.readline().strip())
+            return int(f.readline())
 
     @classmethod
     def generate_unique_key_from_url(cls, url: str) -> str:
@@ -29,7 +37,7 @@ class Cache:
 
     def read_file(self, fpath: str) -> str:  # noqa: D102
         with open(fpath, encoding='utf-8') as f:
-            return '\n'.join(f.read().split('\n')[1:])
+            return f.read().split('\n', 1)[1]
 
     def get_(self, url: str) -> str | None:  # noqa: D102
         key = self.generate_unique_key_from_url(url)
@@ -62,9 +70,7 @@ class Cache:
 
 def get_cache_directory() -> str | None:
     """Get the cache directory."""
-    try:
-        from platformdirs import user_data_dir
-    except ImportError:
+    if not CACHE_AVAILABLE:
         return None
 
     cache_dir = user_data_dir('mkdocs-include-markdown-plugin')
@@ -77,7 +83,6 @@ def get_cache_directory() -> str | None:
 def initialize_cache(expiration_seconds: int) -> Cache | None:
     """Initialize a cache instance."""
     cache_dir = get_cache_directory()
-    if cache_dir is None:
-        return None
-
-    return Cache(cache_dir, expiration_seconds)
+    return None if cache_dir is None else Cache(
+        cache_dir, expiration_seconds,
+    )

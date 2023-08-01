@@ -113,6 +113,8 @@ style = [
 source = ["src"]
 omit = ["src/mkdocs_include_markdown_plugin/plugin.py"]
 plugins = ["covdefaults"]
+parallel = true
+data_file = ".coverage/.coverage"
 
 [tool.coverage.report]
 exclude_lines = [
