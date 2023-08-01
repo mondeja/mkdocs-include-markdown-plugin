@@ -16,10 +16,8 @@ if TYPE_CHECKING:
     from mkdocs.structure.pages import Page
 
 from mkdocs_include_markdown_plugin.cache import initialize_cache
-from mkdocs_include_markdown_plugin.config import (
-    CONFIG_SCHEME,
-    create_include_tag,
-)
+from mkdocs_include_markdown_plugin.config import CONFIG_SCHEME
+from mkdocs_include_markdown_plugin.directive import create_include_tag
 from mkdocs_include_markdown_plugin.event import (
     on_page_markdown as _on_page_markdown,
 )

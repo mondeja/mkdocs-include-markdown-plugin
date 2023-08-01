@@ -21,13 +21,14 @@ from mkdocs_include_markdown_plugin.config import (
     CONFIG_DEFAULTS,
     DEFAULT_CLOSING_TAG,
     DEFAULT_OPENING_TAG,
+)
+from mkdocs_include_markdown_plugin.directive import (
+    ARGUMENT_REGEXES,
     create_include_tag,
+    parse_filename_argument,
+    parse_string_argument,
 )
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
-from mkdocs_include_markdown_plugin.regexes import (
-    DOUBLE_QUOTED_STR_RE,
-    SINGLE_QUOTED_STR_RE,
-)
 
 
 if TYPE_CHECKING:  # remove this for mypyc compiling
@@ -38,6 +39,13 @@ if TYPE_CHECKING:  # remove this for mypyc compiling
     class DirectiveBoolArgument(TypedDict):  # noqa: D101
         value: bool
         regex: re.Pattern[str]
+
+    IncludeTags = TypedDict(
+        'IncludeTags', {
+            'include': re.Pattern[str],
+            'include-markdown': re.Pattern[str],
+        },
+    )
 
     class DefaultValues(TypedDict):  # noqa: D101
         encoding: str
@@ -61,71 +69,12 @@ TRUE_FALSE_BOOL_STR = {
 
 
 def is_url(string: str) -> bool:
-    """Determines if a string is a URL."""
+    """Determine if a string is an URL."""
     try:
         result = urlparse(string)
         return all([result.scheme, result.netloc])
     except ValueError:
         return False
-
-
-def bool_arg(arg: str) -> re.Pattern[str]:
-    """Return a compiled regexp to match a boolean argument."""
-    return re.compile(rf'{arg}=(\w+)')
-
-
-def str_arg(arg: str) -> re.Pattern[str]:
-    """Return a compiled regexp to match a string argument."""
-    return re.compile(
-        rf'{arg}=(?:"({DOUBLE_QUOTED_STR_RE})")?'
-        rf"(?:'({SINGLE_QUOTED_STR_RE})')?",
-    )
-
-
-ARGUMENT_REGEXES = {
-    'start': str_arg('start'),
-    'end': str_arg('end'),
-    'exclude': str_arg('exclude'),
-    'encoding': str_arg('encoding'),
-
-    # bool
-    'comments': bool_arg('comments'),
-    'preserve-includer-indent': bool_arg('preserve-includer-indent'),
-    'dedent': bool_arg('dedent'),
-    'trailing-newlines': bool_arg('trailing-newlines'),
-    'rewrite-relative-urls': bool_arg('rewrite-relative-urls'),
-
-    # int
-    'heading-offset': re.compile(r'heading-offset=(-?\d+)'),
-}
-
-
-def parse_filename_argument(
-        match: re.Match[str],
-) -> tuple[str | None, str | None]:
-    """Return the filename argument matched by ``match``."""
-    raw_filename = match.group('double_quoted_filename')
-    if raw_filename is None:
-        raw_filename = match.group('single_quoted_filename')
-        if raw_filename is None:
-            filename = None
-        else:
-            filename = raw_filename.replace("\\'", "'")
-    else:
-        filename = raw_filename.replace('\\"', '"')
-    return filename, raw_filename
-
-
-def parse_string_argument(match: re.Match[str]) -> str | None:
-    """Return the string argument matched by ``match``."""
-    value = match.group(1)
-    if value is None:
-        value = match.group(3)
-        if value is not None:
-            value = value.replace("\\'", "'")
-    else:
-        value = value.replace('\\"', '"')
-    return value
 
 
 def lineno_from_content_start(content: str, start: int) -> int:
@@ -157,8 +106,7 @@ def get_file_content(
     markdown: str,
     page_src_path: str,
     docs_dir: str,
-    include_tag_regex: re.Pattern[str],
-    include_markdown_tag_regex: re.Pattern[str],
+    tags: IncludeTags,
     defaults: DefaultValues,
     cumulative_heading_offset: int = 0,
     files_watcher: FilesWatcher | None = None,
@@ -349,8 +297,7 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
-                include_tag_regex,
-                include_markdown_tag_regex,
+                tags,
                 defaults,
                 files_watcher=files_watcher,
                 http_cache=http_cache,
@@ -621,8 +568,7 @@ def get_file_content(
                 new_text_to_include,
                 file_path,
                 docs_dir,
-                include_tag_regex,
-                include_markdown_tag_regex,
+                tags,
                 defaults,
                 files_watcher=files_watcher,
                 http_cache=http_cache,
@@ -699,11 +645,11 @@ def get_file_content(
 
         return text_to_include
 
-    markdown = include_tag_regex.sub(
+    markdown = tags['include'].sub(
         found_include_tag,
         markdown,
     )
-    markdown = include_markdown_tag_regex.sub(
+    markdown = tags['include-markdown'].sub(
         found_include_markdown_tag,
         markdown,
     )
@@ -726,21 +672,23 @@ def on_page_markdown(
         markdown,
         page.file.abs_src_path,
         docs_dir,
-        config.get(
-            '_include_tag',
-            create_include_tag(
-                config.get('opening_tag', DEFAULT_OPENING_TAG),
-                config.get('closing_tag', DEFAULT_CLOSING_TAG),
+        {
+            'include': config.get(
+                '_include_tag',
+                create_include_tag(
+                    config.get('opening_tag', DEFAULT_OPENING_TAG),
+                    config.get('closing_tag', DEFAULT_CLOSING_TAG),
+                ),
             ),
-        ),
-        config.get(
-            '_include_markdown_tag',
-            create_include_tag(
-                config.get('opening_tag', DEFAULT_OPENING_TAG),
-                config.get('closing_tag', DEFAULT_CLOSING_TAG),
-                tag='include-markdown',
+            'include-markdown': config.get(
+                '_include_markdown_tag',
+                create_include_tag(
+                    config.get('opening_tag', DEFAULT_OPENING_TAG),
+                    config.get('closing_tag', DEFAULT_CLOSING_TAG),
+                    tag='include-markdown',
+                ),
             ),
-        ),
+        },
         {
             'encoding': config.get('encoding', CONFIG_DEFAULTS['encoding']),
             'preserve_includer_indent': config.get(
