@@ -16,10 +16,8 @@ if TYPE_CHECKING:
     from mkdocs.structure.pages import Page
 
 from mkdocs_include_markdown_plugin.cache import initialize_cache
-from mkdocs_include_markdown_plugin.config import (
-    CONFIG_SCHEME,
-    create_include_tag,
-)
+from mkdocs_include_markdown_plugin.config import CONFIG_SCHEME
+from mkdocs_include_markdown_plugin.directive import create_include_tag
 from mkdocs_include_markdown_plugin.event import (
     on_page_markdown as _on_page_markdown,
 )
@@ -63,23 +61,20 @@ class IncludeMarkdownPlugin(BasePlugin):
     def _watch_included_files(self) -> None:
         global FILES_WATCHER, SERVER
         SERVER = cast(LiveReloadServer, SERVER)
+        FILES_WATCHER = cast(FilesWatcher, FILES_WATCHER)
 
-        # compatibility with Mkdocs < 1.4.0
-        if hasattr(SERVER, 'unwatch'):
-            FILES_WATCHER = cast(FilesWatcher, FILES_WATCHER)
+        # unwatch previous watched files not needed anymore
+        for filepath in FILES_WATCHER.prev_included_files:
+            if filepath not in FILES_WATCHER.included_files:
+                SERVER.unwatch(filepath)
+        FILES_WATCHER.prev_included_files = (
+            FILES_WATCHER.included_files[:]
+        )
 
-            # unwatch previous watched files not needed anymore
-            for filepath in FILES_WATCHER.prev_included_files:
-                if filepath not in FILES_WATCHER.included_files:
-                    SERVER.unwatch(filepath)
-            FILES_WATCHER.prev_included_files = (
-                FILES_WATCHER.included_files[:]
-            )
-
-            # watch new included files
-            for filepath in FILES_WATCHER.included_files:
-                SERVER.watch(filepath, recursive=False)
-            FILES_WATCHER.included_files = []
+        # watch new included files
+        for filepath in FILES_WATCHER.included_files:
+            SERVER.watch(filepath, recursive=False)
+        FILES_WATCHER.included_files = []
 
     def on_page_content(
             self,

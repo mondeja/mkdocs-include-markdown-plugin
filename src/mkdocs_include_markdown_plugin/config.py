@@ -2,36 +2,33 @@
 
 from __future__ import annotations
 
-import re
-
 from mkdocs.config.config_options import Type as MkType
 
-from mkdocs_include_markdown_plugin.regexes import INCLUDE_TAG_RE
-
-
-DEFAULT_COMMENTS = True
-DEFAULT_OPENING_TAG = '{%'
-DEFAULT_CLOSING_TAG = '%}'
 
 CONFIG_DEFAULTS = {
-    'opening_tag': DEFAULT_OPENING_TAG,
-    'closing_tag': DEFAULT_CLOSING_TAG,
+    'opening-tag': '{%',
+    'closing-tag': '%}',
     'encoding': 'utf-8',
-    'preserve_includer_indent': True,
+    'preserve-includer-indent': True,
     'dedent': False,
-    'trailing_newlines': True,
-    'comments': DEFAULT_COMMENTS,
+    'trailing-newlines': True,
+    'comments': True,
+    'rewrite-relative-urls': True,
+    'heading-offset': 0,
+    'start': None,
+    'end': None,
+    'exclude': None,
     'cache': 0,
 }
 
 CONFIG_SCHEME = (
     (
         'opening_tag',
-        MkType(str, default=DEFAULT_OPENING_TAG),
+        MkType(str, default=CONFIG_DEFAULTS['opening-tag']),
     ),
     (
         'closing_tag',
-        MkType(str, default=DEFAULT_CLOSING_TAG),
+        MkType(str, default=CONFIG_DEFAULTS['closing-tag']),
     ),
     (
         'encoding',
@@ -39,7 +36,7 @@ CONFIG_SCHEME = (
     ),
     (
         'preserve_includer_indent',
-        MkType(bool, default=CONFIG_DEFAULTS['preserve_includer_indent']),
+        MkType(bool, default=CONFIG_DEFAULTS['preserve-includer-indent']),
     ),
     (
         'dedent',
@@ -47,30 +44,34 @@ CONFIG_SCHEME = (
     ),
     (
         'trailing_newlines',
-        MkType(bool, default=CONFIG_DEFAULTS['trailing_newlines']),
+        MkType(bool, default=CONFIG_DEFAULTS['trailing-newlines']),
     ),
     (
         'comments',
-        MkType(bool, default=DEFAULT_COMMENTS),
+        MkType(bool, default=CONFIG_DEFAULTS['comments']),
+    ),
+    (
+        'rewrite_relative_urls',
+        MkType(bool, default=CONFIG_DEFAULTS['rewrite-relative-urls']),
+    ),
+    (
+        'heading_offset',
+        MkType(int, default=CONFIG_DEFAULTS['heading-offset']),
+    ),
+    (
+        'start',
+        MkType(str, default=CONFIG_DEFAULTS['start']),
+    ),
+    (
+        'end',
+        MkType(str, default=CONFIG_DEFAULTS['end']),
+    ),
+    (
+        'exclude',
+        MkType(str, default=CONFIG_DEFAULTS['exclude']),
     ),
     (
         'cache',
         MkType(int, default=CONFIG_DEFAULTS['cache']),
     ),
 )
-
-
-def create_include_tag(
-    opening_tag: str, closing_tag: str, tag: str = 'include',
-) -> re.Pattern[str]:
-    """Create a regex pattern to match an inclusion tag directive.
-
-    Replaces the substrings '$OPENING_TAG' and '$CLOSING_TAG' from
-    INCLUDE_TAG_REGEX by the effective tag.
-    """
-    return re.compile(
-        INCLUDE_TAG_RE.replace(' include', f' {tag}').replace(
-            '$OPENING_TAG', re.escape(opening_tag),
-        ).replace('$CLOSING_TAG', re.escape(closing_tag)),
-        flags=re.VERBOSE | re.DOTALL,
-    )

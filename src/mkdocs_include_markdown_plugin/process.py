@@ -7,7 +7,13 @@ import io
 import os
 import re
 from collections.abc import Callable, Iterator
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse, urlunparse
+from urllib.request import Request, urlopen
+
+
+if TYPE_CHECKING:
+    from mkdocs_include_markdown_plugin.cache import Cache
 
 
 # Markdown regular expressions. Taken from the original Markdown.pl by John
@@ -199,7 +205,9 @@ def transform_line_by_line_skipping_codeblocks(
 
 
 def rewrite_relative_urls(
-    markdown: str, source_path: str, destination_path: str,
+        markdown: str,
+        source_path: str,
+        destination_path: str,
 ) -> str:
     """Rewrite relative URLs in a Markdown text.
 
@@ -276,9 +284,9 @@ def interpret_escapes(value: str) -> str:
 
 
 def filter_inclusions(
-    new_start: str | None,
-    new_end: str | None,
-    text_to_include: str,
+        new_start: str | None,
+        new_end: str | None,
+        text_to_include: str,
 ) -> tuple[str, bool, bool]:
     """Filter inclusions in a text.
 
@@ -410,3 +418,31 @@ def filter_paths(
             response.append(filepath)
     response.sort()
     return response
+
+
+def is_url(string: str) -> bool:
+    """Determine if a string is an URL."""
+    try:
+        result = urlparse(string)
+        return all([result.scheme, result.netloc])
+    except ValueError:  # pragma: no cover
+        return False
+
+
+def read_file(file_path: str, encoding: str) -> str:
+    """Read a file and return its content."""
+    with open(file_path, encoding=encoding) as f:
+        return f.read()
+
+
+def read_url(url: str, http_cache: Cache | None) -> Any:  # noqa: U100
+    """Read an HTTP location and return its content."""
+    if http_cache is not None:
+        cached_content = http_cache.get_(url)
+        if cached_content is not None:
+            return cached_content
+    with urlopen(Request(url)) as response:
+        content = response.read().decode('UTF-8')
+    if http_cache is not None:
+        http_cache.set_(url, content)
+    return content

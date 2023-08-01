@@ -57,17 +57,21 @@ def test_page_included_by_url_is_cached(
 
     cache = Cache(cache_dir, 600)
 
-    result = on_page_markdown(
-        f'''{{%
+    def run():
+        return on_page_markdown(
+            f'''{{%
     {directive} "{url}"
     comments=false
 %}}''',
-        page(tmp_path / 'includer.md'),
-        tmp_path,
-        http_cache=cache,
-    )
+            page(tmp_path / 'includer.md'),
+            tmp_path,
+            http_cache=cache,
+        )
 
-    assert result == expected_result
+    assert run() == expected_result
 
     assert os.path.isfile(file_path)
+    run()
+    assert os.path.isfile(file_path)
+
     os.remove(file_path)
