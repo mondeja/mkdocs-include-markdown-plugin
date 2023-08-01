@@ -13,6 +13,7 @@ CONFIG_DEFAULTS = {
     'dedent': False,
     'trailing-newlines': True,
     'comments': True,
+    'rewrite-relative-urls': True,
     'cache': 0,
 }
 
@@ -44,6 +45,10 @@ CONFIG_SCHEME = (
     (
         'comments',
         MkType(bool, default=CONFIG_DEFAULTS['comments']),
+    ),
+    (
+        'rewrite_relative_urls',
+        MkType(bool, default=CONFIG_DEFAULTS['rewrite-relative-urls']),
     ),
     (
         'cache',

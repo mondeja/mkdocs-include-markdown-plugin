@@ -4,6 +4,28 @@ from __future__ import annotations
 
 import re
 import string
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from typing import Generator, TypedDict
+
+    class DirectiveBoolArgument(TypedDict):  # noqa: D101
+        value: bool
+        regex: re.Pattern[str]
+
+    DirectiveBoolArgumentsDict = dict[str, DirectiveBoolArgument]
+
+    DefaultValues = TypedDict(
+        'DefaultValues', {
+            'encoding': str,
+            'preserve-includer-indent': bool,
+            'dedent': bool,
+            'trailing-newlines': bool,
+            'comments': bool,
+            'rewrite-relative-urls': bool,
+        },
+    )
 
 
 DOUBLE_QUOTED_STR_RE = r'([^"]|(?<=\\)["])+'
@@ -22,6 +44,16 @@ INCLUDE_TAG_RE = rf"""
     \s*
     $CLOSING_TAG
 """  # noqa: E501
+
+TRUE_FALSE_STR_BOOL = {
+    'true': True,
+    'false': False,
+}
+
+TRUE_FALSE_BOOL_STR = {
+    True: 'true',
+    False: 'false',
+}
 
 
 def bool_arg(arg: str) -> re.Pattern[str]:
@@ -97,3 +129,35 @@ def create_include_tag(
         ).replace('$CLOSING_TAG', re.escape(closing_tag)),
         flags=re.VERBOSE | re.DOTALL,
     )
+
+
+def parse_bool_options(
+    option_names: list[str],
+    defaults: DefaultValues,
+    arguments_string: str,
+) -> Generator[
+        str | DirectiveBoolArgumentsDict,
+        str | DirectiveBoolArgumentsDict,
+        None,
+]:
+    """Parse boolean options from arguments string."""
+    bool_options: dict[str, DirectiveBoolArgument] = {}
+    for option_name in option_names:
+        bool_options[option_name] = {
+            'value': defaults[option_name],  # type: ignore
+            'regex': ARGUMENT_REGEXES[option_name],
+        }
+
+    for arg_name, arg in bool_options.items():
+        bool_arg_match = arg['regex'].search(arguments_string)
+        if bool_arg_match is None:
+            continue
+        try:
+            bool_options[arg_name]['value'] = TRUE_FALSE_STR_BOOL[
+                bool_arg_match.group(
+                    1,
+                ) or TRUE_FALSE_BOOL_STR[arg['value']]
+            ]
+        except KeyError:
+            yield arg_name
+    yield bool_options

@@ -19,6 +19,7 @@ from mkdocs_include_markdown_plugin.config import CONFIG_DEFAULTS
 from mkdocs_include_markdown_plugin.directive import (
     ARGUMENT_REGEXES,
     create_include_tag,
+    parse_bool_options,
     parse_filename_argument,
     parse_string_argument,
 )
@@ -30,9 +31,7 @@ if TYPE_CHECKING:  # remove this for mypyc compiling
 
     from mkdocs.structure.pages import Page
 
-    class DirectiveBoolArgument(TypedDict):  # noqa: D101
-        value: bool
-        regex: re.Pattern[str]
+    from mkdocs_include_markdown_plugin.directive import DefaultValues
 
     IncludeTags = TypedDict(
         'IncludeTags', {
@@ -41,28 +40,8 @@ if TYPE_CHECKING:  # remove this for mypyc compiling
         },
     )
 
-    DefaultValues = TypedDict(
-        'DefaultValues', {
-            'encoding': str,
-            'preserve-includer-indent': bool,
-            'dedent': bool,
-            'trailing-newlines': bool,
-            'comments': bool,
-        },
-    )
-
 
 logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
-
-TRUE_FALSE_STR_BOOL = {
-    'true': True,
-    'false': False,
-}
-
-TRUE_FALSE_BOOL_STR = {
-    True: 'true',
-    False: 'false',
-}
 
 
 def lineno_from_content_start(content: str, start: int) -> int:
@@ -157,41 +136,24 @@ def get_file_content(
             if not process.is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
 
-        bool_options: dict[str, DirectiveBoolArgument] = {
-            'preserve-includer-indent': {
-                'value': defaults['preserve-includer-indent'],
-                'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
-            },
-            'dedent': {
-                'value': defaults['dedent'],
-                'regex': ARGUMENT_REGEXES['dedent'],
-            },
-            'trailing-newlines': {
-                'value': defaults['trailing-newlines'],
-                'regex': ARGUMENT_REGEXES['trailing-newlines'],
-            },
-        }
-
-        for arg_name, arg in bool_options.items():
-            bool_arg_match = arg['regex'].search(arguments_string)
-            if bool_arg_match is None:
-                continue
-            try:
-                bool_options[arg_name]['value'] = TRUE_FALSE_STR_BOOL[
-                    bool_arg_match.group(
-                        1,
-                    ) or TRUE_FALSE_BOOL_STR[arg['value']]
-                ]
-            except KeyError:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
-                )
-                raise BuildError(
-                    f"Invalid value for '{arg_name}' argument of 'include'"
-                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
-                    f':{lineno}. Possible values are true or false.',
-                )
+        bool_options: Any = list(
+            parse_bool_options(
+                ['preserve-includer-indent', 'dedent', 'trailing-newlines'],
+                defaults,
+                arguments_string,
+            ),
+        )
+        if len(bool_options) > 1:
+            arg_name = bool_options[0]
+            lineno = lineno_from_content_start(
+                markdown,
+                directive_match_start,
+            )
+            raise BuildError(
+                f"Invalid value for '{arg_name}' argument of 'include'"
+                f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                f':{lineno}. Possible values are true or false.',
+            )
 
         start_match = ARGUMENT_REGEXES['start'].search(arguments_string)
         if start_match:
@@ -392,50 +354,29 @@ def get_file_content(
             if not process.is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
 
-        bool_options: dict[str, DirectiveBoolArgument] = {
-            'rewrite-relative-urls': {
-                'value': True,
-                'regex': ARGUMENT_REGEXES['rewrite-relative-urls'],
-            },
-            'comments': {
-                'value': defaults['comments'],
-                'regex': ARGUMENT_REGEXES['comments'],
-            },
-            'preserve-includer-indent': {
-                'value': defaults['preserve-includer-indent'],
-                'regex': ARGUMENT_REGEXES['preserve-includer-indent'],
-            },
-            'dedent': {
-                'value': defaults['dedent'],
-                'regex': ARGUMENT_REGEXES['dedent'],
-            },
-            'trailing-newlines': {
-                'value': defaults['trailing-newlines'],
-                'regex': ARGUMENT_REGEXES['trailing-newlines'],
-            },
-        }
-
-        for arg_name, arg in bool_options.items():
-            bool_arg_match = arg['regex'].search(arguments_string)
-            if bool_arg_match is None:
-                continue
-            try:
-                bool_options[arg_name]['value'] = TRUE_FALSE_STR_BOOL[
-                    bool_arg_match.group(
-                        1,
-                    ) or TRUE_FALSE_BOOL_STR[arg['value']]
-                ]
-            except KeyError:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
-                )
-                raise BuildError(
-                    f"Invalid value for '{arg_name}' argument of"
-                    " 'include-markdown' directive at"
-                    f' {os.path.relpath(page_src_path, docs_dir)}'
-                    f':{lineno}. Possible values are true or false.',
-                )
+        bool_options: Any = list(
+            parse_bool_options(
+                [
+                    'rewrite-relative-urls', 'comments',
+                    'preserve-includer-indent', 'dedent',
+                    'trailing-newlines',
+                ],
+                defaults,
+                arguments_string,
+            ),
+        )
+        if len(bool_options) > 1:
+            arg_name = bool_options[0]
+            lineno = lineno_from_content_start(
+                markdown,
+                directive_match_start,
+            )
+            raise BuildError(
+                f"Invalid value for '{arg_name}' argument of"
+                " 'include-markdown' directive at"
+                f' {os.path.relpath(page_src_path, docs_dir)}'
+                f':{lineno}. Possible values are true or false.',
+            )
 
         # start and end arguments
         start_match = ARGUMENT_REGEXES['start'].search(arguments_string)
@@ -483,7 +424,6 @@ def get_file_content(
                     ' directive at '
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
-                encoding = 'utf-8'
         else:
             encoding = defaults['encoding']
 
@@ -657,15 +597,19 @@ def on_page_markdown(
         {
             'encoding': config.get('encoding', CONFIG_DEFAULTS['encoding']),
             'preserve-includer-indent': config.get(
-                'preserve-includer-indent',
+                'preserve_includer_indent',
                 CONFIG_DEFAULTS['preserve-includer-indent'],
             ),
             'dedent': config.get('dedent', CONFIG_DEFAULTS['dedent']),
             'trailing-newlines': config.get(
                 'trailing_newlines',
-                CONFIG_DEFAULTS['trailing_newlines'],
+                CONFIG_DEFAULTS['trailing-newlines'],
             ),
             'comments': config.get('comments', CONFIG_DEFAULTS['comments']),
+            'rewrite-relative-urls': config.get(
+                'rewrite_relative_urls',
+                CONFIG_DEFAULTS['rewrite-relative-urls'],
+            ),
         },
         files_watcher=files_watcher,
         http_cache=config.get('_cache', http_cache),
