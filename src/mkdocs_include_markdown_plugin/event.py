@@ -63,7 +63,7 @@ def get_file_content(
     def found_include_tag(match: re.Match[str]) -> str:
         directive_match_start = match.start()
 
-        _includer_indent = match.group('_includer_indent')
+        includer_indent = match.group('_includer_indent')
 
         filename, raw_filename = parse_filename_argument(match)
         if filename is None:
@@ -102,7 +102,6 @@ def get_file_content(
                     f' at {os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
             else:
-
                 if os.path.isabs(exclude_string):
                     exclude_globstr = exclude_string
                 else:
@@ -242,14 +241,14 @@ def get_file_content(
             # includer indentation preservation
             if bool_options['preserve-includer-indent']['value']:
                 new_text_to_include = ''.join(
-                    _includer_indent + line
+                    includer_indent + line
                     for line in (
                         new_text_to_include.splitlines(keepends=True)
                         or ['']
                     )
                 )
             else:
-                new_text_to_include = _includer_indent + new_text_to_include
+                new_text_to_include = includer_indent + new_text_to_include
 
             text_to_include += new_text_to_include
 
@@ -278,8 +277,8 @@ def get_file_content(
     def found_include_markdown_tag(match: re.Match[str]) -> str:
         directive_match_start = match.start()
 
-        _includer_indent = match.group('_includer_indent')
-        _empty_includer_indent = ' ' * len(_includer_indent)
+        includer_indent = match.group('_includer_indent')
+        empty_includer_indent = ' ' * len(includer_indent)
 
         filename, raw_filename = parse_filename_argument(match)
         if filename is None:
@@ -492,14 +491,14 @@ def get_file_content(
             # comments
             if bool_options['comments']['value']:
                 new_text_to_include = (
-                    f'{_includer_indent}'
+                    f'{includer_indent}'
                     f'<!-- BEGIN INCLUDE {html.escape(filename)}'
                     f' {start_end_part}-->{separator}{new_text_to_include}'
                     f'{separator}<!-- END INCLUDE -->'
                 )
             else:
                 new_text_to_include = (
-                    f'{_includer_indent}{new_text_to_include}'
+                    f'{includer_indent}{new_text_to_include}'
                 )
 
             # dedent
@@ -509,7 +508,7 @@ def get_file_content(
             # includer indentation preservation
             if bool_options['preserve-includer-indent']['value']:
                 new_text_to_include = ''.join(
-                    (_empty_includer_indent if i > 0 else '') + line
+                    (empty_includer_indent if i > 0 else '') + line
                     for i, line in enumerate(
                         new_text_to_include.splitlines(keepends=True)
                         or [''],
