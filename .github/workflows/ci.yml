@@ -78,6 +78,7 @@ jobs:
       - name: Convert coverage to XML
         run: |
           pip install coverage covdefaults
+          coverage combine
           coverage xml
       - name: Upload coverage
         uses: codecov/codecov-action@v3

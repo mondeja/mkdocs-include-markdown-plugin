@@ -10,7 +10,7 @@ import time
 
 try:
     from platformdirs import user_data_dir
-except ImportError:  # pragma: no cover
+except ImportError:
     CACHE_AVAILABLE = False
 else:
     CACHE_AVAILABLE = True
