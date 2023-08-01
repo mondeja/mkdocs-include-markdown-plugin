@@ -1,4 +1,3 @@
-import contextlib
 import os
 import subprocess
 import sys
@@ -49,9 +48,12 @@ def test_examples_api(dirname):
             if not CACHE_AVAILABLE:
                 expected_to_raise_exc = True
 
-    with (
-        pytest.raises(Abort)
-        if expected_to_raise_exc else contextlib.nullcontext(),
-    ):
+    def run():
         cfg = config.load_config(config_file=config_file)
         build(cfg, dirty=False)
+
+    if expected_to_raise_exc:
+        with pytest.raises(Abort):
+            run()
+    else:
+        run()
