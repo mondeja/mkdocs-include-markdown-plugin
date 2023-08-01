@@ -205,7 +205,9 @@ def transform_line_by_line_skipping_codeblocks(
 
 
 def rewrite_relative_urls(
-    markdown: str, source_path: str, destination_path: str,
+        markdown: str,
+        source_path: str,
+        destination_path: str,
 ) -> str:
     """Rewrite relative URLs in a Markdown text.
 
@@ -282,9 +284,9 @@ def interpret_escapes(value: str) -> str:
 
 
 def filter_inclusions(
-    new_start: str | None,
-    new_end: str | None,
-    text_to_include: str,
+        new_start: str | None,
+        new_end: str | None,
+        text_to_include: str,
 ) -> tuple[str, bool, bool]:
     """Filter inclusions in a text.
 

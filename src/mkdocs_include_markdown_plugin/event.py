@@ -50,14 +50,14 @@ def lineno_from_content_start(content: str, start: int) -> int:
 
 
 def get_file_content(
-    markdown: str,
-    page_src_path: str,
-    docs_dir: str,
-    tags: IncludeTags,
-    defaults: DefaultValues,
-    cumulative_heading_offset: int = 0,
-    files_watcher: FilesWatcher | None = None,
-    http_cache: Cache | None = None,
+        markdown: str,
+        page_src_path: str,
+        docs_dir: str,
+        tags: IncludeTags,
+        defaults: DefaultValues,
+        cumulative_heading_offset: int = 0,
+        files_watcher: FilesWatcher | None = None,
+        http_cache: Cache | None = None,
 ) -> str:
     """Return the content of the file to include."""
     def found_include_tag(match: re.Match[str]) -> str:
@@ -574,12 +574,12 @@ def get_file_content(
 
 
 def on_page_markdown(
-    markdown: str,
-    page: Page,
-    docs_dir: str,
-    config: MutableMapping[str, Any] | None = None,
-    files_watcher: FilesWatcher | None = None,
-    http_cache: Cache | None = None,
+        markdown: str,
+        page: Page,
+        docs_dir: str,
+        config: MutableMapping[str, Any] | None = None,
+        files_watcher: FilesWatcher | None = None,
+        http_cache: Cache | None = None,
 ) -> str:
     """Process markdown content of a page."""
     if config is None:

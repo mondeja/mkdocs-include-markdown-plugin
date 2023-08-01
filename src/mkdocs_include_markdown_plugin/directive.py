@@ -120,7 +120,7 @@ def parse_string_argument(match: re.Match[str]) -> str | None:
 
 
 def create_include_tag(
-    opening_tag: str, closing_tag: str, tag: str = 'include',
+        opening_tag: str, closing_tag: str, tag: str = 'include',
 ) -> re.Pattern[str]:
     """Create a regex pattern to match an inclusion tag directive.
 
@@ -136,9 +136,9 @@ def create_include_tag(
 
 
 def parse_bool_options(
-    option_names: list[str],
-    defaults: DefaultValues,
-    arguments_string: str,
+        option_names: list[str],
+        defaults: DefaultValues,
+        arguments_string: str,
 ) -> tuple[DirectiveBoolArgumentsDict, list[str]]:
     """Parse boolean options from arguments string."""
     invalid_args: list[str] = []
