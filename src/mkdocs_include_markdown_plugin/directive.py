@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from typing import Generator, TypedDict
+    from typing import TypedDict
 
     class DirectiveBoolArgument(TypedDict):  # noqa: D101
         value: bool
@@ -135,12 +135,10 @@ def parse_bool_options(
     option_names: list[str],
     defaults: DefaultValues,
     arguments_string: str,
-) -> Generator[
-        str | DirectiveBoolArgumentsDict,
-        str | DirectiveBoolArgumentsDict,
-        None,
-]:
+) -> tuple[DirectiveBoolArgumentsDict, list[str]]:
     """Parse boolean options from arguments string."""
+    invalid_args: list[str] = []
+
     bool_options: dict[str, DirectiveBoolArgument] = {}
     for option_name in option_names:
         bool_options[option_name] = {
@@ -159,5 +157,5 @@ def parse_bool_options(
                 ) or TRUE_FALSE_BOOL_STR[arg['value']]
             ]
         except KeyError:
-            yield arg_name
-    yield bool_options
+            invalid_args.append(arg_name)
+    return bool_options, invalid_args

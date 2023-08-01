@@ -136,15 +136,13 @@ def get_file_content(
             if not process.is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
 
-        bool_options: Any = list(
-            parse_bool_options(
-                ['preserve-includer-indent', 'dedent', 'trailing-newlines'],
-                defaults,
-                arguments_string,
-            ),
+        bool_options, invalid_bool_args = parse_bool_options(
+            ['preserve-includer-indent', 'dedent', 'trailing-newlines'],
+            defaults,
+            arguments_string,
         )
-        if len(bool_options) > 1:
-            arg_name = bool_options[0]
+        if invalid_bool_args:
+            arg_name = invalid_bool_args[0]
             lineno = lineno_from_content_start(
                 markdown,
                 directive_match_start,
@@ -354,19 +352,17 @@ def get_file_content(
             if not process.is_url(file_path_glob):
                 files_watcher.included_files.extend(file_paths_to_include)
 
-        bool_options: Any = list(
-            parse_bool_options(
-                [
-                    'rewrite-relative-urls', 'comments',
-                    'preserve-includer-indent', 'dedent',
-                    'trailing-newlines',
-                ],
-                defaults,
-                arguments_string,
-            ),
+        bool_options, invalid_bool_args = parse_bool_options(
+            [
+                'rewrite-relative-urls', 'comments',
+                'preserve-includer-indent', 'dedent',
+                'trailing-newlines',
+            ],
+            defaults,
+            arguments_string,
         )
-        if len(bool_options) > 1:
-            arg_name = bool_options[0]
+        if invalid_bool_args:
+            arg_name = invalid_bool_args[0]
             lineno = lineno_from_content_start(
                 markdown,
                 directive_match_start,
