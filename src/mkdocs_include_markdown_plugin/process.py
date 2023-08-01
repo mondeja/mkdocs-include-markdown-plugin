@@ -423,7 +423,7 @@ def is_url(string: str) -> bool:
     try:
         result = urlparse(string)
         return all([result.scheme, result.netloc])
-    except ValueError:
+    except ValueError:  # pragma: no cover
         return False
 
 
