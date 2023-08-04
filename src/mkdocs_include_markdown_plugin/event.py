@@ -89,9 +89,9 @@ def get_file_content(
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         if exclude_match is None:
-            if defaults['exclude'] is None:
+            if defaults['exclude'] is None:  # pragma: no branch
                 ignore_paths: list[str] = []
-            else:
+            else:  # pragma: no cover
                 ignore_paths = glob.glob(defaults['exclude'])
         else:
             exclude_string = parse_string_argument(exclude_match)
@@ -121,7 +121,7 @@ def get_file_content(
         else:
             file_paths_to_include = process.filter_paths(
                 glob.iglob(file_path_glob, recursive=True),
-                ignore_paths=ignore_paths,
+                ignore_paths,
             )
 
         if not file_paths_to_include:
@@ -209,7 +209,7 @@ def get_file_content(
             else:
                 new_text_to_include = process.read_file(file_path, encoding)
 
-            if start is not None or end is not None:
+            if start or end:
                 new_text_to_include, *expected_not_found = (
                     process.filter_inclusions(
                         start,
@@ -307,9 +307,9 @@ def get_file_content(
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         if exclude_match is None:
-            if defaults['exclude'] is None:
+            if defaults['exclude'] is None:  # pragma: no branch
                 ignore_paths: list[str] = []
-            else:
+            else:  # pragma: no cover
                 ignore_paths = glob.glob(defaults['exclude'])
         else:
             exclude_string = parse_string_argument(exclude_match)
@@ -340,7 +340,7 @@ def get_file_content(
         else:
             file_paths_to_include = process.filter_paths(
                 glob.iglob(file_path_glob, recursive=True),
-                ignore_paths=ignore_paths,
+                ignore_paths,
             )
 
         if not file_paths_to_include:
@@ -432,16 +432,27 @@ def get_file_content(
             arguments_string,
         )
         if offset_match:
+            offset = offset_match.group(1)
+            if offset == '':
+                lineno = lineno_from_content_start(
+                    markdown,
+                    directive_match_start,
+                )
+                raise BuildError(
+                    "Invalid empty 'heading-offset' argument in"
+                    " 'include-markdown' directive at"
+                    f' {os.path.relpath(page_src_path, docs_dir)}:{lineno}',
+                )
             try:
-                offset = int(offset_match.group(1))
+                offset = int(offset)
             except ValueError:
                 lineno = lineno_from_content_start(
                     markdown,
                     directive_match_start,
                 )
                 raise BuildError(
-                    "Invalid 'heading-offset' argument in 'include-markdown'"
-                    ' directive at '
+                    f"Invalid 'heading-offset' argument \"{offset}\" in"
+                    " 'include-markdown' directive at "
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
         else:
@@ -468,7 +479,7 @@ def get_file_content(
             else:
                 new_text_to_include = process.read_file(file_path, encoding)
 
-            if start is not None or end is not None:
+            if start or end:
                 new_text_to_include, *expected_not_found = (
                     process.filter_inclusions(
                         start,

@@ -324,7 +324,7 @@ def filter_inclusions(
                 expected_start_not_found = True
         text_to_include = new_text_to_include
 
-    elif new_end is not None:
+    elif new_end is not None:  # pragma: no branch
         end = interpret_escapes(new_end)
         if end in text_to_include:
             text_to_include = text_to_include.split(
@@ -381,7 +381,7 @@ def rstrip_trailing_newlines(content: str) -> str:
 
 def filter_paths(
         filepaths: Iterator[str],
-        ignore_paths: list[str] | None = None,
+        ignore_paths: list[str],
 ) -> list[str]:
     """Filters a list of paths removing those defined in other list of paths.
 
@@ -400,9 +400,6 @@ def filter_paths(
     Returns:
         list: Non filtered paths ordered alphabetically.
     """
-    if ignore_paths is None:
-        ignore_paths = []
-
     response = []
     for filepath in filepaths:
         # ignore by filepath

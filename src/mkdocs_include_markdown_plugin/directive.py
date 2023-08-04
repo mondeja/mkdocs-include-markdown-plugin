@@ -60,9 +60,9 @@ TRUE_FALSE_BOOL_STR = {
 }
 
 
-def bool_arg(arg: str) -> re.Pattern[str]:
+def arg(arg: str) -> re.Pattern[str]:
     """Return a compiled regexp to match a boolean argument."""
-    return re.compile(rf'{arg}=(\w+)')
+    return re.compile(rf'{arg}=([-\w]*)')
 
 
 def str_arg(arg: str) -> re.Pattern[str]:
@@ -80,14 +80,14 @@ ARGUMENT_REGEXES = {
     'encoding': str_arg('encoding'),
 
     # bool
-    'comments': bool_arg('comments'),
-    'preserve-includer-indent': bool_arg('preserve-includer-indent'),
-    'dedent': bool_arg('dedent'),
-    'trailing-newlines': bool_arg('trailing-newlines'),
-    'rewrite-relative-urls': bool_arg('rewrite-relative-urls'),
+    'comments': arg('comments'),
+    'preserve-includer-indent': arg('preserve-includer-indent'),
+    'dedent': arg('dedent'),
+    'trailing-newlines': arg('trailing-newlines'),
+    'rewrite-relative-urls': arg('rewrite-relative-urls'),
 
     # int
-    'heading-offset': re.compile(r'heading-offset=(-?\d+)'),
+    'heading-offset': arg('heading-offset'),
 }
 
 

@@ -201,6 +201,50 @@ def test_empty_encoding_argument(directive, page, tmp_path, caplog):
     )
 
 
+@pytest.mark.parametrize(
+    ('argument_value', 'exception_message'),
+    (
+        pytest.param(
+            'invalidoption', (
+                "Invalid 'heading-offset' argument \"invalidoption\" in"
+                " 'include-markdown' directive at includer.md:1"
+            ),
+            id='invalidoption',
+        ),
+        pytest.param(
+            '', (
+                "Invalid empty 'heading-offset' argument in"
+                " 'include-markdown' directive at includer.md:1"
+            ),
+            id='empty',
+        ),
+    ),
+)
+def test_invalid_heading_offset_arguments(
+    argument_value,
+    exception_message,
+    page,
+    tmp_path,
+    caplog,
+):
+    page_to_include_filepath = tmp_path / 'included.md'
+    page_to_include_filepath.write_text('# Content to include')
+
+    with pytest.raises(BuildError) as exc:
+        on_page_markdown(
+            f'''{{%
+  include-markdown "{page_to_include_filepath}"
+  comments=false
+  heading-offset={argument_value}
+%}}''',
+            page(tmp_path / 'includer.md'),
+            tmp_path,
+        )
+
+    assert len(caplog.records) == 0
+    assert str(exc.value) == exception_message
+
+
 class TestFilename:
     double_quoted_filenames = [
         'inc"luded.md', 'inc"lude"d.md', 'included.md"', '"included.md',

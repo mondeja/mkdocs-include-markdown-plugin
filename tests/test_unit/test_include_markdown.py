@@ -400,7 +400,7 @@ Some text
             id='dedent=true,preserve-includer-indent=true',
         ),
 
-        # Markdown heading offset 1
+        # Markdown heading offsets
         pytest.param(
             '''# Header
 
@@ -423,7 +423,6 @@ Example data
             [],
             id='heading-offset=1',
         ),
-        # Markdown heading offset 2
         pytest.param(
             '''# Header
 
@@ -492,30 +491,6 @@ Example data
 ''',
             [],
             id='heading-offset=0',
-        ),
-
-        # Markdown heading offset string
-        pytest.param(
-            '''# Header
-
-{%
-  include-markdown "{filepath}"
-  heading-offset=true
-%}
-''',
-            '''# This should be a first level heading.
-
-Example data''',
-            '''# Header
-
-<!-- BEGIN INCLUDE {filepath} -->
-# This should be a first level heading.
-
-Example data
-<!-- END INCLUDE -->
-''',
-            [],
-            id='heading-offset=<str>',
         ),
 
         # Markdown heading negative offset
@@ -622,10 +597,7 @@ After include.
         pytest.param(
             '''# Header
 
-{%
-  include-markdown "{filepath}"
-  heading-offset=true
-%}
+{% include-markdown "{filepath}" %}
 ''',
             '''Тест інклуде
 азъ
@@ -664,7 +636,7 @@ vɛвѣди
             id='russian-characters',
         ),
 
-        # right strip unix trailing newlines
+        # Right strip unix trailing newlines
         pytest.param(
             '''1. List item number 1
 1. {% include-markdown "{filepath}" comments=false trailing-newlines=false %}
@@ -679,7 +651,7 @@ vɛвѣди
             id='rstrip-unix-trailing-newlines',
         ),
 
-        # right strip windows trailing nwlines
+        # Right strip windows trailing newlines
         pytest.param(
             '''1. List item number 1
 1. {%
@@ -698,7 +670,7 @@ vɛвѣди
             id='rstrip-windows-trailing-newlines',
         ),
 
-        # right strip trailing newlines keeping comments
+        # Right strip trailing newlines keeping comments
         pytest.param(
             '''1. List item number 1
 1. {% include-markdown "{filepath}" trailing-newlines=false %}

@@ -58,7 +58,7 @@ class IncludeMarkdownPlugin(BasePlugin):
 
         return config
 
-    def _watch_included_files(self) -> None:
+    def _watch_included_files(self) -> None:  # pragma: no cover
         global FILES_WATCHER, SERVER
         SERVER = cast(LiveReloadServer, SERVER)
         FILES_WATCHER = cast(FilesWatcher, FILES_WATCHER)
@@ -83,7 +83,7 @@ class IncludeMarkdownPlugin(BasePlugin):
             config: MkDocsConfig,
             files: Files,
     ) -> str:
-        if SERVER is not None:
+        if SERVER is not None:  # pragma: no cover
             self._watch_included_files()
         return html
 
@@ -94,7 +94,7 @@ class IncludeMarkdownPlugin(BasePlugin):
             builder: Callable[[Any], Any],
     ) -> None:
         global SERVER
-        if SERVER is None:
+        if SERVER is None:  # pragma: no cover
             SERVER = server
             self._watch_included_files()
 

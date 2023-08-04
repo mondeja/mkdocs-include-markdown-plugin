@@ -2,8 +2,10 @@
 
 import pytest
 
+from mkdocs_include_markdown_plugin.cache import Cache
 from mkdocs_include_markdown_plugin.process import (
     increase_headings_offset,
+    read_url,
     rewrite_relative_urls,
 )
 
@@ -148,6 +150,30 @@ Some text after
 Some text after
 ''',
             id='cpp-likelink-indented-codeblock-windows-newlines',
+        ),
+        pytest.param(
+            '''```
+[link](CHANGELOG.md)
+```
+''',
+            'README',
+            'docs/nav.md',
+            '''```
+[link](CHANGELOG.md)
+```
+''',
+            id='exclude-fenced-code-blocks',
+        ),
+        pytest.param(
+            ' ' * 4 + '''
+    [link](CHANGELOG.md)
+''' + ' ' * 4 + '\n',
+            'README',
+            'docs/nav.md',
+            ' ' * 4 + '''
+    [link](CHANGELOG.md)
+''' + ' ' * 4 + '\n',
+            id='exclude-indented-code-blocks',
         ),
     ),
 )
@@ -323,3 +349,28 @@ def test_dont_increase_heading_offset_inside_fenced_codeblocks(
     expected_result,
 ):
     assert increase_headings_offset(markdown, offset=offset) == expected_result
+
+
+def test_read_url_cached_content(tmp_path):
+    url = (
+        'https://raw.githubusercontent.com/mondeja/'
+        'mkdocs-include-markdown-plugin/master/README.md'
+    )
+    cache_dir = tmp_path.as_posix()
+    cached_file_name = Cache.generate_unique_key_from_url(url)
+    cached_file_path = tmp_path / cached_file_name
+    if cached_file_path.exists():
+        cached_file_path.unlink()
+
+    cache = Cache(cache_dir, 600)
+    content = read_url(url, cache)
+    assert cached_file_path.exists()
+
+    cached_content = cached_file_path.read_text(
+        encoding='utf-8',
+    ).split('\n', 1)[1]
+    assert content == cached_content
+
+    assert cache.get_(url) == cached_content
+    assert cache.get_(url) == read_url(url, cache)
+    cached_file_path.unlink()
