@@ -44,7 +44,7 @@ class Cache:
         fpath = os.path.join(self.cache_dir, key)
         if os.path.isfile(fpath):
             creation_time = self.get_creation_time_from_fpath(fpath)
-            if time.time() > creation_time + self.expiration_seconds:
+            if time.time() < creation_time + self.expiration_seconds:
                 return self.read_file(fpath)
             else:
                 os.remove(fpath)
