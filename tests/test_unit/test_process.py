@@ -352,8 +352,6 @@ def test_dont_increase_heading_offset_inside_fenced_codeblocks(
 
 
 def test_read_url_cached_content(tmp_path):
-    if not tmp_path.exists():
-        tmp_path.mkdir()
     url = (
         'https://raw.githubusercontent.com/mondeja/'
         'mkdocs-include-markdown-plugin/master/README.md'
