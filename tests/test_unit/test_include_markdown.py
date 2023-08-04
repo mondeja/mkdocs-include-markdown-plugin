@@ -493,30 +493,6 @@ Example data
             id='heading-offset=0',
         ),
 
-        # Markdown heading offset string
-        pytest.param(
-            '''# Header
-
-{%
-  include-markdown "{filepath}"
-  heading-offset=true
-%}
-''',
-            '''# This should be a first level heading.
-
-Example data''',
-            '''# Header
-
-<!-- BEGIN INCLUDE {filepath} -->
-# This should be a first level heading.
-
-Example data
-<!-- END INCLUDE -->
-''',
-            [],
-            id='heading-offset=<str>',
-        ),
-
         # Markdown heading negative offset
         pytest.param(
             '''# Header
@@ -621,10 +597,7 @@ After include.
         pytest.param(
             '''# Header
 
-{%
-  include-markdown "{filepath}"
-  heading-offset=true
-%}
+{% include-markdown "{filepath}" %}
 ''',
             '''Тест інклуде
 азъ
