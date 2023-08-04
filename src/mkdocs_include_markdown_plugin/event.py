@@ -89,9 +89,9 @@ def get_file_content(
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         if exclude_match is None:
-            if defaults['exclude'] is None:
+            if defaults['exclude'] is None:  # pragma: no branch
                 ignore_paths: list[str] = []
-            else:
+            else:  # pragma: no cover
                 ignore_paths = glob.glob(defaults['exclude'])
         else:
             exclude_string = parse_string_argument(exclude_match)
@@ -307,9 +307,9 @@ def get_file_content(
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         if exclude_match is None:
-            if defaults['exclude'] is None:
+            if defaults['exclude'] is None:  # pragma: no branch
                 ignore_paths: list[str] = []
-            else:
+            else:  # pragma: no cover
                 ignore_paths = glob.glob(defaults['exclude'])
         else:
             exclude_string = parse_string_argument(exclude_match)

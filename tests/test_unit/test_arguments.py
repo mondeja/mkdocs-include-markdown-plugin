@@ -220,7 +220,7 @@ def test_empty_encoding_argument(directive, page, tmp_path, caplog):
         ),
     ),
 )
-def test_invalid_heading_offset_argument(
+def test_invalid_heading_offset_arguments(
     argument_value,
     exception_message,
     page,
