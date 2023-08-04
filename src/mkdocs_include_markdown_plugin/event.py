@@ -121,7 +121,7 @@ def get_file_content(
         else:
             file_paths_to_include = process.filter_paths(
                 glob.iglob(file_path_glob, recursive=True),
-                ignore_paths=ignore_paths,
+                ignore_paths,
             )
 
         if not file_paths_to_include:
@@ -209,7 +209,7 @@ def get_file_content(
             else:
                 new_text_to_include = process.read_file(file_path, encoding)
 
-            if start is not None or end is not None:
+            if start or end:
                 new_text_to_include, *expected_not_found = (
                     process.filter_inclusions(
                         start,
@@ -340,7 +340,7 @@ def get_file_content(
         else:
             file_paths_to_include = process.filter_paths(
                 glob.iglob(file_path_glob, recursive=True),
-                ignore_paths=ignore_paths,
+                ignore_paths,
             )
 
         if not file_paths_to_include:
@@ -468,7 +468,7 @@ def get_file_content(
             else:
                 new_text_to_include = process.read_file(file_path, encoding)
 
-            if start is not None or end is not None:
+            if start or end:
                 new_text_to_include, *expected_not_found = (
                     process.filter_inclusions(
                         start,

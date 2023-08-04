@@ -400,7 +400,7 @@ Some text
             id='dedent=true,preserve-includer-indent=true',
         ),
 
-        # Markdown heading offset 1
+        # Markdown heading offsets
         pytest.param(
             '''# Header
 
@@ -423,7 +423,6 @@ Example data
             [],
             id='heading-offset=1',
         ),
-        # Markdown heading offset 2
         pytest.param(
             '''# Header
 
@@ -664,7 +663,7 @@ vɛвѣди
             id='russian-characters',
         ),
 
-        # right strip unix trailing newlines
+        # Right strip unix trailing newlines
         pytest.param(
             '''1. List item number 1
 1. {% include-markdown "{filepath}" comments=false trailing-newlines=false %}
@@ -679,7 +678,7 @@ vɛвѣди
             id='rstrip-unix-trailing-newlines',
         ),
 
-        # right strip windows trailing nwlines
+        # Right strip windows trailing newlines
         pytest.param(
             '''1. List item number 1
 1. {%
@@ -698,7 +697,7 @@ vɛвѣди
             id='rstrip-windows-trailing-newlines',
         ),
 
-        # right strip trailing newlines keeping comments
+        # Right strip trailing newlines keeping comments
         pytest.param(
             '''1. List item number 1
 1. {% include-markdown "{filepath}" trailing-newlines=false %}

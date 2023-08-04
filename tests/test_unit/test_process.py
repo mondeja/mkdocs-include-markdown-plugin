@@ -149,6 +149,30 @@ Some text after
 ''',
             id='cpp-likelink-indented-codeblock-windows-newlines',
         ),
+        pytest.param(
+            '''```
+[link](CHANGELOG.md)
+```
+''',
+            'README',
+            'docs/nav.md',
+            '''```
+[link](CHANGELOG.md)
+```
+''',
+            id='exclude-fenced-code-blocks',
+        ),
+        pytest.param(
+            ' ' * 4 + '''
+    [link](CHANGELOG.md)
+''' + ' ' * 4 + '\n',
+            'README',
+            'docs/nav.md',
+            ' ' * 4 + '''
+    [link](CHANGELOG.md)
+''' + ' ' * 4 + '\n',
+            id='exclude-indented-code-blocks',
+        ),
     ),
 )
 def test_rewrite_relative_urls(
