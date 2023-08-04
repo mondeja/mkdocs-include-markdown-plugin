@@ -16,6 +16,12 @@ def test_cache_read_file(tmp_path):
     )
 
 
+def test_cache_expiration_on_get(tmp_path):
+    cache = Cache(tmp_path)
+    cache.set_('foo', f'{time.time() - 600*10}\nbar')
+    assert cache.get_('foo') is None
+
+
 def test_cache_clean(tmp_path):
     now_ts = int(time.time())
 
