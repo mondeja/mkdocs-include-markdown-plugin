@@ -32,6 +32,8 @@ if TYPE_CHECKING:
     )
 
 
+RE_ESCAPED_PUNCTUATION = re.escape(string.punctuation)
+
 DOUBLE_QUOTED_STR_RE = r'([^"]|(?<=\\)["])+'
 SINGLE_QUOTED_STR_RE = r"([^']|(?<=\\)['])+"
 
@@ -62,7 +64,7 @@ TRUE_FALSE_BOOL_STR = {
 
 def arg(arg: str) -> re.Pattern[str]:
     """Return a compiled regexp to match a boolean argument."""
-    return re.compile(rf'{arg}=([-\w]*)')
+    return re.compile(rf'{arg}=([{RE_ESCAPED_PUNCTUATION}\w]*)')
 
 
 def str_arg(arg: str) -> re.Pattern[str]:
