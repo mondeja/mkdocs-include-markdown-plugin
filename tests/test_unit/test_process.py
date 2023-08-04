@@ -361,11 +361,16 @@ def test_read_url_cached_content(tmp_path):
     cached_file_path = tmp_path / cached_file_name
     if cached_file_path.exists():
         cached_file_path.unlink()
+
     cache = Cache(cache_dir, 600)
     content = read_url(url, cache)
     assert cached_file_path.exists()
-    cached_content = cached_file_path.read_text().split('\n', 1)[1]
+
+    cached_content = cached_file_path.read_text(
+        encoding='utf-8',
+    ).split('\n', 1)[1]
     assert content == cached_content
+
     assert cache.get_(url) == cached_content
     assert cache.get_(url) == read_url(url, cache)
     cached_file_path.unlink()
