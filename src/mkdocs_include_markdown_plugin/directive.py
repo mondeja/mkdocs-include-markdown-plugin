@@ -6,7 +6,6 @@ import os
 import re
 import string
 from typing import TYPE_CHECKING
-from urllib.parse import urlparse
 
 from wcmatch import glob
 
@@ -185,10 +184,10 @@ def resolve_file_paths_to_include(
     elif process.is_absolute_path(filename_or_url):
         if os.name == 'nt':
             # Windows
-            if not filename_or_url.startswith('/'):
-                filename_or_url = urlparse(
-                    filename_or_url,
-                ).path.replace('\\', '/')
+            return process.filter_paths(
+                [os.path.normpath(filename_or_url)],
+                ignore_paths,
+            ), False
         return process.filter_paths(
             glob.iglob(
                 os.path.normpath(filename_or_url),
