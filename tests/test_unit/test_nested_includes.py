@@ -284,7 +284,7 @@ def test_nested_include_relpath(page, tmp_path):
     first_includer_content = '''# Header
 
 {%
-  include-markdown "docs/second-includer.txt"
+  include-markdown "./docs/second-includer.txt"
   comments=false
 %}
 '''

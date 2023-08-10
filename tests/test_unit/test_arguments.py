@@ -3,7 +3,7 @@ import os
 import re
 
 import pytest
-from mkdocs.exceptions import BuildError
+from mkdocs.exceptions import PluginError
 from testing_helpers import parametrize_directives, unix_only
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
@@ -41,7 +41,7 @@ def test_invalid_bool_arguments(directive, arguments, page, tmp_path, caplog):
 
         filename = 'includer.md'
 
-        with pytest.raises(BuildError) as exc:
+        with pytest.raises(PluginError) as exc:
             on_page_markdown(
                 f'''{{%
     {directive} "{page_to_include_filepath}"
@@ -100,7 +100,7 @@ More content that should be ignored
 '''
     page_to_include_filepath.write_text(included_content)
 
-    with pytest.raises(BuildError) as exc:
+    with pytest.raises(PluginError) as exc:
         on_page_markdown(
             f'''
 {{%
@@ -160,7 +160,7 @@ def test_invalid_exclude_argument(directive, page, tmp_path, caplog):
     page_to_exclude_filepath.write_text('Content that should be excluded\n')
 
     includer_glob = os.path.join(str(drectory_to_include), '*.md')
-    with pytest.raises(BuildError) as exc:
+    with pytest.raises(PluginError) as exc:
         on_page_markdown(
             f'''{{%
   {directive} "{includer_glob}"
@@ -183,7 +183,7 @@ def test_empty_encoding_argument(directive, page, tmp_path, caplog):
     page_to_include_filepath = tmp_path / 'included.md'
     page_to_include_filepath.write_text('Content to include')
 
-    with pytest.raises(BuildError) as exc:
+    with pytest.raises(PluginError) as exc:
         on_page_markdown(
             f'''{{%
   {directive} "{page_to_include_filepath}"
@@ -230,7 +230,7 @@ def test_invalid_heading_offset_arguments(
     page_to_include_filepath = tmp_path / 'included.md'
     page_to_include_filepath.write_text('# Content to include')
 
-    with pytest.raises(BuildError) as exc:
+    with pytest.raises(PluginError) as exc:
         on_page_markdown(
             f'''{{%
   include-markdown "{page_to_include_filepath}"
@@ -262,7 +262,7 @@ class TestFilename:
         page_to_include_filepath = tmp_path / filename
         page_to_include_filepath.write_text('Foo\n')
 
-        with pytest.raises(BuildError) as exc:
+        with pytest.raises(PluginError) as exc:
             on_page_markdown(
                 f'{{% {directive} "{page_to_include_filepath}" %}}',
                 page(tmp_path / 'includer.md'),
@@ -401,7 +401,7 @@ class TestFilename:
         if escape:
             assert func() == included_content
         else:
-            with pytest.raises(BuildError) as exc:
+            with pytest.raises(PluginError) as exc:
                 func()
             assert re.match(
                 r'No files found including ',
@@ -413,7 +413,7 @@ class TestFilename:
     def test_no_filename(self, directive, page, tmp_path, caplog):
         filename = 'includer.md'
 
-        with pytest.raises(BuildError) as exc:
+        with pytest.raises(PluginError) as exc:
             on_page_markdown(
                 f'\n\n{{% {directive} %}}',
                 page(tmp_path / filename),
@@ -437,7 +437,7 @@ class TestFilename:
         page_filepath = tmp_path / 'example.md'
         page_filepath.write_text(page_content)
 
-        with pytest.raises(BuildError) as exc:
+        with pytest.raises(PluginError) as exc:
             on_page_markdown(
                 page_content,
                 page(page_filepath),

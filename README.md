@@ -44,10 +44,6 @@ plugins:
 
 The global behaviour of the plugin can be customized in the configuration.
 
-- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
-  **closing_tag**: The default opening and closing tags. By default are
-  `{%` and `%}`.
-
 Most of the settings will define the default values passed to arguments
 of directives and are documented in the [reference](#reference).
 
@@ -65,25 +61,41 @@ plugins:
       heading_offset: 0
       start: <!--start-->
       end: <!--end-->
-      exclude: LICENSE.md
 ```
 
-The `cache` setting defines a expiration time in seconds for HTTP requests
-when including from URLs.
+- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
+  **closing_tag**: The default opening and closing tags. By default are
+  `{%` and `%}`.
 
-```yaml
-plugins:
-  - include-markdown:
-      cache: 600
-```
+- <a name="config_exclude" href="#config_exclude">#</a> **exclude** Define
+  global exclusion wildcard patterns. Relative paths defined here will be
+  relative to the _docs/_ directory.
 
-In order to use this feature, the dependency [platformdirs] must be installed.
-You can include it in the installation of the plugin adding the `cache` extra:
+  ```yaml
+  plugins:
+    - include-markdown:
+        exclude:
+          - LICENSE.md
+          - api/**
+  ```
 
-```txt
-# requirements.txt
-mkdocs-include-markdown-plugin[cache]
-```
+- <a name="config_cache" href="#config_cache">#</a> **cache** Define a
+  expiration time in seconds for cached HTTP requests when including
+  from URLs.
+
+  ```yaml
+  plugins:
+    - include-markdown:
+        cache: 600
+  ```
+
+  In order to use this feature, the dependency [platformdirs] must be installed.
+  You can include it in the installation of the plugin adding the `cache` extra:
+
+  ```txt
+  # requirements.txt
+  mkdocs-include-markdown-plugin[cache]
+  ```
 
 ### Reference
 
@@ -92,10 +104,12 @@ to include files of any type.
 
 Paths of included files can be either:
 
-- Local files with absolute or relative paths to the file that includes them.
-- Globs matching multiples files, in which case certain paths can be ignored
-  using the `exclude` argument.
 - URLs to include remote content.
+- Local files:
+  - Absolute paths (starting with a path separator).
+  - Relative from the file that includes them (starting with `./` or `../`).
+  - Relative from the _docs/_ directory.
+- [Bash wildcard globs] matching multiple local files.
 
 File paths to include and string arguments can be wrapped by double `"` or
 single `'` quotes, which can be escaped prepending them a `\` character as
@@ -255,3 +269,4 @@ Includes the content of a file or a group of files.
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
+[Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax

@@ -5,7 +5,7 @@ import os
 import re
 
 import pytest
-from mkdocs.exceptions import BuildError
+from mkdocs.exceptions import PluginError
 from testing_helpers import parametrize_directives
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
@@ -98,7 +98,7 @@ def test_exclude(
     )
 
     if expected_result is None:
-        with pytest.raises(BuildError) as exc:
+        with pytest.raises(PluginError) as exc:
             func()
         assert re.match(r'No files found including ', str(exc.value))
     else:

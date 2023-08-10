@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from mkdocs.config.config_options import Type as MkType
+from mkdocs.config.config_options import ListOfItems, Optional, Type as MkType
 
 
 CONFIG_DEFAULTS = {
@@ -68,7 +68,7 @@ CONFIG_SCHEME = (
     ),
     (
         'exclude',
-        MkType(str, default=CONFIG_DEFAULTS['exclude']),
+        Optional(ListOfItems(MkType(str, required=False))),
     ),
     (
         'cache',

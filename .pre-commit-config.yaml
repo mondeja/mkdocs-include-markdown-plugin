@@ -121,6 +121,8 @@ repos:
         files: ^src
         additional_dependencies:
           - mkdocs
+          - platformdirs
+          - wcmatch
   - repo: https://github.com/tcort/markdown-link-check
     rev: v3.11.2
     hooks:

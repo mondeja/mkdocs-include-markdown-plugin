@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, cast
 
-from mkdocs.exceptions import BuildError
+from mkdocs.exceptions import PluginError
 from mkdocs.livereload import LiveReloadServer
 from mkdocs.plugins import BasePlugin, event_priority
 
@@ -46,7 +46,7 @@ class IncludeMarkdownPlugin(BasePlugin):
         if self.config['cache'] > 0:
             cache = initialize_cache(self.config['cache'])
             if cache is None:
-                raise BuildError(
+                raise PluginError(
                     'The "platformdirs" package is required to use the'
                     ' "cache" option. Install'
                     ' mkdocs-include-markdown-plugin with the "cache"'

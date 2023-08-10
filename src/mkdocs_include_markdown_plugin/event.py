@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import glob
 import html
 import logging
 import os
@@ -11,17 +10,21 @@ import textwrap
 from collections.abc import MutableMapping
 from typing import TYPE_CHECKING, Any
 
-from mkdocs.exceptions import BuildError
+from mkdocs.exceptions import PluginError
+from wcmatch import glob
 
 from mkdocs_include_markdown_plugin import process
 from mkdocs_include_markdown_plugin.cache import Cache
 from mkdocs_include_markdown_plugin.config import CONFIG_DEFAULTS
 from mkdocs_include_markdown_plugin.directive import (
     ARGUMENT_REGEXES,
+    GLOB_FLAGS,
     create_include_tag,
     parse_bool_options,
     parse_filename_argument,
     parse_string_argument,
+    resolve_file_paths_to_exclude,
+    resolve_file_paths_to_include,
 )
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
 
@@ -40,6 +43,9 @@ if TYPE_CHECKING:  # remove this for mypyc compiling
         },
     )
 
+    class Settings(TypedDict):  # noqa: D101
+        exclude: list[str] | None
+
 
 logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
 
@@ -55,6 +61,7 @@ def get_file_content(
         docs_dir: str,
         tags: IncludeTags,
         defaults: DefaultValues,
+        settings: Settings,
         cumulative_heading_offset: int = 0,
         files_watcher: FilesWatcher | None = None,
         http_cache: Cache | None = None,
@@ -71,7 +78,7 @@ def get_file_content(
                 markdown,
                 directive_match_start,
             )
-            raise BuildError(
+            raise PluginError(
                 "Found no path passed including with 'include'"
                 f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}',
@@ -79,64 +86,60 @@ def get_file_content(
 
         arguments_string = match.group('arguments')
 
-        if os.path.isabs(filename) or process.is_url(filename):
-            file_path_glob = filename
-        else:
-            file_path_glob = os.path.join(
-                os.path.abspath(os.path.dirname(page_src_path)),
-                filename,
-            )
-
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
-        if exclude_match is None:
-            if defaults['exclude'] is None:  # pragma: no branch
-                ignore_paths: list[str] = []
-            else:  # pragma: no cover
-                ignore_paths = glob.glob(defaults['exclude'])
-        else:
+        ignore_paths = []
+        if settings['exclude'] is not None:
+            ignore_paths.extend(
+                glob.glob(
+                    [
+                        os.path.join(docs_dir, fp)
+                        if not os.path.isabs(fp)
+                        else fp for fp in settings['exclude']
+                    ],
+                    flags=GLOB_FLAGS,
+                    root_dir=docs_dir,
+                ),
+            )
+        if exclude_match is not None:
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
                 lineno = lineno_from_content_start(
                     markdown,
                     directive_match_start,
                 )
-                raise BuildError(
-                    "Invalid empty 'exclude' argument in 'include' directive"
-                    f' at {os.path.relpath(page_src_path, docs_dir)}:{lineno}',
+                raise PluginError(
+                    "Invalid empty 'exclude' argument in 'include'"
+                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
+                    f':{lineno}',
                 )
-            else:
-                if os.path.isabs(exclude_string):
-                    exclude_globstr = exclude_string
-                else:
-                    exclude_globstr = os.path.realpath(
-                        os.path.join(
-                            os.path.abspath(os.path.dirname(page_src_path)),
-                            exclude_string,
-                        ),
-                    )
-                ignore_paths = glob.glob(exclude_globstr)
-
-        if process.is_url(filename):
-            file_paths_to_include = [file_path_glob]
-        else:
-            file_paths_to_include = process.filter_paths(
-                glob.iglob(file_path_glob, recursive=True),
-                ignore_paths,
+            ignore_paths.extend(
+                resolve_file_paths_to_exclude(
+                    exclude_string,
+                    page_src_path,
+                    docs_dir,
+                ),
             )
+        ignore_paths = list(set(ignore_paths))
+
+        file_paths_to_include, is_url = resolve_file_paths_to_include(
+            filename,
+            page_src_path,
+            docs_dir,
+            ignore_paths,
+        )
 
         if not file_paths_to_include:
             lineno = lineno_from_content_start(
                 markdown,
                 directive_match_start,
             )
-            raise BuildError(
+            raise PluginError(
                 f"No files found including '{raw_filename}'"
                 f' at {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}',
             )
-        elif files_watcher is not None:
-            if not process.is_url(file_path_glob):
-                files_watcher.included_files.extend(file_paths_to_include)
+        elif files_watcher is not None and not is_url:
+            files_watcher.included_files.extend(file_paths_to_include)
 
         bool_options, invalid_bool_args = parse_bool_options(
             ['preserve-includer-indent', 'dedent', 'trailing-newlines'],
@@ -148,7 +151,7 @@ def get_file_content(
                 markdown,
                 directive_match_start,
             )
-            raise BuildError(
+            raise PluginError(
                 f"Invalid value for '{invalid_bool_args[0]}' argument of"
                 " 'include' directive at"
                 f' {os.path.relpath(page_src_path, docs_dir)}'
@@ -163,7 +166,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                raise BuildError(
+                raise PluginError(
                     "Invalid empty 'start' argument in 'include' directive at "
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
@@ -178,7 +181,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                raise BuildError(
+                raise PluginError(
                     "Invalid empty 'end' argument in 'include' directive at "
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
@@ -193,7 +196,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                raise BuildError(
+                raise PluginError(
                     "Invalid empty 'encoding' argument in 'include'"
                     ' directive at '
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
@@ -228,6 +231,7 @@ def get_file_content(
                 docs_dir,
                 tags,
                 defaults,
+                settings,
                 files_watcher=files_watcher,
                 http_cache=http_cache,
             )
@@ -289,7 +293,7 @@ def get_file_content(
                 markdown,
                 directive_match_start,
             )
-            raise BuildError(
+            raise PluginError(
                 "Found no path passed including with 'include-markdown'"
                 f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}',
@@ -297,65 +301,60 @@ def get_file_content(
 
         arguments_string = match.group('arguments')
 
-        if os.path.isabs(filename) or process.is_url(filename):
-            file_path_glob = filename
-        else:
-            file_path_glob = os.path.join(
-                os.path.abspath(os.path.dirname(page_src_path)),
-                filename,
-            )
-
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
-        if exclude_match is None:
-            if defaults['exclude'] is None:  # pragma: no branch
-                ignore_paths: list[str] = []
-            else:  # pragma: no cover
-                ignore_paths = glob.glob(defaults['exclude'])
-        else:
+        ignore_paths = []
+        if settings['exclude'] is not None:
+            ignore_paths.extend(
+                glob.glob(
+                    [
+                        os.path.join(docs_dir, fp)
+                        if not os.path.isabs(fp)
+                        else fp for fp in settings['exclude']
+                    ],
+                    flags=GLOB_FLAGS,
+                    root_dir=docs_dir,
+                ),
+            )
+        if exclude_match is not None:
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
                 lineno = lineno_from_content_start(
                     markdown,
                     directive_match_start,
                 )
-                raise BuildError(
+                raise PluginError(
                     "Invalid empty 'exclude' argument in 'include-markdown'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}',
                 )
-            else:
-                if os.path.isabs(exclude_string):
-                    exclude_globstr = exclude_string
-                else:
-                    exclude_globstr = os.path.realpath(
-                        os.path.join(
-                            os.path.abspath(os.path.dirname(page_src_path)),
-                            exclude_string,
-                        ),
-                    )
-                ignore_paths = glob.glob(exclude_globstr)
-
-        if process.is_url(filename):
-            file_paths_to_include = [file_path_glob]
-        else:
-            file_paths_to_include = process.filter_paths(
-                glob.iglob(file_path_glob, recursive=True),
-                ignore_paths,
+            ignore_paths.extend(
+                resolve_file_paths_to_exclude(
+                    exclude_string,
+                    page_src_path,
+                    docs_dir,
+                ),
             )
+        ignore_paths = list(set(ignore_paths))
+
+        file_paths_to_include, is_url = resolve_file_paths_to_include(
+            filename,
+            page_src_path,
+            docs_dir,
+            ignore_paths,
+        )
 
         if not file_paths_to_include:
             lineno = lineno_from_content_start(
                 markdown,
                 directive_match_start,
             )
-            raise BuildError(
+            raise PluginError(
                 f"No files found including '{raw_filename}' at"
                 f' {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}',
             )
-        elif files_watcher is not None:
-            if not process.is_url(file_path_glob):
-                files_watcher.included_files.extend(file_paths_to_include)
+        elif files_watcher is not None and not is_url:
+            files_watcher.included_files.extend(file_paths_to_include)
 
         bool_options, invalid_bool_args = parse_bool_options(
             [
@@ -371,7 +370,7 @@ def get_file_content(
                 markdown,
                 directive_match_start,
             )
-            raise BuildError(
+            raise PluginError(
                 f"Invalid value for '{invalid_bool_args[0]}' argument of"
                 " 'include-markdown' directive at"
                 f' {os.path.relpath(page_src_path, docs_dir)}'
@@ -387,7 +386,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                raise BuildError(
+                raise PluginError(
                     "Invalid empty 'start' argument in 'include-markdown'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}',
@@ -403,7 +402,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                raise BuildError(
+                raise PluginError(
                     "Invalid empty 'end' argument in 'include-markdown'"
                     f' directive at {os.path.relpath(page_src_path, docs_dir)}'
                     f':{lineno}',
@@ -419,7 +418,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                raise BuildError(
+                raise PluginError(
                     "Invalid empty 'encoding' argument in 'include-markdown'"
                     ' directive at '
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
@@ -438,7 +437,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                raise BuildError(
+                raise PluginError(
                     "Invalid empty 'heading-offset' argument in"
                     " 'include-markdown' directive at"
                     f' {os.path.relpath(page_src_path, docs_dir)}:{lineno}',
@@ -450,7 +449,7 @@ def get_file_content(
                     markdown,
                     directive_match_start,
                 )
-                raise BuildError(
+                raise PluginError(
                     f"Invalid 'heading-offset' argument \"{offset}\" in"
                     " 'include-markdown' directive at "
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
@@ -498,6 +497,7 @@ def get_file_content(
                 docs_dir,
                 tags,
                 defaults,
+                settings,
                 files_watcher=files_watcher,
                 http_cache=http_cache,
             )
@@ -639,6 +639,8 @@ def on_page_markdown(
             ),
             'start': config.get('start', CONFIG_DEFAULTS['start']),
             'end': config.get('end', CONFIG_DEFAULTS['end']),
+        },
+        {
             'exclude': config.get('exclude', CONFIG_DEFAULTS['exclude']),
         },
         files_watcher=files_watcher,

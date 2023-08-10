@@ -426,6 +426,16 @@ def is_url(string: str) -> bool:
         return False
 
 
+def is_relative_path(string: str) -> bool:
+    """Check if a string looks like a relative path."""
+    return string.startswith(('./', '../'))
+
+
+def is_absolute_path(string: str) -> bool:
+    """Check if a string looks like an absolute path."""
+    return string.startswith((os.sep, '/'))
+
+
 def read_file(file_path: str, encoding: str) -> str:
     """Read a file and return its content."""
     with open(file_path, encoding=encoding) as f:

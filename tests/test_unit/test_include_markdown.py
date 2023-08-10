@@ -830,7 +830,7 @@ def test_include_markdown_relative_rewrite(
 # Heading
 
 {{%
-    include-markdown "docs/page.md"
+    include-markdown "./docs/page.md"
     start="<!--start-->"
     end="<!--end-->"
     {option_value}
@@ -862,7 +862,7 @@ Here's a [reference link][ref-link].
         assert output == '''
 # Heading
 
-<!-- BEGIN INCLUDE docs/page.md '&lt;!--start--&gt;' '&lt;!--end--&gt;' -->
+<!-- BEGIN INCLUDE ./docs/page.md '&lt;!--start--&gt;' '&lt;!--end--&gt;' -->
 
 Here's [a link](docs/page2.md) and here's an image: ![](docs/image.png)
 
@@ -877,7 +877,7 @@ Here's a [reference link][ref-link].
         assert output == '''
 # Heading
 
-<!-- BEGIN INCLUDE docs/page.md '&lt;!--start--&gt;' '&lt;!--end--&gt;' -->
+<!-- BEGIN INCLUDE ./docs/page.md '&lt;!--start--&gt;' '&lt;!--end--&gt;' -->
 
 Here's [a link](page2.md) and here's an image: ![](image.png)
 
