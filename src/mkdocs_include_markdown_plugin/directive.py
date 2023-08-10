@@ -200,6 +200,7 @@ def resolve_file_paths_to_include(
                 )
             ), ignore_paths,
         ), False
+
     # relative to docs_dir
     return process.filter_paths(
         (

@@ -433,7 +433,16 @@ def is_relative_path(string: str) -> bool:
 
 def is_absolute_path(string: str) -> bool:
     """Check if a string looks like an absolute path."""
-    return os.path.isabs(string) or string.startswith((os.sep, '/'))
+    if os.path.isabs(string):
+        return True
+    try:
+        scheme = urlparse(string).scheme
+        if scheme and len(scheme) == 1:
+            return True
+    except Exception:
+        pass
+
+    return string.startswith((os.sep, '/'))
 
 
 def read_file(file_path: str, encoding: str) -> str:
