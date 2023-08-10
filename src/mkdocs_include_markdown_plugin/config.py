@@ -68,7 +68,7 @@ CONFIG_SCHEME = (
     ),
     (
         'exclude',
-        Optional(ListOfItems(MkType(str, required=False))),
+        Optional(ListOfItems(MkType(str))),
     ),
     (
         'cache',
