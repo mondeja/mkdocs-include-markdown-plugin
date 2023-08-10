@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import re
 import string
+import sys
 from typing import TYPE_CHECKING
 
 from wcmatch import glob
@@ -182,8 +183,12 @@ def resolve_file_paths_to_include(
     if process.is_url(filename_or_url):
         return [filename_or_url], True
     elif process.is_absolute_path(filename_or_url):
+        if 'win' in sys.platform:
+            filename_or_url = filename_or_url.replace('\\', '/')
+            if not filename_or_url.startswith('/'):
+                filename_or_url = filename_or_url[1:]
         return process.filter_paths(
-            glob.iglob(filename_or_url, flags=GLOB_FLAGS),
+            glob.iglob(os.path.normpath(filename_or_url), flags=GLOB_FLAGS),
             ignore_paths,
         ), False
     elif process.is_relative_path(filename_or_url):
