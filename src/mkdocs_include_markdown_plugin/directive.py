@@ -184,13 +184,11 @@ def resolve_file_paths_to_include(
     elif process.is_relative_path(filename_or_url):
         return process.filter_paths(
             glob.iglob(
-                os.path.realpath(
-                    os.path.join(
-                        os.path.abspath(
-                            os.path.dirname(includer_page_src_path),
-                        ),
-                        filename_or_url,
+                os.path.join(
+                    os.path.abspath(
+                        os.path.dirname(includer_page_src_path),
                     ),
+                    filename_or_url,
                 ),
                 flags=GLOB_FLAGS,
             ),
@@ -198,18 +196,16 @@ def resolve_file_paths_to_include(
         ), False
     elif process.is_absolute_path(filename_or_url):
         return process.filter_paths(
-            glob.iglob(filename_or_url, flags=GLOB_FLAGS),
+            glob.iglob(os.path.realpath(filename_or_url), flags=GLOB_FLAGS),
             ignore_paths,
         ), False
 
     # relative to docs_dir
     return process.filter_paths(
         glob.iglob(
-            os.path.realpath(
-                os.path.join(
-                    os.path.abspath(docs_dir),
-                    os.path.normpath(filename_or_url),
-                ),
+            os.path.join(
+                os.path.abspath(docs_dir),
+                os.path.normpath(filename_or_url),
             ),
             flags=GLOB_FLAGS,
         ),
@@ -226,15 +222,13 @@ def resolve_file_paths_to_exclude(
     if process.is_absolute_path(exclude_string):
         exclude_globstr = exclude_string
     elif process.is_relative_path(exclude_string):
-        exclude_globstr = os.path.realpath(
-            os.path.join(
-                os.path.abspath(os.path.dirname(includer_page_src_path)),
-                exclude_string,
-            ),
+        exclude_globstr = os.path.join(
+            os.path.abspath(os.path.dirname(includer_page_src_path)),
+            exclude_string,
         )
     else:
         # relative to docs_dir
-        exclude_globstr = os.path.realpath(
-            os.path.join(docs_dir, exclude_string),
+        exclude_globstr = os.path.join(
+            os.path.abspath(docs_dir), exclude_string,
         )
     return glob.glob(exclude_globstr, flags=GLOB_FLAGS)
