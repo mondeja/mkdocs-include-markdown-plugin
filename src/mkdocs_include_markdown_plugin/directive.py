@@ -206,7 +206,7 @@ def resolve_file_paths_to_include(
         (
             os.path.normpath(os.path.join(docs_dir, fp))
             for fp in glob.iglob(
-                os.path.join(docs_dir, filename_or_url),
+                filename_or_url,
                 flags=GLOB_FLAGS,
                 root_dir=docs_dir,
             )
