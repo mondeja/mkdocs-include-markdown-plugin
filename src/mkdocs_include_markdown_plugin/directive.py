@@ -184,11 +184,15 @@ def resolve_file_paths_to_include(
         return [filename_or_url], True
     elif process.is_absolute_path(filename_or_url):
         if 'win' in sys.platform:
-            filename_or_url = filename_or_url.replace('\\', '/')
-            if not filename_or_url.startswith('/'):
-                filename_or_url = filename_or_url[1:]
+            return process.filter_paths(
+                [os.path.normpath(filename_or_url)],
+                ignore_paths,
+            ), False
         return process.filter_paths(
-            glob.iglob(os.path.normpath(filename_or_url), flags=GLOB_FLAGS),
+            glob.iglob(
+                os.path.normpath(filename_or_url),
+                flags=GLOB_FLAGS,
+            ),
             ignore_paths,
         ), False
     elif process.is_relative_path(filename_or_url):

@@ -380,7 +380,7 @@ def rstrip_trailing_newlines(content: str) -> str:
 
 
 def filter_paths(
-        filepaths: Iterator[str],
+        filepaths: Iterator[str] | list[str],
         ignore_paths: list[str],
 ) -> list[str]:
     """Filters a list of paths removing those defined in other list of paths.
