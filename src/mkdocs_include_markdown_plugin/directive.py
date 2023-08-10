@@ -196,7 +196,7 @@ def resolve_file_paths_to_include(
         ), False
     elif process.is_absolute_path(filename_or_url):
         return process.filter_paths(
-            glob.iglob(os.path.realpath(filename_or_url), flags=GLOB_FLAGS),
+            glob.iglob(filename_or_url, flags=GLOB_FLAGS),
             ignore_paths,
         ), False
 
@@ -205,7 +205,7 @@ def resolve_file_paths_to_include(
         glob.iglob(
             os.path.join(
                 os.path.abspath(docs_dir),
-                os.path.normpath(filename_or_url),
+                filename_or_url,
             ),
             flags=GLOB_FLAGS,
         ),
