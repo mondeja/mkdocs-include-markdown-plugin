@@ -181,6 +181,11 @@ def resolve_file_paths_to_include(
     """Resolve the file paths to include for a directive."""
     if process.is_url(filename_or_url):
         return [filename_or_url], True
+    elif process.is_absolute_path(filename_or_url):
+        return process.filter_paths(
+            glob.iglob(filename_or_url, flags=GLOB_FLAGS),
+            ignore_paths,
+        ), False
     elif process.is_relative_path(filename_or_url):
         root_dir = os.path.abspath(
             os.path.dirname(includer_page_src_path),
@@ -195,12 +200,6 @@ def resolve_file_paths_to_include(
                 )
             ), ignore_paths,
         ), False
-    elif process.is_absolute_path(filename_or_url):
-        return process.filter_paths(
-            glob.iglob(filename_or_url, flags=GLOB_FLAGS),
-            ignore_paths,
-        ), False
-
     # relative to docs_dir
     return process.filter_paths(
         (
