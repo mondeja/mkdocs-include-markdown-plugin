@@ -187,7 +187,7 @@ def resolve_file_paths_to_include(
                 os.path.abspath(
                     os.path.join(
                         os.path.dirname(includer_page_src_path),
-                        filename_or_url,
+                        os.path.normpath(filename_or_url),
                     ),
                 ),
                 flags=GLOB_FLAGS,
