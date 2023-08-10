@@ -182,17 +182,18 @@ def resolve_file_paths_to_include(
     if process.is_url(filename_or_url):
         return [filename_or_url], True
     elif process.is_relative_path(filename_or_url):
+        root_dir = os.path.abspath(
+            os.path.dirname(includer_page_src_path),
+        )
         return process.filter_paths(
-            glob.iglob(
-                os.path.join(
-                    os.path.abspath(
-                        os.path.dirname(includer_page_src_path),
-                    ),
+            (
+                os.path.normpath(os.path.join(root_dir, fp))
+                for fp in glob.iglob(
                     filename_or_url,
-                ),
-                flags=GLOB_FLAGS,
-            ),
-            ignore_paths,
+                    flags=GLOB_FLAGS,
+                    root_dir=root_dir,
+                )
+            ), ignore_paths,
         ), False
     elif process.is_absolute_path(filename_or_url):
         return process.filter_paths(
@@ -203,10 +204,7 @@ def resolve_file_paths_to_include(
     # relative to docs_dir
     return process.filter_paths(
         glob.iglob(
-            os.path.join(
-                os.path.abspath(docs_dir),
-                filename_or_url,
-            ),
+            os.path.join(docs_dir, filename_or_url),
             flags=GLOB_FLAGS,
         ),
         ignore_paths,
@@ -219,16 +217,24 @@ def resolve_file_paths_to_exclude(
     docs_dir: str,
 ) -> list[str]:
     """Resolve the file paths to exclude for a directive."""
+    root_dir = None
     if process.is_absolute_path(exclude_string):
-        exclude_globstr = exclude_string
+        return glob.glob(exclude_string, flags=GLOB_FLAGS)
     elif process.is_relative_path(exclude_string):
-        exclude_globstr = os.path.join(
-            os.path.abspath(os.path.dirname(includer_page_src_path)),
-            exclude_string,
+        root_dir = os.path.abspath(
+            os.path.dirname(includer_page_src_path),
         )
-    else:
-        # relative to docs_dir
-        exclude_globstr = os.path.join(
-            os.path.abspath(docs_dir), exclude_string,
-        )
-    return glob.glob(exclude_globstr, flags=GLOB_FLAGS)
+        return [
+            os.path.normpath(
+                os.path.join(root_dir, fp),
+            ) for fp in glob.glob(
+                exclude_string,
+                flags=GLOB_FLAGS,
+                root_dir=root_dir,
+            )
+        ]
+    return glob.glob(
+        exclude_string,
+        flags=GLOB_FLAGS,
+        root_dir=docs_dir,
+    )

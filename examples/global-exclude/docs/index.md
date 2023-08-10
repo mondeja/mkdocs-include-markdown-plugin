@@ -1,1 +1,1 @@
-{% include-markdown "**" exclude="{index,license}.md" %}
+{% include-markdown "**" exclude="./{index,license}.md" %}
