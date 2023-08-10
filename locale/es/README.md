@@ -39,8 +39,6 @@ pasados a los argumentos de las directivas y están documentados en la
 ```yaml
 plugins:
   - include-markdown:
-      opening_tag: "{!"
-      closing_tag: "!}"
       encoding: ascii
       preserve_includer_indent: false
       dedent: false
@@ -55,7 +53,13 @@ plugins:
 - <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
 **closing_tag**: Las etiquetas de apertura y cierre. Por defecto son `{%` y
 `%}`.
-- <a name="config_exclude" href="#config_exclude">#</a> **exclude** Define
+   ```yaml
+   plugins:
+  - include-markdown:
+      opening_tag: "{!"
+      closing_tag: "!}"
+   ```
+- <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Define
 patrones de comodín de exclusión globales. Las rutas relativas definidas aquí
 serán relativas al directorio *docs/*.
    ```yaml
@@ -65,8 +69,8 @@ serán relativas al directorio *docs/*.
         - LICENSE.md
         - api/**
    ```
-- <a name="config_cache" href="#config_cache">#</a> **cache** Define un tiempo de
-caducidad en segundos para las solicitudes HTTP almacenadas en caché al
+- <a name="config_cache" href="#config_cache">#</a> **cache**: Define un tiempo
+de caducidad en segundos para las solicitudes HTTP almacenadas en caché al
 incluir desde URL.
    ```yaml
    plugins:

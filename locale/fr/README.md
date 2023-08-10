@@ -38,8 +38,6 @@ arguments des directives et sont documentés dans la [référence](#référence)
 ```yaml
 plugins:
   - include-markdown:
-      opening_tag: "{!"
-      closing_tag: "!}"
       encoding: ascii
       preserve_includer_indent: false
       dedent: false
@@ -54,7 +52,13 @@ plugins:
 - <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
 **closing_tag**: Les balises d'ouverture et de fermeture par défaut. Par
 défaut sont `{%` et `%}`.
-- <a name="config_exclude" href="#config_exclude">#</a> **exclude** Définissez
+   ```yaml
+   plugins:
+  - include-markdown:
+      opening_tag: "{!"
+      closing_tag: "!}"
+   ```
+- <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Définissez
 des modèles génériques d'exclusion globale. Les chemins de fichiers relatifs
 définis ici seront relatifs au répertoire *docs/*.
    ```yaml
@@ -64,8 +68,8 @@ définis ici seront relatifs au répertoire *docs/*.
         - LICENSE.md
         - api/**
    ```
-- <a name="config_cache" href="#config_cache">#</a> **cache** Définissez un délai
-d'expiration en secondes pour les requêtes HTTP mises en cache lors de
+- <a name="config_cache" href="#config_cache">#</a> **cache**: Définissez un
+délai d'expiration en secondes pour les requêtes HTTP mises en cache lors de
 l'inclusion d'URL.
    ```yaml
    plugins:

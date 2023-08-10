@@ -50,8 +50,6 @@ of directives and are documented in the [reference](#reference).
 ```yaml
 plugins:
   - include-markdown:
-      opening_tag: "{!"
-      closing_tag: "!}"
       encoding: ascii
       preserve_includer_indent: false
       dedent: false
@@ -67,7 +65,14 @@ plugins:
   **closing_tag**: The default opening and closing tags. By default are
   `{%` and `%}`.
 
-- <a name="config_exclude" href="#config_exclude">#</a> **exclude** Define
+  ```yaml
+  plugins:
+    - include-markdown:
+        opening_tag: "{!"
+        closing_tag: "!}"
+  ```
+
+- <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Define
   global exclusion wildcard patterns. Relative paths defined here will be
   relative to the _docs/_ directory.
 
@@ -79,7 +84,7 @@ plugins:
           - api/**
   ```
 
-- <a name="config_cache" href="#config_cache">#</a> **cache** Define a
+- <a name="config_cache" href="#config_cache">#</a> **cache**: Define a
   expiration time in seconds for cached HTTP requests when including
   from URLs.
 
