@@ -203,9 +203,12 @@ def resolve_file_paths_to_include(
 
     # relative to docs_dir
     return process.filter_paths(
-        glob.iglob(
-            os.path.join(docs_dir, filename_or_url),
-            flags=GLOB_FLAGS,
+        (
+            os.path.normpath(os.path.join(docs_dir, fp))
+            for fp in glob.iglob(
+                os.path.join(docs_dir, filename_or_url),
+                flags=GLOB_FLAGS,
+            )
         ),
         ignore_paths,
     ), False
