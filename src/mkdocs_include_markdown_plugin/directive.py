@@ -186,7 +186,9 @@ def resolve_file_paths_to_include(
             glob.iglob(
                 os.path.realpath(
                     os.path.join(
-                        os.path.dirname(includer_page_src_path),
+                        os.path.abspath(
+                            os.path.dirname(includer_page_src_path),
+                        ),
                         filename_or_url,
                     ),
                 ),
@@ -205,7 +207,7 @@ def resolve_file_paths_to_include(
         glob.iglob(
             os.path.realpath(
                 os.path.join(
-                    docs_dir,
+                    os.path.abspath(docs_dir),
                     os.path.normpath(filename_or_url),
                 ),
             ),
@@ -226,7 +228,7 @@ def resolve_file_paths_to_exclude(
     elif process.is_relative_path(exclude_string):
         exclude_globstr = os.path.realpath(
             os.path.join(
-                os.path.dirname(includer_page_src_path),
+                os.path.abspath(os.path.dirname(includer_page_src_path)),
                 exclude_string,
             ),
         )
