@@ -131,7 +131,7 @@ jobs:
         id: tag
         run: |
           TAG_TITLE=${GITHUB_REF#refs/*/}
-          echo ::set-output name=title::$TAG_TITLE
+          echo "title=$TAG_TITLE" >> $GITHUB_OUTPUT
           git -c protocol.version=2 fetch --prune --progress \
             --no-recurse-submodules origin \
             +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
@@ -139,7 +139,7 @@ jobs:
           TAG_BODY="${TAG_BODY//'%'/'%25'}"
           TAG_BODY="${TAG_BODY//$'\n'/'%0A'}"
           TAG_BODY="${TAG_BODY//$'\r'/'%0D'}"
-          echo ::set-output name=body::$TAG_BODY
+          echo "body=$TAG_BODY" >> $GITHUB_OUTPUT
       - name: Create Release
         uses: softprops/action-gh-release@v1
         id: create-release

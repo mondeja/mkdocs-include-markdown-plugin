@@ -380,7 +380,7 @@ def rstrip_trailing_newlines(content: str) -> str:
 
 
 def filter_paths(
-        filepaths: Iterator[str],
+        filepaths: Iterator[str] | list[str],
         ignore_paths: list[str],
 ) -> list[str]:
     """Filters a list of paths removing those defined in other list of paths.
@@ -424,6 +424,16 @@ def is_url(string: str) -> bool:
         return all([result.scheme, result.netloc])
     except ValueError:  # pragma: no cover
         return False
+
+
+def is_relative_path(string: str) -> bool:
+    """Check if a string looks like a relative path."""
+    return string.startswith(('./', '../'))
+
+
+def is_absolute_path(string: str) -> bool:
+    """Check if a string looks like an absolute path."""
+    return os.path.isabs(string) or string.startswith((os.sep, '/'))
 
 
 def read_file(file_path: str, encoding: str) -> str:

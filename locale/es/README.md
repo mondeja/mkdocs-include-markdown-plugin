@@ -32,10 +32,6 @@ plugins:
 
 El comportamiento global del plugin puede ser personalizado en la configuración.
 
-- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
-**closing_tag**: Las etiquetas de apertura y cierre. Por defecto son `{%` y
-`%}`.
-
 La mayoría de los parámetros de configuración definirán los valores por defecto
 pasados a los argumentos de las directivas y están documentados en la
 [referencia](#referencia).
@@ -43,8 +39,6 @@ pasados a los argumentos de las directivas y están documentados en la
 ```yaml
 plugins:
   - include-markdown:
-      opening_tag: "{!"
-      closing_tag: "!}"
       encoding: ascii
       preserve_includer_indent: false
       dedent: false
@@ -54,25 +48,42 @@ plugins:
       heading_offset: 0
       start: <!--start-->
       end: <!--end-->
-      exclude: LICENSE.md
 ```
 
-La configuración `cache` define un tiempo de expiración en segundos para las
-peticiones HTTP cuando se incluye desde URLs.
-
-```yaml
-plugins:
+- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
+**closing_tag**: Las etiquetas de apertura y cierre. Por defecto son `{%` y
+`%}`.
+   ```yaml
+   plugins:
+  - include-markdown:
+      opening_tag: "{!"
+      closing_tag: "!}"
+   ```
+- <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Define
+patrones de comodín de exclusión globales. Las rutas relativas definidas aquí
+serán relativas al directorio *docs/*.
+   ```yaml
+   plugins:
+  - include-markdown:
+      exclude:
+        - LICENSE.md
+        - api/**
+   ```
+- <a name="config_cache" href="#config_cache">#</a> **cache**: Define un tiempo
+de caducidad en segundos para las solicitudes HTTP almacenadas en caché al
+incluir desde URL.
+   ```yaml
+   plugins:
   - include-markdown:
       cache: 600
-```
+   ```
 
-Para usar esta funcionalidad, la dependencia [platformdirs] debe ser instalada.
+   Para usar esta funcionalidad, la dependencia [platformdirs] debe ser instalada.
 Puedes incluirla en la instalación del plugin añadiendo el extra `cache`:
-
-```txt
-# requirements.txt
+   ```txt
+   # requirements.txt
 mkdocs-include-markdown-plugin[cache]
-```
+   ```
 
 ### Referencia
 
@@ -81,10 +92,14 @@ incluir archivos de cualquier tipo.
 
 Las rutas de los archivos a incluir pueden ser:
 
-- Archivos locales con rutas absolutas o relativas al archivo que los incluye.
-- Globs coincidiendo con múltiples archivos, en cuyo caso ciertas rutas pueden
-ser ignoradas usando el argumento `exclude`.
 - URLs para incluir contenido remoto.
+- Archivos locales:
+   - Rutas absolutas (comenzando con un separador de rutas).
+   - Relativas desde el archivo que las incluye (empezando por `./` o `../`).
+   - Relativas desde el directorio *docs/*.
+- [Bash wildcard globs] matching multiple local files.
+[Patrones glob de Bash]
+que coincidan con múltiples archivos locales.
 
 Las rutas de archivo para incluir y los argumentos de cadena se pueden envolver
 con comillas dobles `"` o simples `'`, que se pueden escapar anteponiendo un
@@ -92,7 +107,7 @@ carácter `\` como `\"` y `\'`.
 
 Las cadenas **start** y **end** pueden contener caracteres usuales de secuencias
 de escape (al estilo Python) como `\n` para hacer coincidir contra caracteres de
-salto de línea
+salto de línea.
 
 #### **`include-markdown`**
 
@@ -248,3 +263,4 @@ separar este plugin de la documentación de
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
+[Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax

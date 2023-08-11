@@ -3,12 +3,13 @@
 import os
 
 import pytest
-from testing_helpers import parametrize_directives
+from testing_helpers import parametrize_directives, unix_only
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 
-def test_glob_include_simple(page, tmp_path):
+@unix_only
+def test_glob_include_absolute(page, tmp_path):
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
     included_02_file = tmp_path / 'included_02.txt'

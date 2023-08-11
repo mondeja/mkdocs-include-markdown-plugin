@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+import os
 import re
 import string
 from typing import TYPE_CHECKING
+
+from wcmatch import glob
+
+from mkdocs_include_markdown_plugin import process
 
 
 if TYPE_CHECKING:
@@ -27,11 +32,11 @@ if TYPE_CHECKING:
             'heading-offset': int,
             'start': str,
             'end': str,
-            'exclude': str,
         },
     )
 
 
+GLOB_FLAGS = glob.NEGATE | glob.EXTGLOB | glob.GLOBSTAR | glob.BRACE
 RE_ESCAPED_PUNCTUATION = re.escape(string.punctuation)
 
 DOUBLE_QUOTED_STR_RE = r'([^"]|(?<=\\)["])+'
@@ -165,3 +170,87 @@ def parse_bool_options(
         except KeyError:
             invalid_args.append(arg_name)
     return bool_options, invalid_args
+
+
+def resolve_file_paths_to_include(
+    filename_or_url: str,
+    includer_page_src_path: str,
+    docs_dir: str,
+    ignore_paths: list[str],
+) -> tuple[list[str], bool]:
+    """Resolve the file paths to include for a directive."""
+    if process.is_url(filename_or_url):
+        return [filename_or_url], True
+    elif process.is_absolute_path(filename_or_url):
+        if os.name == 'nt':
+            # Windows
+            fpath = os.path.normpath(filename_or_url)
+            if not os.path.isfile(fpath):
+                return [], False
+
+            return process.filter_paths(
+                [fpath], ignore_paths,
+            ), False
+        return process.filter_paths(
+            glob.iglob(
+                os.path.normpath(filename_or_url),
+                flags=GLOB_FLAGS,
+            ),
+            ignore_paths,
+        ), False
+    elif process.is_relative_path(filename_or_url):
+        root_dir = os.path.abspath(
+            os.path.dirname(includer_page_src_path),
+        )
+        return process.filter_paths(
+            (
+                os.path.normpath(os.path.join(root_dir, fp))
+                for fp in glob.iglob(
+                    filename_or_url,
+                    flags=GLOB_FLAGS,
+                    root_dir=root_dir,
+                )
+            ), ignore_paths,
+        ), False
+
+    # relative to docs_dir
+    return process.filter_paths(
+        (
+            os.path.normpath(os.path.join(docs_dir, fp))
+            for fp in glob.iglob(
+                filename_or_url,
+                flags=GLOB_FLAGS,
+                root_dir=docs_dir,
+            )
+        ),
+        ignore_paths,
+    ), False
+
+
+def resolve_file_paths_to_exclude(
+    exclude_string: str,
+    includer_page_src_path: str,
+    docs_dir: str,
+) -> list[str]:
+    """Resolve the file paths to exclude for a directive."""
+    root_dir = None
+    if process.is_absolute_path(exclude_string):
+        return glob.glob(exclude_string, flags=GLOB_FLAGS)
+    elif process.is_relative_path(exclude_string):
+        root_dir = os.path.abspath(
+            os.path.dirname(includer_page_src_path),
+        )
+        return [
+            os.path.normpath(
+                os.path.join(root_dir, fp),
+            ) for fp in glob.glob(
+                exclude_string,
+                flags=GLOB_FLAGS,
+                root_dir=root_dir,
+            )
+        ]
+    return glob.glob(
+        exclude_string,
+        flags=GLOB_FLAGS,
+        root_dir=docs_dir,
+    )

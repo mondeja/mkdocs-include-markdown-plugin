@@ -32,18 +32,12 @@ plugins:
 
 Le comportement global du plugin peut être personnalisé dans la configuration.
 
-- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
-**closing_tag**: Les balises d'ouverture et de fermeture par défaut. Par
-défaut sont `{%` et `%}`.
-
 La plupart des paramètres définissent les valeurs par défaut transmises aux
 arguments des directives et sont documentés dans la [référence](#référence).
 
 ```yaml
 plugins:
   - include-markdown:
-      opening_tag: "{!"
-      closing_tag: "!}"
       encoding: ascii
       preserve_includer_indent: false
       dedent: false
@@ -53,26 +47,43 @@ plugins:
       heading_offset: 0
       start: <!--start-->
       end: <!--end-->
-      exclude: LICENSE.md
 ```
 
-Le paramètre `cache` définit un délai d'expiration en secondes pour les requêtes
-HTTP lors de l'inclusion d'URL.
-
-```yaml
-plugins:
+- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
+**closing_tag**: Les balises d'ouverture et de fermeture par défaut. Par
+défaut sont `{%` et `%}`.
+   ```yaml
+   plugins:
+  - include-markdown:
+      opening_tag: "{!"
+      closing_tag: "!}"
+   ```
+- <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Définissez
+des modèles génériques d'exclusion globale. Les chemins de fichiers relatifs
+définis ici seront relatifs au répertoire *docs/*.
+   ```yaml
+   plugins:
+  - include-markdown:
+      exclude:
+        - LICENSE.md
+        - api/**
+   ```
+- <a name="config_cache" href="#config_cache">#</a> **cache**: Définissez un
+délai d'expiration en secondes pour les requêtes HTTP mises en cache lors de
+l'inclusion d'URL.
+   ```yaml
+   plugins:
   - include-markdown:
       cache: 600
-```
+   ```
 
-Pour utiliser cette fonctionnalité, la dépendance [platformdirs] doit être
+   Pour utiliser cette fonctionnalité, la dépendance [platformdirs] doit être
 installée. Vous pouvez l'inclure dans l'installation du plugin en ajoutant le
 supplément `cache`:
-
-```txt
-# requirements.txt
+   ```txt
+   # requirements.txt
 mkdocs-include-markdown-plugin[cache]
-```
+   ```
 
 ### Référence
 
@@ -81,11 +92,12 @@ autre pour inclure des fichiers de tout type.
 
 Les chemins des fichiers inclus peuvent être soit:
 
-- Fichiers locaux avec des chemins absolus ou relatifs vers le fichier qui les
-contient.
-- Globs correspondant à plusieurs fichiers, auquel cas certains chemins peuvent
-être ignorés en utilisant l'argument `exclude`.
 - URL pour inclure du contenu distant.
+- Fichiers locaux:
+   - Chemins de fichier absolus (commençant par un séparateur de chemin).
+   - Relatifs du fichiers qui les inclut (commençant par `./` ou `../`).
+   - Relatif du répertoire *docs/*.
+- Globs génériques Bash correspondant à plusieurs fichiers locaux.
 
 Les chemins d'accès aux fichiers à inclure et les arguments de chaîne peuvent
 être entourés de guillemets doubles `"` ou simples `'`, qui peuvent être
@@ -248,3 +260,4 @@ autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
 [cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
+[Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax
