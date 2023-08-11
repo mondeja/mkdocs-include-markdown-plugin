@@ -6,11 +6,12 @@ import re
 
 import pytest
 from mkdocs.exceptions import PluginError
-from testing_helpers import parametrize_directives
+from testing_helpers import parametrize_directives, unix_only
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 
+@unix_only
 @parametrize_directives
 @pytest.mark.parametrize(
     ('filenames', 'exclude', 'exclude_prefix', 'expected_result'),
