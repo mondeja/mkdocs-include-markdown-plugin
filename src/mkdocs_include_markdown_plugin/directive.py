@@ -184,9 +184,12 @@ def resolve_file_paths_to_include(
     elif process.is_absolute_path(filename_or_url):
         if os.name == 'nt':
             # Windows
+            fpath = os.path.normpath(filename_or_url)
+            if not os.path.isfile(fpath):
+                return [], False
+
             return process.filter_paths(
-                [os.path.normpath(filename_or_url)],
-                ignore_paths,
+                [fpath], ignore_paths,
             ), False
         return process.filter_paths(
             glob.iglob(
