@@ -70,7 +70,10 @@
             },
             "exclude": {
               "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include-markdown_exclude",
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             },
             "cache": {
               "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#configuration",
