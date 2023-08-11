@@ -186,7 +186,14 @@ especificado. Sólo soporta la sintaxis de encabezado de caracteres de hash
    include-markdown "../LICENSE*"
    start="<!--license \"start\" -->"
    end='<!--license "end" -->'
-   exclude="../LICENSE*.rst"
+   exclude="../*.rst"
+%}
+```
+
+```jinja
+{%
+   include-markdown "**"
+   exclude="./{index,LICENSE}.md"
 %}
 ```
 
@@ -239,8 +246,8 @@ se usará `utf-8`.
 
 ```jinja
 {%
-   include '../LICENSE*'
-   exclude='../LICENSE*.rst'
+   include '**'
+   exclude='./*.md'
 %}
 ```
 

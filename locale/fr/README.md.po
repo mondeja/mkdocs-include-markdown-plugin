@@ -351,15 +351,6 @@ msgstr "Les chemins des fichiers inclus peuvent être soit:"
 msgid "URLs to include remote content."
 msgstr "URL pour inclure du contenu distant."
 
-msgid ""
-"In order to use this feature, the dependency [platformdirs] must be "
-"installed. You can include it in the installation of the plugin adding the "
-"`cache` extra:"
-msgstr ""
-"Pour utiliser cette fonctionnalité, la dépendance [platformdirs] doit être "
-"installée. Vous pouvez l'inclure dans l'installation du plugin en ajoutant "
-"le supplément `cache`:"
-
 msgid "Local files:"
 msgstr "Fichiers locaux:"
 
@@ -398,3 +389,12 @@ msgstr "Relatifs du fichiers qui les inclut (commençant par `./` ou `../`)."
 
 msgid "Relative from the *docs/* directory."
 msgstr "Relatif du répertoire *docs/*."
+
+msgid ""
+"In order to use this feature, the dependency [platformdirs] must be "
+"installed. You can include it in the installation of the plugin adding the "
+"`cache` extra:"
+msgstr ""
+"Pour utiliser cette fonctionnalité, la dépendance [platformdirs] doit être "
+"installée. Vous pouvez l'inclure dans l'installation du plugin en ajoutant "
+"le supplément `cache`:"

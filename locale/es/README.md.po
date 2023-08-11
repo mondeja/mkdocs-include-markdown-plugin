@@ -352,15 +352,6 @@ msgstr "Las rutas de los archivos a incluir pueden ser:"
 msgid "URLs to include remote content."
 msgstr "URLs para incluir contenido remoto."
 
-msgid ""
-"In order to use this feature, the dependency [platformdirs] must be "
-"installed. You can include it in the installation of the plugin adding the "
-"`cache` extra:"
-msgstr ""
-"Para usar esta funcionalidad, la dependencia [platformdirs] debe ser "
-"instalada. Puedes incluirla en la instalación del plugin añadiendo el extra "
-"`cache`:"
-
 msgid "Local files:"
 msgstr "Archivos locales:"
 
@@ -402,3 +393,12 @@ msgstr ""
 
 msgid "Relative from the *docs/* directory."
 msgstr "Relativas desde el directorio *docs/*."
+
+msgid ""
+"In order to use this feature, the dependency [platformdirs] must be "
+"installed. You can include it in the installation of the plugin adding the "
+"`cache` extra:"
+msgstr ""
+"Para usar esta funcionalidad, la dependencia [platformdirs] debe ser "
+"instalada. Puedes incluirla en la instalación del plugin añadiendo el extra "
+"`cache`:"

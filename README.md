@@ -197,7 +197,14 @@ content to include.
    include-markdown "../LICENSE*"
    start="<!--license \"start\" -->"
    end='<!--license "end" -->'
-   exclude="../LICENSE*.rst"
+   exclude="../*.rst"
+%}
+```
+
+```jinja
+{%
+   include-markdown "**"
+   exclude="./{index,LICENSE}.md"
 %}
 ```
 
@@ -250,8 +257,8 @@ Includes the content of a file or a group of files.
 
 ```jinja
 {%
-   include '../LICENSE*'
-   exclude='../LICENSE*.rst'
+   include '**'
+   exclude='./*.md'
 %}
 ```
 

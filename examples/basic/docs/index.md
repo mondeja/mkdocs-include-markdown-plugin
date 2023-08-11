@@ -2,4 +2,4 @@
 { % include '../mkdocs.yml'% }
 ```
 
-{% include-markdown 'included.md' start='<--start-->' %}
+{% include-markdown './included.md' start='<--start-->' %}

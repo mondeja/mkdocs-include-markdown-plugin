@@ -184,7 +184,14 @@ négatives pour supprimer les caractères `#` de tête.
    include-markdown "../LICENSE*"
    start="<!--license \"start\" -->"
    end='<!--license "end" -->'
-   exclude="../LICENSE*.rst"
+   exclude="../*.rst"
+%}
+```
+
+```jinja
+{%
+   include-markdown "**"
+   exclude="./{index,LICENSE}.md"
 %}
 ```
 
@@ -236,8 +243,8 @@ valeurs possibles sont `true` et `false`.
 
 ```jinja
 {%
-   include '../LICENSE*'
-   exclude='../LICENSE*.rst'
+   include '**'
+   exclude='./*.md'
 %}
 ```
 
