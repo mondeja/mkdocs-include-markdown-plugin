@@ -331,7 +331,7 @@ def filter_inclusions(
             for i, end_text in enumerate(start_text.split(end)):
                 if not i % 2:
                     new_text_to_include += end_text
-    else:  # start is None and end is None
+    else:  # pragma: no cover
         new_text_to_include = text_to_include
 
     return (
