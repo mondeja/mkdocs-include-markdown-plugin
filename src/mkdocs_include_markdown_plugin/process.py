@@ -284,8 +284,8 @@ def interpret_escapes(value: str) -> str:
 
 
 def filter_inclusions(
-        new_start: str | None,
-        new_end: str | None,
+        start: str | None,
+        end: str | None,
         text_to_include: str,
 ) -> tuple[str, bool, bool]:
     """Filter inclusions in a text.
@@ -294,48 +294,48 @@ def filter_inclusions(
     arguments.
     """
     expected_start_not_found, expected_end_not_found = (False, False)
+    new_text_to_include = ''
 
-    if new_start is not None:
-        start = interpret_escapes(new_start)
-        end = interpret_escapes(new_end) if new_end is not None else None
-
-        new_text_to_include = ''
-
-        if end is not None:
-            end_found = False
-            start_split = text_to_include.split(start)[1:]
-            if not start_split:
-                expected_start_not_found = True
-            else:
-                for start_text in start_split:
-                    for i, end_text in enumerate(start_text.split(end)):
-                        if not i % 2:
-                            new_text_to_include += end_text
-                            end_found = True
-            if not end_found:
-                expected_end_not_found = True
+    if start is not None and end is None:
+        start = interpret_escapes(start)
+        if start not in text_to_include:
+            expected_start_not_found = True
         else:
-            if start in text_to_include:
-                new_text_to_include = text_to_include.split(
-                    start,
-                    maxsplit=1,
-                )[1]
-            else:
-                expected_start_not_found = True
-        text_to_include = new_text_to_include
-
-    elif new_end is not None:  # pragma: no branch
-        end = interpret_escapes(new_end)
-        if end in text_to_include:
-            text_to_include = text_to_include.split(
+            new_text_to_include = text_to_include.split(
+                start,
+                maxsplit=1,
+            )[1]
+    elif start is None and end is not None:
+        end = interpret_escapes(end)
+        if end not in text_to_include:
+            expected_end_not_found = True
+            new_text_to_include = text_to_include
+        else:
+            new_text_to_include = text_to_include.split(
                 end,
                 maxsplit=1,
             )[0]
-        else:
+    elif start is not None and end is not None:
+        start, end = interpret_escapes(start), interpret_escapes(end)
+        if start not in text_to_include:
+            expected_start_not_found = True
+        if end not in text_to_include:
             expected_end_not_found = True
 
+        text_parts = (
+            text_to_include.split(start)[1:]
+            if start in text_to_include else [text_to_include]
+        )
+
+        for start_text in text_parts:
+            for i, end_text in enumerate(start_text.split(end)):
+                if not i % 2:
+                    new_text_to_include += end_text
+    else:  # start is None and end is None
+        new_text_to_include = text_to_include
+
     return (
-        text_to_include,
+        new_text_to_include,
         expected_start_not_found,
         expected_end_not_found,
     )

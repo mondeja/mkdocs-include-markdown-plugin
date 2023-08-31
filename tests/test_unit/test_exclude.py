@@ -81,7 +81,7 @@ def test_exclude(
     }
 
     exclude_prefix = f'{tmp_path}{os.sep}' if exclude_prefix else ''
-    includer_filepath_content = f'''{{%
+    includer_file_content = f'''{{%
   {directive} "{tmp_path}{os.sep}content/*"
   exclude='{exclude_prefix}{exclude}'
   comments=false
@@ -89,11 +89,11 @@ def test_exclude(
     for basename, file in files.items():
         file.write_text(f'{basename}\n')
 
-    includer_file.write_text(includer_filepath_content)
+    includer_file.write_text(includer_file_content)
 
     func = functools.partial(
         on_page_markdown,
-        includer_filepath_content,
+        includer_file_content,
         page(includer_file),
         includer_folder,
     )

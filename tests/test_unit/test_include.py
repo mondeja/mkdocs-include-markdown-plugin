@@ -195,7 +195,7 @@ Some text
                 (
                     "Delimiter start '<!--start-->' of 'include'"
                     ' directive at {filepath}:3'
-                    ' not detected in the file {included_filepath}'
+                    ' not detected in the file {included_file}'
                 ),
             ],
             id='start=foo (not found)-end=None',
@@ -220,7 +220,7 @@ Some text
                 (
                     "Delimiter end '<!--end-->' of 'include'"
                     ' directive at {filepath}:2'
-                    ' not detected in the file {included_filepath}'
+                    ' not detected in the file {included_file}'
                 ),
             ],
             id='start=None-end=foo (not found)',
@@ -368,22 +368,22 @@ def test_include(
     caplog,
     tmp_path,
 ):
-    included_filepath = tmp_path / 'included.md'
-    includer_filepath = tmp_path / 'includer.md'
+    included_file = tmp_path / 'included.md'
+    includer_file = tmp_path / 'includer.md'
 
-    included_filepath.write_text(content_to_include)
-    includer_filepath.write_text(
-        content_to_include.replace('{filepath}', included_filepath.as_posix()),
+    included_file.write_text(content_to_include)
+    includer_file.write_text(
+        content_to_include.replace('{filepath}', included_file.as_posix()),
     )
 
     # assert content
     page_content = includer_schema.replace(
-        '{filepath}', included_filepath.as_posix(),
+        '{filepath}', included_file.as_posix(),
     )
-    includer_filepath.write_text(page_content)
+    includer_file.write_text(page_content)
 
     assert on_page_markdown(
-        page_content, page(includer_filepath), tmp_path,
+        page_content, page(includer_file), tmp_path,
     ) == expected_result
 
     # assert warnings
@@ -391,10 +391,10 @@ def test_include(
     expected_warnings = [
         msg_schema.replace(
             '{filepath}',
-            str(includer_filepath.relative_to(tmp_path)),
+            str(includer_file.relative_to(tmp_path)),
         ).replace(
-            '{included_filepath}',
-            str(included_filepath.relative_to(tmp_path)),
+            '{included_file}',
+            str(included_file.relative_to(tmp_path)),
         ) for msg_schema in expected_warnings_schemas
     ]
 

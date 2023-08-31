@@ -23,30 +23,30 @@ def _run_test(
     caplog,
     tmp_path,
 ):
-    included_filepath = tmp_path / 'included.md'
-    includer_filepath = tmp_path / 'includer.md'
+    included_file = tmp_path / 'included.md'
+    includer_file = tmp_path / 'includer.md'
 
-    included_filepath.write_text(content_to_include)
-    includer_filepath.write_text(
-        content_to_include.replace('{filepath}', included_filepath.as_posix()),
+    included_file.write_text(content_to_include)
+    includer_file.write_text(
+        content_to_include.replace('{filepath}', included_file.as_posix()),
     )
 
     # assert content
     page_content = includer_schema.replace(
         '{filepath}',
-        included_filepath.as_posix(),
+        included_file.as_posix(),
     )
-    includer_filepath.write_text(page_content)
+    includer_file.write_text(page_content)
 
     expected_result = expected_result.replace(
         '{filepath}',
-        included_filepath.as_posix(),
+        included_file.as_posix(),
     )
 
     assert (
         on_page_markdown(
             page_content,
-            page(includer_filepath),
+            page(includer_file),
             tmp_path,
             config,
         )
