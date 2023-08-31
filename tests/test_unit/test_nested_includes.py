@@ -167,17 +167,19 @@ Some test from final included.
 ''',
             '''# Header
 
+# Header 2
+
 ''',
             [
                 (
                     "Delimiter start '<!--start-->' of 'include-markdown'"
-                    ' directive at {first_includer_filepath}:3 not detected'
-                    ' in the file {second_includer_filepath}'
+                    ' directive at {first_includer_file}:3 not detected'
+                    ' in the file {second_includer_file}'
                 ),
                 (
                     "Delimiter end '<!--end-->' of 'include-markdown'"
-                    ' directive at {first_includer_filepath}:3 not detected'
-                    ' in the file {second_includer_filepath}'
+                    ' directive at {first_includer_file}:3 not detected'
+                    ' in the file {second_includer_file}'
                 ),
             ],
             id='start-end-not-found (first-level)',
@@ -206,17 +208,20 @@ Included content
 
 # Header 2
 
+# Header 3
+
+Included content
 ''',
             [
                 (
                     "Delimiter start '<!--start-->' of 'include-markdown'"
-                    ' directive at {second_includer_filepath}:3 not detected'
-                    ' in the file {included_filepath}'
+                    ' directive at {second_includer_file}:3 not detected'
+                    ' in the file {included_file}'
                 ),
                 (
                     "Delimiter end '<!--end-->' of 'include-markdown'"
-                    ' directive at {second_includer_filepath}:3 not detected'
-                    ' in the file {included_filepath}'
+                    ' directive at {second_includer_file}:3 not detected'
+                    ' in the file {included_file}'
                 ),
             ],
             id='start-end-not-found (second-level)',
@@ -233,38 +238,38 @@ def test_nested_include(
     caplog,
     tmp_path,
 ):
-    first_includer_filepath = tmp_path / 'first-includer.txt'
-    second_includer_filepath = tmp_path / 'second-includer.txt'
-    included_filepath = tmp_path / 'included.txt'
+    first_includer_file = tmp_path / 'first-includer.txt'
+    second_includer_file = tmp_path / 'second-includer.txt'
+    included_file = tmp_path / 'included.txt'
 
     first_includer_content = first_includer_content.replace(
-        '{filepath}', second_includer_filepath.as_posix(),
+        '{filepath}', second_includer_file.as_posix(),
     )
     second_includer_content = second_includer_content.replace(
-        '{filepath}', included_filepath.as_posix(),
+        '{filepath}', included_file.as_posix(),
     )
 
-    first_includer_filepath.write_text(first_includer_content)
-    second_includer_filepath.write_text(second_includer_content)
-    included_filepath.write_text(included_content)
+    first_includer_file.write_text(first_includer_content)
+    second_includer_file.write_text(second_includer_content)
+    included_file.write_text(included_content)
 
     # assert content
     assert on_page_markdown(
-        first_includer_content, page(first_includer_filepath), tmp_path,
+        first_includer_content, page(first_includer_file), tmp_path,
     ) == expected_result
 
     # assert warnings
     expected_warnings_schemas = expected_warnings_schemas or []
     expected_warnings = [
         msg_schema.replace(
-            '{first_includer_filepath}',
-            str(first_includer_filepath.relative_to(tmp_path)),
+            '{first_includer_file}',
+            str(first_includer_file.relative_to(tmp_path)),
         ).replace(
-            '{second_includer_filepath}',
-            str(second_includer_filepath.relative_to(tmp_path)),
+            '{second_includer_file}',
+            str(second_includer_file.relative_to(tmp_path)),
         ).replace(
-            '{included_filepath}',
-            str(included_filepath.relative_to(tmp_path)),
+            '{included_file}',
+            str(included_file.relative_to(tmp_path)),
         ) for msg_schema in expected_warnings_schemas
     ]
 
@@ -277,9 +282,9 @@ def test_nested_include_relpath(page, tmp_path):
     docs_dir = tmp_path / 'docs'
     docs_dir.mkdir()
 
-    first_includer_filepath = tmp_path / 'first-includer.txt'
-    second_includer_filepath = docs_dir / 'second-includer.txt'
-    included_filepath = tmp_path / 'included.txt'
+    first_includer_file = tmp_path / 'first-includer.txt'
+    second_includer_file = docs_dir / 'second-includer.txt'
+    included_file = tmp_path / 'included.txt'
 
     first_includer_content = '''# Header
 
@@ -288,7 +293,7 @@ def test_nested_include_relpath(page, tmp_path):
   comments=false
 %}
 '''
-    first_includer_filepath.write_text(first_includer_content)
+    first_includer_file.write_text(first_includer_content)
 
     second_includer_content = '''Text from second includer.
 
@@ -297,9 +302,9 @@ def test_nested_include_relpath(page, tmp_path):
   comments=false
 %}
 '''
-    second_includer_filepath.write_text(second_includer_content)
+    second_includer_file.write_text(second_includer_content)
 
-    included_filepath.write_text('Included content.')
+    included_file.write_text('Included content.')
 
     expected_result = '''# Header
 
@@ -311,6 +316,6 @@ Included content.
 
     assert on_page_markdown(
         first_includer_content,
-        page(first_includer_filepath),
+        page(first_includer_file),
         docs_dir,
     ) == expected_result
