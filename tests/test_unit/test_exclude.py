@@ -6,9 +6,8 @@ import re
 
 import pytest
 from mkdocs.exceptions import PluginError
-from testing_helpers import parametrize_directives, unix_only
-
 from mkdocs_include_markdown_plugin.event import on_page_markdown
+from testing_helpers import parametrize_directives, unix_only
 
 
 @unix_only
@@ -81,11 +80,11 @@ def test_exclude(
     }
 
     exclude_prefix = f'{tmp_path}{os.sep}' if exclude_prefix else ''
-    includer_file_content = f'''{{%
+    includer_file_content = f"""{{%
   {directive} "{tmp_path}{os.sep}content/*"
   exclude='{exclude_prefix}{exclude}'
   comments=false
-%}}'''
+%}}"""
     for basename, file in files.items():
         file.write_text(f'{basename}\n')
 

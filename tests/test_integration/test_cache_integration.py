@@ -1,8 +1,8 @@
+from __future__ import annotations
+
 import os
 
 import pytest
-from testing_helpers import parametrize_directives
-
 from mkdocs_include_markdown_plugin.cache import (
     CACHE_AVAILABLE,
     Cache,
@@ -10,6 +10,7 @@ from mkdocs_include_markdown_plugin.cache import (
     initialize_cache,
 )
 from mkdocs_include_markdown_plugin.event import on_page_markdown
+from testing_helpers import parametrize_directives
 
 
 @pytest.mark.parametrize(
@@ -17,19 +18,19 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
     (
         (
             'https://raw.githubusercontent.com/mondeja/mkdocs-include-markdown-plugin/master/examples/basic/mkdocs.yml',  # noqa: E501
-            '''site_name: Foo
+            """site_name: Foo
 plugins:
   - include-markdown
-''',
+""",
         ),
         (
             'https://raw.githubusercontent.com/mondeja/mkdocs-include-markdown-plugin/master/examples/basic/docs/included.md',  # noqa: E501
-            '''Some ignored content.
+            """Some ignored content.
 
 <--start-->
 
 Some included content.
-''',
+""",
         ),
     ),
 )
@@ -57,10 +58,10 @@ def test_page_included_by_url_is_cached(
 
     def run():
         return on_page_markdown(
-            f'''{{%
+            f"""{{%
     {directive} "{url}"
     comments=false
-%}}''',
+%}}""",
             page(tmp_path / 'includer.md'),
             tmp_path,
             http_cache=cache,

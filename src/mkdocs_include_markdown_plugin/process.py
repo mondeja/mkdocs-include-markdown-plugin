@@ -161,9 +161,8 @@ def transform_p_by_p_skipping_codeblocks(
             if _current_fcodeblock_delimiter:
                 if line.lstrip().startswith(_current_fcodeblock_delimiter):
                     _current_fcodeblock_delimiter = ''
-            else:
-                if not line.startswith('    ') and not line.startswith('\t'):
-                    _inside_icodeblock = False
+            elif not line.startswith('    ') and not line.startswith('\t'):
+                _inside_icodeblock = False
 
     process_current_paragraph()
 
@@ -196,7 +195,7 @@ def transform_line_by_line_skipping_codeblocks(
             ):
                 _current_fcodeblock_delimiter = lstripped_line[:3]
             else:
-                line = func(line)
+                line = func(line)  # noqa: PLW2901
         elif line.lstrip().startswith(_current_fcodeblock_delimiter):
             _current_fcodeblock_delimiter = ''
         lines.append(line)
@@ -283,7 +282,7 @@ def interpret_escapes(value: str) -> str:
     return value.encode('latin-1', 'backslashreplace').decode('unicode_escape')
 
 
-def filter_inclusions(
+def filter_inclusions(  # noqa: PLR0912
         start: str | None,
         end: str | None,
         text_to_include: str,

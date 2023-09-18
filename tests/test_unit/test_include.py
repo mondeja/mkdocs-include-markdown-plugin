@@ -1,7 +1,6 @@
 """``include`` directive tests."""
 
 import pytest
-
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 
@@ -32,79 +31,79 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
 
         # Start and end options
         pytest.param(
-            '''# Header
+            """# Header
 
 {%
   include "{filepath}"
   start="start here"
   end="end here"
 %}
-''',
-            '''This must be ignored.
+""",
+            """This must be ignored.
 start hereThis must be included.end here
 This must be ignored also.
-''',
-            '''# Header
+""",
+            """# Header
 
 This must be included.
-''',
+""",
             [],
             id='start/end',
         ),
 
         # Start and end options with escaped special characters
         pytest.param(
-            '''# Header
+            """# Header
 
 {%
   include "{filepath}"
   start="\\tstart here"
   end="\\tend here"
 %}
-''',
-            '''This must be ignored.
+""",
+            """This must be ignored.
 \tstart hereThis must be included.\tend here
 This must be ignored also.
-''',
-            '''# Header
+""",
+            """# Header
 
 This must be included.
-''',
+""",
             [],
             id='start/end (escaped special characters)',
         ),
 
         # Start and end options with unescaped special characters
         pytest.param(
-            '''# Header
+            """# Header
 
 {%
   include "{filepath}"
   start="\tstart here"
   end="\tend here"
 %}
-''',
-            '''This must be ignored.
+""",
+            """This must be ignored.
 \tstart hereThis must be included.\tend here
 This must be ignored also.
-''',
-            '''# Header
+""",
+            """# Header
 
 This must be included.
-''',
+""",
             [],
             id='start/end (unescaped special characters)',
         ),
 
         # Multiples start and end matchs
         pytest.param(
-            '''{%
+            """{%
   include-markdown "{filepath}"
   start="<!--start-tag-->"
   end="<!--end-tag-->"
   comments=false
-%}''',
-            '''Some text
+%}""",
+            """Some text
 
 <!--start-tag-->
 This should be included.
@@ -125,72 +124,72 @@ that should be ignored.
 Etc
 <!--start-tag-->
 This should be included even if hasn't defined after end tag.
-''',
-            '''
+""",
+            """
 This should be included.
 
 This should be included also.
 
 This should be included even if hasn't defined after end tag.
-''',
+""",
             [],
             id='multiple-start-end-matchs',
         ),
 
         # Don't specify end and finds start in included content
         pytest.param(
-            '''Foo
+            """Foo
 {%
     include "{filepath}"
     start="<!--start-->"
-%}''',
-            '''Some text
+%}""",
+            """Some text
 
 <!--start-->
 More text
-''',
-            '''Foo
+""",
+            """Foo
 
 More text
-''',
+""",
             [],
             id='start=foo-end=None',
         ),
 
         # Don't specify start and finds end in included content
         pytest.param(
-            '''Foo
+            """Foo
 {%
     include "{filepath}"
     end="<!--end-->"
-%}''',
-            '''
+%}""",
+            """
 Some text
 <!--end-->
 More text
-''',
-            '''Foo
+""",
+            """Foo
 
 Some text
-''',
+""",
             [],
             id='start=None-end=foo',
         ),
 
         # Don't specify end but not finds start in included content
         pytest.param(
-            '''Foo
+            """Foo
 
 {%
     include "{filepath}"
     start="<!--start-->"
     comments=false
-%}''',
-            '''Some text
-''',
-            '''Foo
+%}""",
+            """Some text
+""",
+            """Foo
 
-''',
+""",
             [
                 (
                     "Delimiter start '<!--start-->' of 'include'"
@@ -203,19 +202,19 @@ Some text
 
         # Don't specify start but not finds end in included content
         pytest.param(
-            '''Foo
+            """Foo
 {%
     include "{filepath}"
     end="<!--end-->"
     comments=false
-%}''',
-            '''
+%}""",
+            """
 Some text
-''',
-            '''Foo
+""",
+            """Foo
 
 Some text
-''',
+""",
             [
                 (
                     "Delimiter end '<!--end-->' of 'include'"
@@ -228,86 +227,86 @@ Some text
 
         # Preserve included indent
         pytest.param(
-            '''1. Ordered list item
+            """1. Ordered list item
     {%
       include "{filepath}"
       preserve-includer-indent=false
-    %}''',
-            '''- Unordered sublist item
-    - Other unordered sublist item''',
-            '''1. Ordered list item
+    %}""",
+            """- Unordered sublist item
+    - Other unordered sublist item""",
+            """1. Ordered list item
     - Unordered sublist item
-    - Other unordered sublist item''',
+    - Other unordered sublist item""",
             [],
             id='preserve included indent',
         ),
 
         # Preserve includer indent
         pytest.param(
-            '''1. Ordered list item
+            """1. Ordered list item
     {%
       include "{filepath}"
-    %}''',
-            '''- First unordered sublist item
+    %}""",
+            """- First unordered sublist item
 - Second unordered sublist item
-- Third unordered sublist item''',
-            '''1. Ordered list item
+- Third unordered sublist item""",
+            """1. Ordered list item
     - First unordered sublist item
     - Second unordered sublist item
-    - Third unordered sublist item''',
+    - Third unordered sublist item""",
             [],
             id='preserve includer indent',
         ),
 
         # Custom options ordering
         pytest.param(
-            '''1. Ordered list item
+            """1. Ordered list item
     {%
       include "{filepath}"
       preserve-includer-indent=true
       end="<!--end-->"
       start="<!--start-->"
-    %}''',
-            '''<!--start-->- First unordered sublist item
+    %}""",
+            """<!--start-->- First unordered sublist item
 - Second unordered sublist item<!--end-->
-- Third unordered sublist item''',
-            '''1. Ordered list item
+- Third unordered sublist item""",
+            """1. Ordered list item
     - First unordered sublist item
-    - Second unordered sublist item''',
+    - Second unordered sublist item""",
             [],
             id='custom options ordering',
         ),
 
         # Content unindentation
         pytest.param(
-            '''# Header
+            """# Header
 
 {%
   include "{filepath}"
   dedent=true
 %}
-''',
-            '''    - Foo
+""",
+            """    - Foo
     - Bar
-        - Baz''',
-            '''# Header
+        - Baz""",
+            """# Header
 
 - Foo
 - Bar
     - Baz
-''',
+""",
             [],
             id='dedent=true',
         ),
 
         # Include from URL
         pytest.param(
-            '''# Header
+            """# Header
 
 {% include "https://raw.githubusercontent.com/mondeja/mkdocs-include-markdown-plugin/master/examples/basic/docs/included.md" %}
-''',  # noqa: E501
+""",  # noqa: E501
             '(not used)\n',
-            '''# Header
+            """# Header
 
 Some ignored content.
 
@@ -315,30 +314,30 @@ Some ignored content.
 
 Some included content.
 
-''',
+""",
             [],
             id='url',
         ),
 
         # Content unindentation + preserve includer indent
         pytest.param(
-            '''# Header
+            """# Header
 
     {%
       include "{filepath}"
       dedent=true
       preserve-includer-indent=true
     %}
-''',
-            '''        - Foo
+""",
+            """        - Foo
         - Bar
-            - Baz''',
-            '''# Header
+            - Baz""",
+            """# Header
 
     - Foo
     - Bar
         - Baz
-''',
+""",
             [],
             id='dedent=true,preserve-includer-indent=true',
         ),

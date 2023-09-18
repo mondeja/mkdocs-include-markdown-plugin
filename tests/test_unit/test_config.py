@@ -1,9 +1,8 @@
 """``include`` directive tests."""
 
 import pytest
-from testing_helpers import unix_only
-
 from mkdocs_include_markdown_plugin.event import on_page_markdown
+from testing_helpers import unix_only
 
 
 TESTS_ARGUMENTS = (

@@ -1,7 +1,8 @@
-import pytest
-from testing_helpers import parametrize_directives
+"""Logging tests."""
 
+import pytest
 from mkdocs_include_markdown_plugin.event import on_page_markdown
+from testing_helpers import parametrize_directives
 
 
 @parametrize_directives
@@ -18,7 +19,7 @@ def test_start_end_arguments_not_found(
     included_file = tmp_path / included_file_name
     includer_file = tmp_path / includer_file_name
 
-    includer_content = f'''# Heading
+    includer_content = f"""# Heading
 
 {{%
   {directive} "{included_file}"
@@ -26,7 +27,7 @@ def test_start_end_arguments_not_found(
   start="<!--start-->"
   end="<!--end-->"
 %}}
-'''
+"""
     if missing_argument == 'end':
         included_content = '<!--start-->Included content'
     else:
@@ -35,10 +36,10 @@ def test_start_end_arguments_not_found(
     includer_file.write_text(includer_content)
     included_file.write_text(included_content)
 
-    expected_result = '''# Heading
+    expected_result = """# Heading
 
 Included content
-'''
+"""
 
     assert on_page_markdown(
         includer_content, page(includer_file), tmp_path,

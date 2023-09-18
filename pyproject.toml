@@ -4,7 +4,7 @@ version = "6.0.1"
 description = "Mkdocs Markdown includer plugin."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.8,<3.13"
+requires-python = ">=3.8"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Operating System :: OS Independent",
@@ -81,9 +81,7 @@ matrix.mkdocs.dependencies = [
   { value = "mkdocs==1.5.0", if = ["1.5.0"] },
   { value = "mkdocs==1.5.1", if = ["1.5.1"] },
 ]
-matrix.cache.dependencies = [
-  { value = "platformdirs", if = ["yes"] },
-]
+matrix.cache.dependencies = [{ value = "platformdirs", if = ["yes"] }]
 
 [tool.hatch.envs.tests.scripts]
 all = "coverage run -m pytest"
@@ -102,12 +100,10 @@ targets = [{ file = "pyproject.toml" }]
 [tool.project-config]
 cache = "2 days"
 style = [
-  "gh://mondeja/project-config-styles@v4.3/base/pre-commit/md2po2md.json5",
-  "gh://mondeja/project-config-styles@v4.3/python/base.json5",
-  "gh://mondeja/project-config-styles@v4.3/python/single-quotes.json5",
-  "gh://mondeja/project-config-styles@v4.3/python/tests.json5",
-  "gh://mondeja/project-config-styles@v4.3/python/google-docstrings.json5",
-  "gh://mondeja/project-config-styles@v4.3/python/mypy.json5",
+  "../project-config-styles/base/pre-commit/md2po2md.json5",
+  "../project-config-styles/python/base.json5",
+  "../project-config-styles/python/tests.json5",
+  "../project-config-styles/python/mypy.json5",
 ]
 
 [tool.coverage.run]
@@ -117,80 +113,58 @@ parallel = true
 data_file = ".coverage/.coverage"
 
 [tool.coverage.report]
-exclude_lines = [
-  "def __repr__\\(",
-  "@(abc\\.)?abstractmethod",
-]
+exclude_lines = ["def __repr__\\(", "@(abc\\.)?abstractmethod"]
 fail_under = 1
 
-[tool.flakeheaven]
+[tool.ruff]
+line-length = 80
+target-version = "py38"
+select = [
+  "W",
+  "B",
+  "E",
+  "I",
+  "F",
+  "A",
+  "D",
+  "G",
+  "Q",
+  "PL",
+  "UP",
+  "PT",
+  "C4",
+  "EXE",
+  "ISC",
+  "T20",
+  "INP",
+  "ARG",
+  "SIM",
+  "RET",
+  "FBT",
+  "ERA",
+  "T10",
+  "COM",
+  "SLOT",
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.flake8-quotes]
 inline-quotes = "single"
-max-line-length = 80
-pytest-fixture-no-parentheses = true
-pytest-parametrize-values-type = "tuple"
-docstring-convention = "google"
-unused-arguments-ignore-abstract-functions = true
 
-[tool.flakeheaven.plugins]
-pycodestyle = ["+*", "-W503"]
-pyflakes = ["+*"]
-pylint = ["+*"]
-flake8-builtins = ["+*"]
-flake8-comprehensions = ["+*"]
-flake8-docstrings = ["+*", "-D107", "-D105"]
-flake8-executable = ["+*"]
-flake8-implicit-str-concat = ["+*"]
-flake8-print = ["+*"]
-flake8-printf-formatting = ["+*"]
-flake8-pytest-style = ["+*"]
-flake8-bugbear = ["+*"]
-flake8-encodings = ["+*"]
-flake8-no-pep420 = ["+*"]
-flake8-absolute-import = ["+*"]
-flake8-unused-arguments = ["+*"]
-flake8-slots = ["+*"]
-dlint = ["+*"]
+[tool.ruff.flake8-pytest-style]
+fixture-parentheses = false
+parametrize-values-type = "tuple"
+parametrize-values-row-type = "tuple"
 
-[tool.flakeheaven.exceptions."tests/**"]
-flake8-docstrings = [
-  "-D100",
-  "-D101",
-  "-D102",
-  "-D103",
-  "-D104",
-  "-D107",
-  "-D205",
-  "-D415"
-]
-flake8-no-pep420 = ["-INP001"]
-
-[tool.flakeheaven.exceptions."setup.py"]
-flake8-docstrings = ["-D205"]
-flake8-no-pep420 = ["-INP001"]
-
-[tool.flakeheaven.exceptions."src/mkdocs_include_markdown_plugin/plugin.py"]
-flake8-docstrings = ["-D100", "-D101", "-D102"]
-flake8-unused-arguments = ["-U100"]
-
-[tool.isort]
-lines_after_imports = 2
-multi_line_output = 3
-line_length = 79
-use_parentheses = true
-combine_as_imports = true
-include_trailing_comma = true
-remove_redundant_aliases = true
-known_tests = "tests"
-sections = [
-  "FUTURE",
-  "STDLIB",
-  "THIRDPARTY",
-  "FIRSTPARTY",
-  "TESTS",
-  "LOCALFOLDER"
-]
-py_version = 38
-extra_standard_library = [
+[tool.ruff.isort]
+lines-after-imports = 2
+combine-as-imports = true
+force-wrap-aliases = true
+known-local-folder = ["tests"]
+required-imports = ["from __future__ import annotations"]
+extra-standard-library = [
   "contextvars",
   "dataclasses",
   "importlib.resources",
@@ -199,6 +173,28 @@ extra_standard_library = [
   "graphlib",
   "tomllib",
   "wsgiref.types"
+]
+
+[tool.ruff.per-file-ignores]
+"tests/**" = [
+  "I002",
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "D107",
+  "D205",
+  "D415",
+  "INP001",
+  "PLR0913",
+  "PLR2004",
+]
+"setup.py" = ["D205", "INP001", "I002"]
+"src/mkdocs_include_markdown_plugin/plugin.py" = [
+  "D100",
+  "D101",
+  "D102",
 ]
 
 [tool.mypy]
@@ -210,9 +206,3 @@ allow_any_generics = true
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-# The next object is enough to build the wheel with mypyc, but just
-# provides a ~10% performance improvement on Python < 3.11 (on Python3.11
-# is even slower):
-#[tool.hatch.build.targets.wheel.hooks.mypyc]
-#dependencies = ["hatch-mypyc", "mkdocs", "typing_extensions"]
-#exclude = ["plugin.py"]
