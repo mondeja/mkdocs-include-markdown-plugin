@@ -441,7 +441,7 @@ def read_file(file_path: str, encoding: str) -> str:
         return f.read()
 
 
-def read_url(url: str, http_cache: Cache | None) -> Any:  # noqa: U100
+def read_url(url: str, http_cache: Cache | None) -> Any:
     """Read an HTTP location and return its content."""
     if http_cache is not None:
         cached_content = http_cache.get_(url)

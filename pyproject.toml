@@ -100,10 +100,9 @@ targets = [{ file = "pyproject.toml" }]
 [tool.project-config]
 cache = "2 days"
 style = [
-  "../project-config-styles/base/pre-commit/md2po2md.json5",
-  "../project-config-styles/python/base.json5",
-  "../project-config-styles/python/tests.json5",
-  "../project-config-styles/python/mypy.json5",
+  "gh://mondeja/project-config-styles@v5/base/pre-commit/md2po2md.json5",
+  "gh://mondeja/project-config-styles@v5/python/base.json5",
+  "gh://mondeja/project-config-styles@v5/python/mypy.json5",
 ]
 
 [tool.coverage.run]
@@ -165,10 +164,6 @@ force-wrap-aliases = true
 known-local-folder = ["tests"]
 required-imports = ["from __future__ import annotations"]
 extra-standard-library = [
-  "contextvars",
-  "dataclasses",
-  "importlib.resources",
-  "importlib.metadata",
   "zoneinfo",
   "graphlib",
   "tomllib",
