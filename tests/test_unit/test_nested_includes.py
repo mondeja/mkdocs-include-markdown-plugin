@@ -170,16 +170,22 @@ Some test from final included.
 
 """,
             [
-                (
-                    "Delimiter start '<!--start-->' of 'include-markdown'"
-                    ' directive at {first_includer_file}:3 not detected'
-                    ' in the file {second_includer_file}'
-                ),
-                (
-                    "Delimiter end '<!--end-->' of 'include-markdown'"
-                    ' directive at {first_includer_file}:3 not detected'
-                    ' in the file {second_includer_file}'
-                ),
+                {
+                    'delimiter_name': 'start',
+                    'delimiter_value': '<!--start-->',
+                    'relative_path': '{first_includer_file}',
+                    'line_number': 3,
+                    'readable_files_to_include': '{second_includer_file}',
+                    'directive': 'include-markdown',
+                },
+                {
+                    'delimiter_name': 'end',
+                    'delimiter_value': '<!--end-->',
+                    'relative_path': '{first_includer_file}',
+                    'line_number': 3,
+                    'readable_files_to_include': '{second_includer_file}',
+                    'directive': 'include-markdown',
+                },
             ],
             id='start-end-not-found (first-level)',
         ),
@@ -212,16 +218,22 @@ Included content
 Included content
 """,
             [
-                (
-                    "Delimiter start '<!--start-->' of 'include-markdown'"
-                    ' directive at {second_includer_file}:3 not detected'
-                    ' in the file {included_file}'
-                ),
-                (
-                    "Delimiter end '<!--end-->' of 'include-markdown'"
-                    ' directive at {second_includer_file}:3 not detected'
-                    ' in the file {included_file}'
-                ),
+                {
+                    'delimiter_name': 'start',
+                    'delimiter_value': '<!--start-->',
+                    'relative_path': '{second_includer_file}',
+                    'line_number': 3,
+                    'readable_files_to_include': '{included_file}',
+                    'directive': 'include-markdown',
+                },
+                {
+                    'delimiter_name': 'end',
+                    'delimiter_value': '<!--end-->',
+                    'relative_path': '{second_includer_file}',
+                    'line_number': 3,
+                    'readable_files_to_include': '{included_file}',
+                    'directive': 'include-markdown',
+                },
             ],
             id='start-end-not-found (second-level)',
         ),
@@ -259,21 +271,24 @@ def test_nested_include(
 
     # assert warnings
     expected_warnings_schemas = expected_warnings_schemas or []
-    expected_warnings = [
-        msg_schema.replace(
+    for warning in expected_warnings_schemas:
+        warning['relative_path'] = warning['relative_path'].replace(
             '{first_includer_file}',
             str(first_includer_file.relative_to(tmp_path)),
         ).replace(
             '{second_includer_file}',
             str(second_includer_file.relative_to(tmp_path)),
-        ).replace(
-            '{included_file}',
-            str(included_file.relative_to(tmp_path)),
-        ) for msg_schema in expected_warnings_schemas
-    ]
+        )
+        warning['readable_files_to_include'] = warning[
+            'readable_files_to_include'
+        ].replace(
+            '{second_includer_file}',
+            str(second_includer_file.relative_to(tmp_path)),
+        ).replace('{included_file}', str(included_file.relative_to(tmp_path)))
 
-    for record in caplog.records:
-        assert record.msg in expected_warnings
+    for i, warning in enumerate(expected_warnings_schemas):
+        for key in warning:
+            assert getattr(caplog.records[i], key) == warning[key]
     assert len(expected_warnings_schemas) == len(caplog.records)
 
 

@@ -263,9 +263,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             text_to_include += new_text_to_include
 
         # warn if expected start or ends haven't been found in included content
-        for i, argname in enumerate(['start', 'end']):
+        for i, delimiter_name in enumerate(['start', 'end']):
             if expected_but_any_found[i]:
-                value = locals()[argname]
+                delimiter_value = locals()[delimiter_name]
                 readable_files_to_include = ', '.join([
                     os.path.relpath(fpath, docs_dir)
                     for fpath in file_paths_to_include
@@ -277,14 +277,16 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 )
                 logger.warning(
                     (
-                        "Delimiter {argname} '{value}' of 'include'"
-                        ' directive at {relative_path}:{line_number}'
+                        "Delimiter {delimiter_name} '{delimiter_value}'"
+                        " of '{directive}' directive at"
+                        ' {relative_path}:{line_number}'
                         ' not detected in the file{plural_suffix}'
                         ' {readable_files_to_include}'
                     ),
                     extra={
-                        'argname': argname,
-                        'value': value,
+                        'delimiter_name': delimiter_name,
+                        'delimiter_value': delimiter_value,
+                        'directive': 'include',
                         'relative_path': os.path.relpath(
                             page_src_path,
                             docs_dir,
@@ -571,9 +573,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             text_to_include += new_text_to_include
 
         # warn if expected start or ends haven't been found in included content
-        for i, argname in enumerate(['start', 'end']):
+        for i, delimiter_name in enumerate(['start', 'end']):
             if expected_but_any_found[i]:
-                value = locals()[argname]
+                delimiter_value = locals()[delimiter_name]
                 readable_files_to_include = ', '.join([
                     os.path.relpath(fpath, docs_dir)
                     for fpath in file_paths_to_include
@@ -585,14 +587,16 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 )
                 logger.warning(
                     (
-                        "Delimiter {argname} '{value}' of 'include-markdown'"
-                        ' directive at {relative_path}:{line_number}'
+                        "Delimiter {delimiter_name} '{delimiter_value}' of"
+                        " '{directive}' directive at"
+                        ' {relative_path}:{line_number}'
                         ' not detected in the file{plural_suffix}'
                         ' {readable_files_to_include}'
                     ),
                     extra={
-                        'argname': argname,
-                        'value': value,
+                        'delimiter_name': delimiter_name,
+                        'delimiter_value': delimiter_value,
+                        'directive': 'include-markdown',
                         'relative_path': os.path.relpath(
                             page_src_path,
                             docs_dir,
@@ -624,7 +628,11 @@ def on_page_markdown(
 ) -> str:
     """Process markdown content of a page."""
     if config is None:
-        config = {}
+        config = {
+            '_files_watcher': None,
+        }
+    elif '_files_watcher' not in config:
+        config['_files_watcher'] = None
 
     return get_file_content(
         markdown,

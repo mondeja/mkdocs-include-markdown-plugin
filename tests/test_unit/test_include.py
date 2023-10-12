@@ -191,11 +191,13 @@ Some text
 
 """,
             [
-                (
-                    "Delimiter start '<!--start-->' of 'include'"
-                    ' directive at {filepath}:3'
-                    ' not detected in the file {included_file}'
-                ),
+                {
+                    'delimiter_name': 'start',
+                    'delimiter_value': '<!--start-->',
+                    'relative_path': '{includer_file}',
+                    'line_number': 3,
+                    'readable_files_to_include': '{included_file}',
+                },
             ],
             id='start=foo (not found)-end=None',
         ),
@@ -216,11 +218,14 @@ Some text
 Some text
 """,
             [
-                (
-                    "Delimiter end '<!--end-->' of 'include'"
-                    ' directive at {filepath}:2'
-                    ' not detected in the file {included_file}'
-                ),
+                {
+                    'delimiter_name': 'end',
+                    'delimiter_value': '<!--end-->',
+                    'relative_path': '{includer_file}',
+                    'line_number': 2,
+                    'readable_files_to_include': '{included_file}',
+                    'directive': 'include',
+                },
             ],
             id='start=None-end=foo (not found)',
         ),
@@ -387,16 +392,17 @@ def test_include(
 
     # assert warnings
     expected_warnings_schemas = expected_warnings_schemas or []
-    expected_warnings = [
-        msg_schema.replace(
-            '{filepath}',
-            str(includer_file.relative_to(tmp_path)),
-        ).replace(
+    for warning in expected_warnings_schemas:
+        warning['directive'] = 'include'
+        warning['relative_path'] = str(includer_file.relative_to(tmp_path))
+        warning['readable_files_to_include'] = warning[
+            'readable_files_to_include'
+        ].replace(
             '{included_file}',
             str(included_file.relative_to(tmp_path)),
-        ) for msg_schema in expected_warnings_schemas
-    ]
+        )
 
-    for record in caplog.records:
-        assert record.msg in expected_warnings
+    for i, warning in enumerate(expected_warnings_schemas):
+        for key in warning:
+            assert getattr(caplog.records[i], key) == warning[key]
     assert len(expected_warnings_schemas) == len(caplog.records)
