@@ -1,7 +1,6 @@
 """``include-markdown`` directive tests"""
 
 import pytest
-
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 
@@ -281,11 +280,13 @@ Some text
             '''# Header
 ''',
             [
-                (
-                    "Delimiter start '<!--start-->' of 'include-markdown'"
-                    ' directive at {filepath}:2 not detected in the file'
-                    ' {included_file}'
-                ),
+                {
+                    'delimiter_name': 'start',
+                    'delimiter_value': '<!--start-->',
+                    'relative_path': '{filepath}',
+                    'readable_files_to_include': '{included_file}',
+                    'line_number': 2,
+                },
             ],
             id='start=foo (not found)-end=None',
         ),
@@ -306,11 +307,13 @@ Some text
 Some text
 ''',
             [
-                (
-                    "Delimiter end '<!--end-->' of 'include-markdown'"
-                    ' directive at {filepath}:2'
-                    ' not detected in the file {included_file}'
-                ),
+                {
+                    'delimiter_name': 'end',
+                    'delimiter_value': '<!--end-->',
+                    'relative_path': '{filepath}',
+                    'readable_files_to_include': '{included_file}',
+                    'line_number': 2,
+                },
             ],
             id='start=None-end=foo (not found)',
         ),
@@ -707,11 +710,11 @@ vɛвѣди
                 "{% include-markdown \"{filepath}\""
                 " start='<!--start-\\'including-->' %}"
             ),
-            """Ignored content
+            '''Ignored content
 
 <!--start-'including-->
 Content to include
-""",
+''',
             r'''<!-- BEGIN INCLUDE {filepath} '&lt;!--start-&#x27;including--&gt;' '' -->
 
 Content to include
@@ -739,6 +742,7 @@ It is a code block
 
 With some text after it
 ''',
+            # ruff: noqa: ISC003  TODO: error in ruff
             '''1.  This is the first number line
 
 1.  <!-- BEGIN INCLUDE {filepath} -->
@@ -754,7 +758,7 @@ With some text after it
     <!-- END INCLUDE -->
 
 1.  If everything works as expected this should be number 3
-''',  # noqa: ISC003
+''',
             [],
             id='include-code-block-to-list-item (#123)',
         ),
@@ -796,18 +800,22 @@ def test_include_markdown(
 
     # assert warnings
     expected_warnings_schemas = expected_warnings_schemas or []
-    expected_warnings = [
-        msg_schema.replace(
+    for warning in expected_warnings_schemas:
+        warning['directive'] = 'include-markdown'
+        warning['relative_path'] = warning['relative_path'].replace(
             '{filepath}',
             str(includer_file.relative_to(tmp_path)),
-        ).replace(
-            '{included_file}',
-            str(included_file.relative_to(tmp_path)),
-        ) for msg_schema in expected_warnings_schemas
-    ]
+        )
+        warning['readable_files_to_include'] = (
+            warning['readable_files_to_include'].replace(
+                '{included_file}',
+                str(included_file.relative_to(tmp_path)),
+            )
+        )
 
-    for record in caplog.records:
-        assert record.msg in expected_warnings
+    for i, warning in enumerate(expected_warnings_schemas):
+        for key in warning:
+            assert getattr(caplog.records[i], key) == warning[key]
     assert len(expected_warnings_schemas) == len(caplog.records)
 
 

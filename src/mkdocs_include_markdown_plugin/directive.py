@@ -45,7 +45,7 @@ SINGLE_QUOTED_STR_RE = r"([^']|(?<=\\)['])+"
 # In the following regular expression, the substrings "$OPENING_TAG"
 # and "$CLOSING_TAG" will be replaced by the effective opening and
 # closing tags in the `on_config` plugin event.
-INCLUDE_TAG_RE = rf"""
+INCLUDE_TAG_RE = rf'''
     (?P<_includer_indent>[ \t\f\v\w{re.escape(string.punctuation)}]*?)$OPENING_TAG
     \s*
     include
@@ -54,7 +54,7 @@ INCLUDE_TAG_RE = rf"""
     (?P<arguments>.*?)
     \s*
     $CLOSING_TAG
-"""  # noqa: E501
+'''  # noqa: E501
 
 TRUE_FALSE_STR_BOOL = {
     'true': True,
@@ -181,7 +181,8 @@ def resolve_file_paths_to_include(
     """Resolve the file paths to include for a directive."""
     if process.is_url(filename_or_url):
         return [filename_or_url], True
-    elif process.is_absolute_path(filename_or_url):
+
+    if process.is_absolute_path(filename_or_url):
         if os.name == 'nt':
             # Windows
             fpath = os.path.normpath(filename_or_url)
@@ -198,7 +199,8 @@ def resolve_file_paths_to_include(
             ),
             ignore_paths,
         ), False
-    elif process.is_relative_path(filename_or_url):
+
+    if process.is_relative_path(filename_or_url):
         root_dir = os.path.abspath(
             os.path.dirname(includer_page_src_path),
         )
@@ -236,7 +238,8 @@ def resolve_file_paths_to_exclude(
     root_dir = None
     if process.is_absolute_path(exclude_string):
         return glob.glob(exclude_string, flags=GLOB_FLAGS)
-    elif process.is_relative_path(exclude_string):
+
+    if process.is_relative_path(exclude_string):
         root_dir = os.path.abspath(
             os.path.dirname(includer_page_src_path),
         )
@@ -249,6 +252,7 @@ def resolve_file_paths_to_exclude(
                 root_dir=root_dir,
             )
         ]
+
     return glob.glob(
         exclude_string,
         flags=GLOB_FLAGS,

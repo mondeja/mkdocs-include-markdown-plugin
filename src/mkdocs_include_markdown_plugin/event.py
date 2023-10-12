@@ -55,7 +55,7 @@ def lineno_from_content_start(content: str, start: int) -> int:
     return content[:start].count('\n') + 1
 
 
-def get_file_content(
+def get_file_content(  # noqa: PLR0913, PLR0915
         markdown: str,
         page_src_path: str,
         docs_dir: str,
@@ -67,7 +67,9 @@ def get_file_content(
         http_cache: Cache | None = None,
 ) -> str:
     """Return the content of the file to include."""
-    def found_include_tag(match: re.Match[str]) -> str:
+    def found_include_tag(  # noqa: PLR0912, PLR0915
+            match: re.Match[str],
+    ) -> str:
         directive_match_start = match.start()
 
         includer_indent = match.group('_includer_indent')
@@ -138,7 +140,8 @@ def get_file_content(
                 f' at {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}',
             )
-        elif files_watcher is not None and not is_url:
+
+        if files_watcher is not None and not is_url:
             files_watcher.included_files.extend(file_paths_to_include)
 
         bool_options, invalid_bool_args = parse_bool_options(
@@ -260,9 +263,9 @@ def get_file_content(
             text_to_include += new_text_to_include
 
         # warn if expected start or ends haven't been found in included content
-        for i, argname in enumerate(['start', 'end']):
+        for i, delimiter_name in enumerate(['start', 'end']):
             if expected_but_any_found[i]:
-                value = locals()[argname]
+                delimiter_value = locals()[delimiter_name]
                 readable_files_to_include = ', '.join([
                     os.path.relpath(fpath, docs_dir)
                     for fpath in file_paths_to_include
@@ -273,15 +276,32 @@ def get_file_content(
                     directive_match_start,
                 )
                 logger.warning(
-                    f"Delimiter {argname} '{value}' of 'include'"
-                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
-                    f':{lineno} not detected in the file{plural_suffix}'
-                    f' {readable_files_to_include}',
+                    (
+                        "Delimiter {delimiter_name} '{delimiter_value}'"
+                        " of '{directive}' directive at"
+                        ' {relative_path}:{line_number}'
+                        ' not detected in the file{plural_suffix}'
+                        ' {readable_files_to_include}'
+                    ),
+                    extra={
+                        'delimiter_name': delimiter_name,
+                        'delimiter_value': delimiter_value,
+                        'directive': 'include',
+                        'relative_path': os.path.relpath(
+                            page_src_path,
+                            docs_dir,
+                        ),
+                        'line_number': lineno,
+                        'plural_suffix': plural_suffix,
+                        'readable_files_to_include': readable_files_to_include,
+                    },
                 )
 
         return text_to_include
 
-    def found_include_markdown_tag(match: re.Match[str]) -> str:
+    def found_include_markdown_tag(  # noqa: PLR0912, PLR0915
+            match: re.Match[str],
+    ) -> str:
         directive_match_start = match.start()
 
         includer_indent = match.group('_includer_indent')
@@ -353,7 +373,8 @@ def get_file_content(
                 f' {os.path.relpath(page_src_path, docs_dir)}'
                 f':{lineno}',
             )
-        elif files_watcher is not None and not is_url:
+
+        if files_watcher is not None and not is_url:
             files_watcher.included_files.extend(file_paths_to_include)
 
         bool_options, invalid_bool_args = parse_bool_options(
@@ -453,7 +474,7 @@ def get_file_content(
                     f"Invalid 'heading-offset' argument \"{offset}\" in"
                     " 'include-markdown' directive at "
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
-                )
+                ) from None
         else:
             offset = defaults['heading-offset']
 
@@ -552,9 +573,9 @@ def get_file_content(
             text_to_include += new_text_to_include
 
         # warn if expected start or ends haven't been found in included content
-        for i, argname in enumerate(['start', 'end']):
+        for i, delimiter_name in enumerate(['start', 'end']):
             if expected_but_any_found[i]:
-                value = locals()[argname]
+                delimiter_value = locals()[delimiter_name]
                 readable_files_to_include = ', '.join([
                     os.path.relpath(fpath, docs_dir)
                     for fpath in file_paths_to_include
@@ -565,10 +586,25 @@ def get_file_content(
                     directive_match_start,
                 )
                 logger.warning(
-                    f"Delimiter {argname} '{value}' of 'include-markdown'"
-                    f' directive at {os.path.relpath(page_src_path, docs_dir)}'
-                    f':{lineno} not detected in the file{plural_suffix}'
-                    f' {readable_files_to_include}',
+                    (
+                        "Delimiter {delimiter_name} '{delimiter_value}' of"
+                        " '{directive}' directive at"
+                        ' {relative_path}:{line_number}'
+                        ' not detected in the file{plural_suffix}'
+                        ' {readable_files_to_include}'
+                    ),
+                    extra={
+                        'delimiter_name': delimiter_name,
+                        'delimiter_value': delimiter_value,
+                        'directive': 'include-markdown',
+                        'relative_path': os.path.relpath(
+                            page_src_path,
+                            docs_dir,
+                        ),
+                        'line_number': lineno,
+                        'plural_suffix': plural_suffix,
+                        'readable_files_to_include': readable_files_to_include,
+                    },
                 )
 
         return text_to_include
@@ -577,11 +613,10 @@ def get_file_content(
         found_include_tag,
         markdown,
     )
-    markdown = tags['include-markdown'].sub(
+    return tags['include-markdown'].sub(
         found_include_markdown_tag,
         markdown,
     )
-    return markdown
 
 
 def on_page_markdown(
@@ -589,12 +624,15 @@ def on_page_markdown(
         page: Page,
         docs_dir: str,
         config: MutableMapping[str, Any] | None = None,
-        files_watcher: FilesWatcher | None = None,
         http_cache: Cache | None = None,
 ) -> str:
     """Process markdown content of a page."""
     if config is None:
-        config = {}
+        config = {
+            '_files_watcher': None,
+        }
+    elif '_files_watcher' not in config:
+        config['_files_watcher'] = None
 
     return get_file_content(
         markdown,
@@ -643,6 +681,6 @@ def on_page_markdown(
         {
             'exclude': config.get('exclude', CONFIG_DEFAULTS['exclude']),
         },
-        files_watcher=files_watcher,
+        files_watcher=config['_files_watcher'],
         http_cache=config.get('_cache', http_cache),
     )

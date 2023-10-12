@@ -5,6 +5,7 @@ __pycache__/
 report.html
 .coverage
 .pytest_cache/
+.ruff_cache/
 htmlcov/
 *.egg-info/
 venv*/
@@ -15,6 +16,5 @@ venv*/
 .vscode
 .mypy_cache/
 *.so
-.flakeheaven_cache/
 
 site/

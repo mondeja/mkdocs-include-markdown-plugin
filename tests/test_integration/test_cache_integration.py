@@ -1,8 +1,8 @@
+from __future__ import annotations
+
 import os
 
 import pytest
-from testing_helpers import parametrize_directives
-
 from mkdocs_include_markdown_plugin.cache import (
     CACHE_AVAILABLE,
     Cache,
@@ -10,6 +10,7 @@ from mkdocs_include_markdown_plugin.cache import (
     initialize_cache,
 )
 from mkdocs_include_markdown_plugin.event import on_page_markdown
+from testing_helpers import parametrize_directives
 
 
 @pytest.mark.parametrize(

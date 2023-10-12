@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 # Perl implementation but this doesn't seem possible in Python, the current
 # implementation only reaches two levels.
 MARKDOWN_LINK_REGEX = re.compile(  # noqa: DUO138
-    r"""
+    r'''
         (                 # wrap whole match in $1
           (?<!!)          # don't match images - negative lookbehind
           \[
@@ -59,14 +59,14 @@ MARKDOWN_LINK_REGEX = re.compile(  # noqa: DUO138
             )?           # title is optional
           \)
         )
-    """,
+    ''',
     flags=re.VERBOSE,
 )
 
 # Matches markdown inline images.
 # e.g. ![alt-text](path/to/image.png)
 MARKDOWN_IMAGE_REGEX = re.compile(
-    r"""
+    r'''
         (                # wrap whole match in $1
           !\[
             (.*?)        # alt text = $2
@@ -83,14 +83,14 @@ MARKDOWN_IMAGE_REGEX = re.compile(
             )?           # title is optional
           \)
         )
-    """,
+    ''',
     flags=re.VERBOSE,
 )
 
 # Matches markdown link definitions.
 # e.g. [scikit-learn]: https://github.com/scikit-learn/scikit-learn
 MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
-    r"""
+    r'''
         ^[ ]{0,4}\[(.+)\]:   # id = $1
         [ \t]*
         \n?                # maybe *one* newline
@@ -107,7 +107,7 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
             [ \t]*
         )?                   # title is optional
         (?:\n+|\Z)
-    """,
+    ''',
     flags=re.VERBOSE | re.MULTILINE,
 )
 
@@ -161,9 +161,8 @@ def transform_p_by_p_skipping_codeblocks(
             if _current_fcodeblock_delimiter:
                 if line.lstrip().startswith(_current_fcodeblock_delimiter):
                     _current_fcodeblock_delimiter = ''
-            else:
-                if not line.startswith('    ') and not line.startswith('\t'):
-                    _inside_icodeblock = False
+            elif not line.startswith('    ') and not line.startswith('\t'):
+                _inside_icodeblock = False
 
     process_current_paragraph()
 
@@ -196,7 +195,7 @@ def transform_line_by_line_skipping_codeblocks(
             ):
                 _current_fcodeblock_delimiter = lstripped_line[:3]
             else:
-                line = func(line)
+                line = func(line)  # noqa: PLW2901
         elif line.lstrip().startswith(_current_fcodeblock_delimiter):
             _current_fcodeblock_delimiter = ''
         lines.append(line)
@@ -283,7 +282,7 @@ def interpret_escapes(value: str) -> str:
     return value.encode('latin-1', 'backslashreplace').decode('unicode_escape')
 
 
-def filter_inclusions(
+def filter_inclusions(  # noqa: PLR0912
         start: str | None,
         end: str | None,
         text_to_include: str,
@@ -442,7 +441,7 @@ def read_file(file_path: str, encoding: str) -> str:
         return f.read()
 
 
-def read_url(url: str, http_cache: Cache | None) -> Any:  # noqa: U100
+def read_url(url: str, http_cache: Cache | None) -> Any:
     """Read an HTTP location and return its content."""
     if http_cache is not None:
         cached_content = http_cache.get_(url)

@@ -1,7 +1,6 @@
 """String processing tests."""
 
 import pytest
-
 from mkdocs_include_markdown_plugin.cache import Cache
 from mkdocs_include_markdown_plugin.process import (
     increase_headings_offset,

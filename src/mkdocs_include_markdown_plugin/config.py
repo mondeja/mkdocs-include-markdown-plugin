@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
-from mkdocs.config.config_options import ListOfItems, Optional, Type as MkType
+from mkdocs.config.config_options import (
+    ListOfItems,
+    Optional,
+    Type as MkType,
+)
 
 
 CONFIG_DEFAULTS = {

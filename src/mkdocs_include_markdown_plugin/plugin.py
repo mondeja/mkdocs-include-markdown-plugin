@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from mkdocs.exceptions import PluginError
 from mkdocs.livereload import LiveReloadServer
@@ -24,14 +24,10 @@ from mkdocs_include_markdown_plugin.event import (
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
 
 
-SERVER: LiveReloadServer | None = None
-FILES_WATCHER: FilesWatcher | None = None
-
-
 class IncludeMarkdownPlugin(BasePlugin):
     config_scheme = CONFIG_SCHEME
 
-    def on_config(self, config: MkDocsConfig, **kwargs: Any) -> MkDocsConfig:
+    def on_config(self, config: MkDocsConfig) -> MkDocsConfig:
         self.config['_include_tag'] = create_include_tag(
             self.config['opening_tag'],
             self.config['closing_tag'],
@@ -52,50 +48,47 @@ class IncludeMarkdownPlugin(BasePlugin):
                     ' mkdocs-include-markdown-plugin with the "cache"'
                     ' extra to install it.',
                 )
-            else:
-                cache.clean()
-                self.config['_cache'] = cache
+            cache.clean()
+            self.config['_cache'] = cache
+
+        self.config['_files_watcher'] = None
+        self.config['_server'] = None
 
         return config
 
     def _watch_included_files(self) -> None:  # pragma: no cover
-        global FILES_WATCHER, SERVER
-        SERVER = cast(LiveReloadServer, SERVER)
-        FILES_WATCHER = cast(FilesWatcher, FILES_WATCHER)
-
         # unwatch previous watched files not needed anymore
-        for filepath in FILES_WATCHER.prev_included_files:
-            if filepath not in FILES_WATCHER.included_files:
-                SERVER.unwatch(filepath)
-        FILES_WATCHER.prev_included_files = (
-            FILES_WATCHER.included_files[:]
+        for filepath in self.config['_files_watcher'].prev_included_files:
+            if filepath not in self.config['_files_watcher'].included_files:
+                self.config['_server'].unwatch(filepath)
+        self.config['_files_watcher'].prev_included_files = (
+            self.config['_files_watcher'].included_files[:]
         )
 
         # watch new included files
-        for filepath in FILES_WATCHER.included_files:
-            SERVER.watch(filepath, recursive=False)
-        FILES_WATCHER.included_files = []
+        for filepath in self.config['_files_watcher'].included_files:
+            self.config['_server'].watch(filepath, recursive=False)
+        self.config['_files_watcher'].included_files = []
 
     def on_page_content(
             self,
             html: str,
-            page: Page,
-            config: MkDocsConfig,
-            files: Files,
+            page: Page,  # noqa: ARG002
+            config: MkDocsConfig,  # noqa: ARG002
+            files: Files,  # noqa: ARG002
     ) -> str:
-        if SERVER is not None:  # pragma: no cover
+        if self.config['_server'] is not None:  # pragma: no cover
             self._watch_included_files()
         return html
 
     def on_serve(
             self,
             server: LiveReloadServer,
-            config: MkDocsConfig,
-            builder: Callable[[Any], Any],
+            config: MkDocsConfig,  # noqa: ARG002
+            builder: Callable[[Any], Any],  # noqa: ARG002
     ) -> None:
-        global SERVER
-        if SERVER is None:  # pragma: no cover
-            SERVER = server
+        if self.config['_server'] is None:  # pragma: no cover
+            self.config['_server'] = server
             self._watch_included_files()
 
     @event_priority(100)
@@ -104,15 +97,13 @@ class IncludeMarkdownPlugin(BasePlugin):
             markdown: str,
             page: Page,
             config: MkDocsConfig,
-            files: Files,
+            files: Files,  # noqa: ARG002
     ) -> str:
-        global FILES_WATCHER
-        if FILES_WATCHER is None:
-            FILES_WATCHER = FilesWatcher()
+        if self.config['_files_watcher'] is None:
+            self.config['_files_watcher'] = FilesWatcher()
         return _on_page_markdown(
             markdown,
             page,
             config['docs_dir'],
             config=self.config,
-            files_watcher=FILES_WATCHER,
         )

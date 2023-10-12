@@ -19,7 +19,11 @@ else:
 class Cache:
     """Cache for arbitrary content, one file per entry."""
 
-    def __init__(self, cache_dir: str, expiration_seconds: int = 0):
+    def __init__(  # noqa: D107
+            self,
+            cache_dir: str,
+            expiration_seconds: int = 0,
+        ):
         self.cache_dir = cache_dir
         self.expiration_seconds = expiration_seconds
 
@@ -46,11 +50,8 @@ class Cache:
             creation_time = self.get_creation_time_from_fpath(fpath)
             if time.time() < creation_time + self.expiration_seconds:
                 return self.read_file(fpath)
-            else:
-                os.remove(fpath)
-                return None
-        else:
-            return None
+            os.remove(fpath)
+        return None
 
     def set_(self, url: str, value: str) -> None:  # noqa: D102
         key = self.generate_unique_key_from_url(url)
