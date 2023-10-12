@@ -13,165 +13,165 @@ from mkdocs_include_markdown_plugin.process import (
     ('markdown', 'source_path', 'destination_path', 'expected_result'),
     (
         pytest.param(
-            """
+            '''
         Here's a [link](CHANGELOG.md) to the changelog.
-""",
+''',
             'README',
             'docs/nav.md',
-            """
+            '''
         Here's a [link](../CHANGELOG.md) to the changelog.
-""",
+''',
             id='relative-link',
         ),
         pytest.param(
-            """Here's a [link whose text is really long and so is broken across
+            '''Here's a [link whose text is really long and so is broken across
 multiple lines](CHANGELOG.md) to the changelog.
-""",
+''',
             'README',
             'docs/nav.md',
-            """Here's a [link whose text is really long and so is broken across
+            '''Here's a [link whose text is really long and so is broken across
 multiple lines](../CHANGELOG.md) to the changelog.
-""",
+''',
             id='multiline-link',
         ),
         pytest.param(
-            """
+            '''
 Check [this link](foobar.md) for more information
-""",
+''',
             'docs/includes/feature_a/index.md',
             'docs/setup.md',
-            """
+            '''
 Check [this link](includes/feature_a/foobar.md) for more information
-""",
+''',
             id='relative-link-down',
         ),
         pytest.param(
-            """Here's a [link](CHANGELOG.md#v1.2.3) to the changelog.
-""",
+            '''Here's a [link](CHANGELOG.md#v1.2.3) to the changelog.
+''',
             'README',
             'docs/nav.md',
-            """Here's a [link](../CHANGELOG.md#v1.2.3) to the changelog.
-""",
+            '''Here's a [link](../CHANGELOG.md#v1.2.3) to the changelog.
+''',
             id='link-with-hash',
         ),
         pytest.param(
-            """Here's a [link][changelog] to the changelog.
+            '''Here's a [link][changelog] to the changelog.
 
 [changelog]: CHANGELOG.md
-""",
+''',
             'README',
             'docs/nav.md',
-            """Here's a [link][changelog] to the changelog.
+            '''Here's a [link][changelog] to the changelog.
 
 [changelog]: ../CHANGELOG.md
-""",
+''',
             id='link-reference',
         ),
         pytest.param(
-            """Here's a diagram: ![diagram](assets/diagram.png)""",
+            '''Here's a diagram: ![diagram](assets/diagram.png)''',
             'README',
             'docs/home.md',
-            """Here's a diagram: ![diagram](../assets/diagram.png)""",
+            '''Here's a diagram: ![diagram](../assets/diagram.png)''',
             id='image',
         ),
         pytest.param(
-            """Build status: [![Build Status](badge.png)](build/)""",
+            '''Build status: [![Build Status](badge.png)](build/)''',
             'README',
             'docs/home.md',
-            """Build status: [![Build Status](../badge.png)](../build/)""",
+            '''Build status: [![Build Status](../badge.png)](../build/)''',
             id='image-inside-link',
         ),
         pytest.param(
-            """[Homepage](/) [Github](https://github.com/user/repo)
-[Privacy policy](/privacy)""",
+            '''[Homepage](/) [Github](https://github.com/user/repo)
+[Privacy policy](/privacy)''',
             'README',
             'docs/nav.md',
-            """[Homepage](/) [Github](https://github.com/user/repo)
-[Privacy policy](/privacy)""",
+            '''[Homepage](/) [Github](https://github.com/user/repo)
+[Privacy policy](/privacy)''',
             id='absolute-urls',
         ),
         pytest.param(
-            """[contact us](mailto:hello@example.com)""",
+            '''[contact us](mailto:hello@example.com)''',
             'README',
             'docs/nav.md',
-            """[contact us](mailto:hello@example.com)""",
+            '''[contact us](mailto:hello@example.com)''',
             id='mailto-urls',
         ),
         pytest.param(
-            """Some text before
+            '''Some text before
 
 ```cpp
 // Some code in which rewrites shouldn't be proccessed.
 // https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/78
 const auto lambda = []() { .... };
 ```
-""",
+''',
             'README',
             'examples/lambda.md',
-            """Some text before
+            '''Some text before
 
 ```cpp
 // Some code in which rewrites shouldn't be proccessed.
 // https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/78
 const auto lambda = []() { .... };
 ```
-""",
+''',
             id='cpp-likelink-fenced-codeblock',
         ),
         pytest.param(
-            """Some text before
+            '''Some text before
 \t
 \tconst auto lambda = []() { .... };
 
 Some text after
-""",
+''',
             'README',
             'examples/lambda.md',
-            """Some text before
+            '''Some text before
 \t
 \tconst auto lambda = []() { .... };
 
 Some text after
-""",
+''',
             id='cpp-likelink-indented-codeblock',
         ),
         pytest.param(
-            """Some text before
+            '''Some text before
 \t
 \tconst auto lambda = []() { .... };\r\n
 Some text after
-""",
+''',
             'README',
             'examples/lambda.md',
-            """Some text before
+            '''Some text before
 \t
 \tconst auto lambda = []() { .... };\r\n
 Some text after
-""",
+''',
             id='cpp-likelink-indented-codeblock-windows-newlines',
         ),
         pytest.param(
-            """```
+            '''```
 [link](CHANGELOG.md)
 ```
-""",
+''',
             'README',
             'docs/nav.md',
-            """```
+            '''```
 [link](CHANGELOG.md)
 ```
-""",
+''',
             id='exclude-fenced-code-blocks',
         ),
         pytest.param(
-            ' ' * 4 + """
+            ' ' * 4 + '''
     [link](CHANGELOG.md)
-""" + ' ' * 4 + '\n',
+''' + ' ' * 4 + '\n',
             'README',
             'docs/nav.md',
-            ' ' * 4 + """
+            ' ' * 4 + '''
     [link](CHANGELOG.md)
-""" + ' ' * 4 + '\n',
+''' + ' ' * 4 + '\n',
             id='exclude-indented-code-blocks',
         ),
     ),
@@ -193,7 +193,7 @@ def test_rewrite_relative_urls(
     ('markdown', 'offset', 'expected_result'),
     (
         pytest.param(
-            """# Foo
+            '''# Foo
 
 ```python
 # this is a comment
@@ -214,9 +214,9 @@ hello = "world"
 Some text
 
 ## Baz
-""",
+''',
             2,
-            """### Foo
+            '''### Foo
 
 ```python
 # this is a comment
@@ -237,11 +237,11 @@ hello = "world"
 Some text
 
 #### Baz
-""",
+''',
             id='```',
         ),
         pytest.param(
-            """# Foo
+            '''# Foo
 
 ~~~python
 # this is a comment
@@ -253,9 +253,9 @@ hello = "world"
 Some text
 
 ## Baz
-""",
+''',
             3,
-            """#### Foo
+            '''#### Foo
 
 ~~~python
 # this is a comment
@@ -267,11 +267,11 @@ hello = "world"
 Some text
 
 ##### Baz
-""",
+''',
             id='~~~',
         ),
         pytest.param(
-            """# Foo
+            '''# Foo
 
 ~~~python
 # this is a comment
@@ -289,9 +289,9 @@ Some text
 ```
 
 # Qux
-""",
+''',
             1,
-            """## Foo
+            '''## Foo
 
 ~~~python
 # this is a comment
@@ -309,11 +309,11 @@ Some text
 ```
 
 ## Qux
-""",
+''',
             id='```,~~~',
         ),
         pytest.param(
-            """# Foo
+            '''# Foo
 
     # this is a comment
     hello = "world"
@@ -324,9 +324,9 @@ Some text
 
 \t# comment in tabbed indented codeblock\r\n
 ## Qux
-""",
+''',
             1,
-            """## Foo
+            '''## Foo
 
     # this is a comment
     hello = "world"
@@ -337,7 +337,7 @@ Some text
 
 \t# comment in tabbed indented codeblock\r\n
 ### Qux
-""",
+''',
             id='indented-codeblocks',
         ),
     ),

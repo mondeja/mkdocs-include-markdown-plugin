@@ -151,6 +151,7 @@ convention = "google"
 
 [tool.ruff.flake8-quotes]
 inline-quotes = "single"
+multiline-quotes = "single"
 
 [tool.ruff.flake8-pytest-style]
 fixture-parentheses = false

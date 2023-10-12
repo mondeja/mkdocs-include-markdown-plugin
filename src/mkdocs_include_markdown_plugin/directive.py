@@ -45,7 +45,7 @@ SINGLE_QUOTED_STR_RE = r"([^']|(?<=\\)['])+"
 # In the following regular expression, the substrings "$OPENING_TAG"
 # and "$CLOSING_TAG" will be replaced by the effective opening and
 # closing tags in the `on_config` plugin event.
-INCLUDE_TAG_RE = rf"""
+INCLUDE_TAG_RE = rf'''
     (?P<_includer_indent>[ \t\f\v\w{re.escape(string.punctuation)}]*?)$OPENING_TAG
     \s*
     include
@@ -54,7 +54,7 @@ INCLUDE_TAG_RE = rf"""
     (?P<arguments>.*?)
     \s*
     $CLOSING_TAG
-"""  # noqa: E501
+'''  # noqa: E501
 
 TRUE_FALSE_STR_BOOL = {
     'true': True,

@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 # Perl implementation but this doesn't seem possible in Python, the current
 # implementation only reaches two levels.
 MARKDOWN_LINK_REGEX = re.compile(  # noqa: DUO138
-    r"""
+    r'''
         (                 # wrap whole match in $1
           (?<!!)          # don't match images - negative lookbehind
           \[
@@ -59,14 +59,14 @@ MARKDOWN_LINK_REGEX = re.compile(  # noqa: DUO138
             )?           # title is optional
           \)
         )
-    """,
+    ''',
     flags=re.VERBOSE,
 )
 
 # Matches markdown inline images.
 # e.g. ![alt-text](path/to/image.png)
 MARKDOWN_IMAGE_REGEX = re.compile(
-    r"""
+    r'''
         (                # wrap whole match in $1
           !\[
             (.*?)        # alt text = $2
@@ -83,14 +83,14 @@ MARKDOWN_IMAGE_REGEX = re.compile(
             )?           # title is optional
           \)
         )
-    """,
+    ''',
     flags=re.VERBOSE,
 )
 
 # Matches markdown link definitions.
 # e.g. [scikit-learn]: https://github.com/scikit-learn/scikit-learn
 MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
-    r"""
+    r'''
         ^[ ]{0,4}\[(.+)\]:   # id = $1
         [ \t]*
         \n?                # maybe *one* newline
@@ -107,7 +107,7 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
             [ \t]*
         )?                   # title is optional
         (?:\n+|\Z)
-    """,
+    ''',
     flags=re.VERBOSE | re.MULTILINE,
 )
 
