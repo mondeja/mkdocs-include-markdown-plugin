@@ -7,19 +7,17 @@ import logging
 import os
 import re
 import textwrap
-from collections.abc import MutableMapping
-from typing import TYPE_CHECKING, Any
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from mkdocs.exceptions import PluginError
 from wcmatch import glob
 
 from mkdocs_include_markdown_plugin import process
 from mkdocs_include_markdown_plugin.cache import Cache
-from mkdocs_include_markdown_plugin.config import CONFIG_DEFAULTS
 from mkdocs_include_markdown_plugin.directive import (
     ARGUMENT_REGEXES,
     GLOB_FLAGS,
-    create_include_tag,
     parse_bool_options,
     parse_filename_argument,
     parse_string_argument,
@@ -35,6 +33,7 @@ if TYPE_CHECKING:  # remove this for mypyc compiling
     from mkdocs.structure.pages import Page
 
     from mkdocs_include_markdown_plugin.directive import DefaultValues
+    from mkdocs_include_markdown_plugin.plugin import IncludeMarkdownPlugin
 
     IncludeTags = TypedDict(
         'IncludeTags', {
@@ -43,8 +42,9 @@ if TYPE_CHECKING:  # remove this for mypyc compiling
         },
     )
 
-    class Settings(TypedDict):  # noqa: D101
-        exclude: list[str] | None
+@dataclass
+class Settings:  # noqa: D101
+    exclude: list[str] | None
 
 
 logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
@@ -72,7 +72,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
     ) -> str:
         directive_match_start = match.start()
 
-        includer_indent = match.group('_includer_indent')
+        includer_indent = match['_includer_indent']
 
         filename, raw_filename = parse_filename_argument(match)
         if filename is None:
@@ -86,17 +86,17 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 f':{lineno}',
             )
 
-        arguments_string = match.group('arguments')
+        arguments_string = match['arguments']
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         ignore_paths = []
-        if settings['exclude'] is not None:
+        if settings.exclude:
             ignore_paths.extend(
                 glob.glob(
                     [
                         os.path.join(docs_dir, fp)
                         if not os.path.isabs(fp)
-                        else fp for fp in settings['exclude']
+                        else fp for fp in settings.exclude
                     ],
                     flags=GLOB_FLAGS,
                     root_dir=docs_dir,
@@ -240,16 +240,16 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             )
 
             # trailing newlines right stripping
-            if not bool_options['trailing-newlines']['value']:
+            if not bool_options['trailing-newlines'].value:
                 new_text_to_include = process.rstrip_trailing_newlines(
                     new_text_to_include,
                 )
 
-            if bool_options['dedent']['value']:
+            if bool_options['dedent'].value:
                 new_text_to_include = textwrap.dedent(new_text_to_include)
 
             # includer indentation preservation
-            if bool_options['preserve-includer-indent']['value']:
+            if bool_options['preserve-includer-indent'].value:
                 new_text_to_include = ''.join(
                     includer_indent + line
                     for line in (
@@ -304,7 +304,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
     ) -> str:
         directive_match_start = match.start()
 
-        includer_indent = match.group('_includer_indent')
+        includer_indent = match['_includer_indent']
         empty_includer_indent = ' ' * len(includer_indent)
 
         filename, raw_filename = parse_filename_argument(match)
@@ -319,17 +319,17 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 f':{lineno}',
             )
 
-        arguments_string = match.group('arguments')
+        arguments_string = match['arguments']
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         ignore_paths = []
-        if settings['exclude'] is not None:
+        if settings.exclude is not None:
             ignore_paths.extend(
                 glob.glob(
                     [
                         os.path.join(docs_dir, fp)
                         if not os.path.isabs(fp)
-                        else fp for fp in settings['exclude']
+                        else fp for fp in settings.exclude
                     ],
                     flags=GLOB_FLAGS,
                     root_dir=docs_dir,
@@ -452,7 +452,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             arguments_string,
         )
         if offset_match:
-            offset = offset_match.group(1)
+            offset = offset_match[1]
             if offset == '':
                 lineno = lineno_from_content_start(
                     markdown,
@@ -478,7 +478,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         else:
             offset = defaults['heading-offset']
 
-        separator = '\n' if bool_options['trailing-newlines']['value'] else ''
+        separator = '\n' if bool_options['trailing-newlines'].value else ''
         if not start and not end:
             start_end_part = ''
         else:
@@ -524,13 +524,13 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             )
 
             # trailing newlines right stripping
-            if not bool_options['trailing-newlines']['value']:
+            if not bool_options['trailing-newlines'].value:
                 new_text_to_include = process.rstrip_trailing_newlines(
                     new_text_to_include,
                 )
 
             # relative URLs rewriting
-            if bool_options['rewrite-relative-urls']['value']:
+            if bool_options['rewrite-relative-urls'].value:
                 new_text_to_include = process.rewrite_relative_urls(
                     new_text_to_include,
                     source_path=file_path,
@@ -538,7 +538,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 )
 
             # comments
-            if bool_options['comments']['value']:
+            if bool_options['comments'].value:
                 new_text_to_include = (
                     f'{includer_indent}'
                     f'<!-- BEGIN INCLUDE {html.escape(filename)}'
@@ -551,11 +551,11 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 )
 
             # dedent
-            if bool_options['dedent']['value']:
+            if bool_options['dedent'].value:
                 new_text_to_include = textwrap.dedent(new_text_to_include)
 
             # includer indentation preservation
-            if bool_options['preserve-includer-indent']['value']:
+            if bool_options['preserve-includer-indent'].value:
                 new_text_to_include = ''.join(
                     (empty_includer_indent if i > 0 else '') + line
                     for i, line in enumerate(
@@ -623,64 +623,33 @@ def on_page_markdown(
         markdown: str,
         page: Page,
         docs_dir: str,
-        config: MutableMapping[str, Any] | None = None,
+        plugin: IncludeMarkdownPlugin,
         http_cache: Cache | None = None,
 ) -> str:
     """Process markdown content of a page."""
-    if config is None:
-        config = {
-            '_files_watcher': None,
-        }
-    elif '_files_watcher' not in config:
-        config['_files_watcher'] = None
-
+    config = plugin.config
     return get_file_content(
         markdown,
         page.file.abs_src_path,
         docs_dir,
         {
-            'include': config.get(
-                '_include_tag',
-                create_include_tag(
-                    config.get('opening_tag', CONFIG_DEFAULTS['opening-tag']),
-                    config.get('closing_tag', CONFIG_DEFAULTS['closing-tag']),
-                ),
-            ),
-            'include-markdown': config.get(
-                '_include_markdown_tag',
-                create_include_tag(
-                    config.get('opening_tag', CONFIG_DEFAULTS['opening-tag']),
-                    config.get('closing_tag', CONFIG_DEFAULTS['closing-tag']),
-                    tag='include-markdown',
-                ),
-            ),
+            'include': plugin._include_tag,
+            'include-markdown': plugin._include_markdown_tag,
         },
         {
-            'encoding': config.get('encoding', CONFIG_DEFAULTS['encoding']),
-            'preserve-includer-indent': config.get(
-                'preserve_includer_indent',
-                CONFIG_DEFAULTS['preserve-includer-indent'],
-            ),
-            'dedent': config.get('dedent', CONFIG_DEFAULTS['dedent']),
-            'trailing-newlines': config.get(
-                'trailing_newlines',
-                CONFIG_DEFAULTS['trailing-newlines'],
-            ),
-            'comments': config.get('comments', CONFIG_DEFAULTS['comments']),
-            'rewrite-relative-urls': config.get(
-                'rewrite_relative_urls',
-                CONFIG_DEFAULTS['rewrite-relative-urls'],
-            ),
-            'heading-offset': config.get(
-                'heading_offset',
-                CONFIG_DEFAULTS['heading-offset'],
-            ),
-            'start': config.get('start', CONFIG_DEFAULTS['start']),
-            'end': config.get('end', CONFIG_DEFAULTS['end']),
+            'encoding': config.encoding,
+            'preserve-includer-indent': config.preserve_includer_indent,
+            'dedent': config.dedent,
+            'trailing-newlines': config.trailing_newlines,
+            'comments': config.comments,
+            'rewrite-relative-urls': config.rewrite_relative_urls,
+            'heading-offset': config.heading_offset,
+            'start': config.start,
+            'end': config.end,
         },
-        {
-            'exclude': config.get('exclude', CONFIG_DEFAULTS['exclude']),
-        },
-        files_watcher=config['_files_watcher'],
-        http_cache=config.get('_cache', http_cache),
+        Settings(
+            exclude=config.exclude,
+        ),
+        files_watcher=plugin._files_watcher,
+        http_cache=plugin._cache or http_cache,
     )

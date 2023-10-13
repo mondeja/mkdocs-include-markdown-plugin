@@ -41,6 +41,7 @@ def test_page_included_by_url_is_cached(
     expected_result,
     page,
     tmp_path,
+    plugin,
 ):
     cache_dir = get_cache_directory()
     if not CACHE_AVAILABLE:
@@ -64,6 +65,7 @@ def test_page_included_by_url_is_cached(
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
             http_cache=cache,
         )
 

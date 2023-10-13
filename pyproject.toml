@@ -22,7 +22,10 @@ classifiers = [
   "Programming Language :: Python :: 3.12"
 ]
 keywords = ["markdown", "mkdocs", "includer", "plugin"]
-dependencies = ["wcmatch>=8,<9"]
+dependencies = [
+  "mkdocs>=1.4",
+  "wcmatch>=8,<9"
+]
 
 [[project.authors]]
 name = "Joe Rickerby"

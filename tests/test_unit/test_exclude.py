@@ -62,6 +62,7 @@ from testing_helpers import parametrize_directives, unix_only
 def test_exclude(
     page,
     tmp_path,
+    plugin,
     caplog,
     directive,
     filenames,
@@ -95,6 +96,7 @@ def test_exclude(
         includer_file_content,
         page(includer_file),
         includer_folder,
+        plugin,
     )
 
     if expected_result is None:

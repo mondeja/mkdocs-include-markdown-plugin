@@ -248,6 +248,7 @@ def test_nested_include(
     page,
     caplog,
     tmp_path,
+    plugin,
 ):
     first_includer_file = tmp_path / 'first-includer.txt'
     second_includer_file = tmp_path / 'second-includer.txt'
@@ -266,7 +267,7 @@ def test_nested_include(
 
     # assert content
     assert on_page_markdown(
-        first_includer_content, page(first_includer_file), tmp_path,
+        first_includer_content, page(first_includer_file), tmp_path, plugin,
     ) == expected_result
 
     # assert warnings
@@ -292,7 +293,7 @@ def test_nested_include(
     assert len(expected_warnings_schemas) == len(caplog.records)
 
 
-def test_nested_include_relpath(page, tmp_path):
+def test_nested_include_relpath(page, tmp_path, plugin):
     docs_dir = tmp_path / 'docs'
     docs_dir.mkdir()
 
@@ -332,4 +333,5 @@ Included content.
         first_includer_content,
         page(first_includer_file),
         docs_dir,
+        plugin,
     ) == expected_result

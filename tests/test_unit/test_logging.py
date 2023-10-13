@@ -12,6 +12,7 @@ def test_start_end_arguments_not_found(
     missing_argument,
     page,
     tmp_path,
+    plugin,
     caplog,
 ):
     included_file_name = 'included.md'
@@ -42,7 +43,7 @@ Included content
 '''
 
     assert on_page_markdown(
-        includer_content, page(includer_file), tmp_path,
+        includer_content, page(includer_file), tmp_path, plugin,
     ) == expected_result
 
     rec = caplog.records[0]
