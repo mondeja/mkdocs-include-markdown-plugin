@@ -6,7 +6,7 @@ import pytest
 
 TESTS_DIR = os.path.abspath(os.path.dirname(__file__))
 SRC_DIR = os.path.abspath(os.path.join(TESTS_DIR, '..', 'src'))
-for d in [SRC_DIR, TESTS_DIR]:
+for d in (SRC_DIR, TESTS_DIR):
     if d not in sys.path:
         sys.path.insert(0, d)
 
