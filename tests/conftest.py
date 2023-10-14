@@ -2,23 +2,26 @@ import os
 import sys
 
 import pytest
-from mkdocs_include_markdown_plugin.plugin import IncludeMarkdownPlugin
 
 
 TESTS_DIR = os.path.abspath(os.path.dirname(__file__))
-if TESTS_DIR not in sys.path:
-    sys.path.append(TESTS_DIR)
+SRC_DIR = os.path.abspath(os.path.join(TESTS_DIR, '..', 'src'))
+for d in (SRC_DIR, TESTS_DIR):
+    if d not in sys.path:
+        sys.path.insert(0, d)
+
+from mkdocs_include_markdown_plugin import IncludeMarkdownPlugin  # noqa: E402
 
 
 @pytest.fixture
 def page():
     """Fake mkdocs page object."""
-    def _page(filepath):
+    def _page(file_path):
         return type(
             'FakeMkdocsPage', (), {
                 'file': type(
                     'FakeMdocsPageFile', (), {
-                        'abs_src_path': filepath,
+                        'abs_src_path': file_path,
                     },
                 ),
             },

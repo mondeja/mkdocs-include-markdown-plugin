@@ -65,21 +65,23 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
     def _files_watcher(self) -> FilesWatcher:
         return FilesWatcher()
 
-    def _watch_included_files(self) -> None:  # pragma: no cover
-        assert self._server is not None
+    def _update_watched_files(self) -> None:  # pragma: no cover
+        """Function executed on server reload.
+
+        At this execution point, the ``self._server`` attribute must be set.
+        """
+        watcher, server = self._files_watcher, self._server
 
         # unwatch previous watched files not needed anymore
-        for filepath in self._files_watcher.prev_included_files:
-            if filepath not in self._files_watcher.included_files:
-                self._server.unwatch(filepath)
-        self._files_watcher.prev_included_files = (
-            self._files_watcher.included_files[:]
-        )
+        for file_path in watcher.prev_included_files:
+            if file_path not in watcher.included_files:
+                server.unwatch(file_path)  # type: ignore
+        watcher.prev_included_files = watcher.included_files[:]
 
         # watch new included files
-        for filepath in self._files_watcher.included_files:
-            self._server.watch(filepath, recursive=False)
-        self._files_watcher.included_files = []
+        for file_path in watcher.included_files:
+            server.watch(file_path, recursive=False)  # type: ignore
+        watcher.included_files = []
 
     def on_page_content(
             self,
@@ -89,7 +91,7 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
             files: Files,  # noqa: ARG002
     ) -> str:
         if self._server is not None:  # pragma: no cover
-            self._watch_included_files()
+            self._update_watched_files()
         return html
 
     def on_serve(
@@ -100,7 +102,7 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
     ) -> None:
         if self._server is None:  # pragma: no cover
             self._server = server
-            self._watch_included_files()
+            self._update_watched_files()
 
     @event_priority(100)
     def on_page_markdown(

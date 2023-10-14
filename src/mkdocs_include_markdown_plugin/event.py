@@ -27,7 +27,7 @@ from mkdocs_include_markdown_plugin.directive import (
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
 
 
-if TYPE_CHECKING:  # remove this for mypyc compiling
+if TYPE_CHECKING:
     from typing import TypedDict
 
     from mkdocs.structure.pages import Page
