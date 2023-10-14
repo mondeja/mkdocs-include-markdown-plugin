@@ -33,7 +33,14 @@ from testing_helpers import parametrize_directives, unix_only
         ),
     ),
 )
-def test_invalid_bool_arguments(directive, arguments, page, tmp_path, caplog):
+def test_invalid_bool_arguments(
+    directive,
+    arguments,
+    page,
+    tmp_path,
+    plugin,
+    caplog,
+):
     for argument_name in arguments:
         page_to_include_filepath = tmp_path / 'included.md'
         page_to_include_filepath.write_text('Included\n')
@@ -48,6 +55,7 @@ def test_invalid_bool_arguments(directive, arguments, page, tmp_path, caplog):
     %}}''',
                 page(tmp_path / filename),
                 tmp_path,
+                plugin,
             )
         assert str(exc.value) == (
             f"Invalid value for '{argument_name}' argument of '{directive}'"
@@ -57,7 +65,7 @@ def test_invalid_bool_arguments(directive, arguments, page, tmp_path, caplog):
 
 
 @parametrize_directives
-def test_start_end_mixed_quotes(directive, page, caplog, tmp_path):
+def test_start_end_mixed_quotes(directive, page, caplog, tmp_path, plugin):
     page_to_include_filepath = tmp_path / 'included.md'
     page_to_include_filepath.write_text('''Content that should be ignored
 <!-- "s'tar't" -->
@@ -75,6 +83,7 @@ More content that should be ignored
 %}}''',
         page(tmp_path / 'includer.md'),
         tmp_path,
+        plugin,
     )
     assert result == '\nContent to include\n'
 
@@ -89,6 +98,7 @@ def test_invalid_start_end_arguments(
     page,
     caplog,
     tmp_path,
+    plugin,
 ):
     page_to_include_filepath = tmp_path / 'included.md'
     included_content = '''Content that should be ignored
@@ -109,6 +119,7 @@ More content that should be ignored
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
         )
     assert str(exc.value) == (
         f"Invalid empty '{argument}' argument in '{directive}'"
@@ -120,7 +131,7 @@ More content that should be ignored
 
 @unix_only
 @parametrize_directives
-def test_exclude_double_quote_escapes(directive, page, tmp_path):
+def test_exclude_double_quote_escapes(directive, page, tmp_path, plugin):
     drectory_to_include = tmp_path / 'exclude_double_quote_escapes'
     drectory_to_include.mkdir()
 
@@ -142,13 +153,14 @@ def test_exclude_double_quote_escapes(directive, page, tmp_path):
 %}}''',
         page(tmp_path / 'includer.md'),
         tmp_path,
+        plugin,
     )
     assert result == 'Content that should be included\n'
 
 
 @unix_only
 @parametrize_directives
-def test_invalid_exclude_argument(directive, page, tmp_path, caplog):
+def test_invalid_exclude_argument(directive, page, tmp_path, caplog, plugin):
     drectory_to_include = tmp_path / 'exclude_double_quote_escapes'
     drectory_to_include.mkdir()
 
@@ -168,6 +180,7 @@ def test_invalid_exclude_argument(directive, page, tmp_path, caplog):
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
         )
 
     assert len(caplog.records) == 0
@@ -178,7 +191,7 @@ def test_invalid_exclude_argument(directive, page, tmp_path, caplog):
 
 
 @parametrize_directives
-def test_empty_encoding_argument(directive, page, tmp_path, caplog):
+def test_empty_encoding_argument(directive, page, tmp_path, plugin, caplog):
     page_to_include_filepath = tmp_path / 'included.md'
     page_to_include_filepath.write_text('Content to include')
 
@@ -191,6 +204,7 @@ def test_empty_encoding_argument(directive, page, tmp_path, caplog):
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
         )
 
     assert len(caplog.records) == 0
@@ -224,6 +238,7 @@ def test_invalid_heading_offset_arguments(
     exception_message,
     page,
     tmp_path,
+    plugin,
     caplog,
 ):
     page_to_include_filepath = tmp_path / 'included.md'
@@ -238,6 +253,7 @@ def test_invalid_heading_offset_arguments(
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
         )
 
     assert len(caplog.records) == 0
@@ -256,7 +272,7 @@ class TestFilename:
     @parametrize_directives
     @pytest.mark.parametrize('filename', double_quoted_filenames)
     def test_not_escaped_double_quotes(
-        self, directive, filename, page, tmp_path, caplog,
+        self, directive, filename, page, tmp_path, plugin, caplog,
     ):
         page_to_include_filepath = tmp_path / filename
         page_to_include_filepath.write_text('Foo\n')
@@ -266,6 +282,7 @@ class TestFilename:
                 f'{{% {directive} "{page_to_include_filepath}" %}}',
                 page(tmp_path / 'includer.md'),
                 tmp_path,
+                plugin,
             )
 
         assert len(caplog.records) == 0
@@ -278,7 +295,7 @@ class TestFilename:
     @parametrize_directives
     @pytest.mark.parametrize('filename', double_quoted_filenames)
     def test_escaped_double_quotes(
-        self, directive, filename, page, tmp_path,
+        self, directive, filename, page, tmp_path, plugin,
     ):
         included_content = 'Foo\n'
         page_to_include_filepath = tmp_path / filename
@@ -295,13 +312,14 @@ class TestFilename:
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
         )
         assert result == included_content
 
     @parametrize_directives
     @pytest.mark.parametrize('filename', single_quoted_filenames)
     def test_escaped_single_quotes(
-        self, filename, directive, page, tmp_path,
+        self, filename, directive, page, tmp_path, plugin,
     ):
         included_content = 'Foo\n'
         page_to_include_filepath = tmp_path / filename
@@ -318,6 +336,7 @@ class TestFilename:
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
         )
         assert result == included_content
 
@@ -325,7 +344,7 @@ class TestFilename:
     @parametrize_directives
     @pytest.mark.parametrize('filename', double_quoted_filenames)
     def test_unescaped_double_quotes(
-        self, filename, directive, page, tmp_path,
+        self, filename, directive, page, tmp_path, plugin,
     ):
         included_content = 'Foo\n'
         page_to_include_filepath = tmp_path / filename
@@ -338,13 +357,14 @@ class TestFilename:
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
         )
         assert result == included_content
 
     @parametrize_directives
     @pytest.mark.parametrize('filename', single_quoted_filenames)
     def test_unescaped_single_quotes(
-        self, filename, directive, page, tmp_path,
+        self, filename, directive, page, tmp_path, plugin,
     ):
         included_content = 'Foo\n'
         page_to_include_filepath = tmp_path / filename
@@ -357,6 +377,7 @@ class TestFilename:
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
         )
         assert result == included_content
 
@@ -372,7 +393,15 @@ class TestFilename:
         'escape', (True, False), ids=('escape=True', 'escape=False'),
     )
     def test_mixed_quotes(
-        self, filename, quote, escape, directive, page, tmp_path, caplog,
+        self,
+        filename,
+        quote,
+        escape,
+        directive,
+        page,
+        tmp_path,
+        plugin,
+        caplog,
     ):
         included_content = 'Foo\n'
         page_to_include_filepath = tmp_path / filename
@@ -395,6 +424,7 @@ class TestFilename:
             markdown,
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
         )
 
         if escape:
@@ -409,7 +439,7 @@ class TestFilename:
         assert len(caplog.records) == 0
 
     @parametrize_directives
-    def test_no_filename(self, directive, page, tmp_path, caplog):
+    def test_no_filename(self, directive, page, tmp_path, plugin, caplog):
         filename = 'includer.md'
 
         with pytest.raises(PluginError) as exc:
@@ -417,6 +447,7 @@ class TestFilename:
                 f'\n\n{{% {directive} %}}',
                 page(tmp_path / filename),
                 tmp_path,
+                plugin,
             )
 
         assert str(exc.value) == (
@@ -426,7 +457,14 @@ class TestFilename:
         assert len(caplog.records) == 0
 
     @parametrize_directives
-    def test_non_existent_filename(self, directive, page, tmp_path, caplog):
+    def test_non_existent_filename(
+        self,
+        directive,
+        page,
+        tmp_path,
+        plugin,
+        caplog,
+    ):
         page_content = f'''{{%
     {directive} "/path/to/file/that/does/not/exists"
     start="<!--start-here-->"
@@ -441,6 +479,7 @@ class TestFilename:
                 page_content,
                 page(page_filepath),
                 tmp_path,
+                plugin,
             )
 
         assert len(caplog.records) == 0

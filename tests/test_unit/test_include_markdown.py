@@ -772,6 +772,7 @@ def test_include_markdown(
     page,
     caplog,
     tmp_path,
+    plugin,
 ):
     included_file = tmp_path / 'included.md'
     includer_file = tmp_path / 'includer.md'
@@ -796,6 +797,7 @@ def test_include_markdown(
         page_content,
         page(includer_file),
         tmp_path,
+        plugin,
     ) == expected_result
 
     # assert warnings
@@ -823,6 +825,7 @@ def test_include_markdown(
 def test_include_markdown_relative_rewrite(
     page,
     tmp_path,
+    plugin,
     rewrite_relative_urls,
 ):
     option_value = '' if rewrite_relative_urls is None else (
@@ -864,6 +867,7 @@ Here's a [reference link][ref-link].
         includer_path.read_text(),
         page(str(includer_path)),
         docs_dir,
+        plugin,
     )
 
     if rewrite_relative_urls in ['true', None]:
@@ -897,7 +901,7 @@ Here's a [reference link][ref-link].
 '''
 
 
-def test_multiple_includes(page, tmp_path):
+def test_multiple_includes(page, tmp_path, plugin):
     snippet_filepath = tmp_path / 'snippet.md'
     another_filepath = tmp_path / 'another.md'
     includer_file = tmp_path / 'includer.md'
@@ -940,5 +944,5 @@ Another
 Another
 '''
     assert on_page_markdown(
-        includer_content, page(includer_file), tmp_path,
+        includer_content, page(includer_file), tmp_path, plugin,
     ) == expected_result

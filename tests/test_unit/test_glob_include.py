@@ -8,7 +8,7 @@ from testing_helpers import parametrize_directives, unix_only
 
 
 @unix_only
-def test_glob_include_absolute(page, tmp_path):
+def test_glob_include_absolute(page, tmp_path, plugin):
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
     included_02_file = tmp_path / 'included_02.txt'
@@ -41,7 +41,7 @@ barbaz
 '''
 
     assert on_page_markdown(
-        includer_file_content, page(includer_file), tmp_path,
+        includer_file_content, page(includer_file), tmp_path, plugin,
     ) == expected_result
 
 
@@ -150,6 +150,7 @@ def test_glob_include(
     page,
     caplog,
     tmp_path,
+    plugin,
 ):
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
@@ -178,7 +179,7 @@ This 02 must appear only without specifying end.
     included_02_file.write_text(included_02_content)
 
     on_page_markdown(
-        includer_file_content, page(includer_file), tmp_path,
+        includer_file_content, page(includer_file), tmp_path, plugin,
     )
 
     # assert warnings

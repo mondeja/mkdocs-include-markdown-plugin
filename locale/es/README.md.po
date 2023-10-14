@@ -56,12 +56,11 @@ msgstr ""
 "[tests-link]: https://github.com/mondeja/mkdocs-include-markdown-"
 "plugin/actions?query=workflow%3ACI"
 
-msgid "[cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470"
-msgstr ""
-"[cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470"
+msgid "[cibuildwheel-470]: https://github.com/pypa/cibuildwheel/issues/470"
+msgstr "[cibuildwheel-470]: https://github.com/pypa/cibuildwheel/issues/470"
 
-msgid "[cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel"
-msgstr "[cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel"
+msgid "[cibuildwheel-repo-link]: https://github.com/pypa/cibuildwheel"
+msgstr "[cibuildwheel-repo-link]: https://github.com/pypa/cibuildwheel"
 
 msgid "Read this document in other languages:"
 msgstr "Lee este documento en otros idiomas:"

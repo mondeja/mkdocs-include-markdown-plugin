@@ -371,6 +371,7 @@ def test_include(
     page,
     caplog,
     tmp_path,
+    plugin,
 ):
     included_file = tmp_path / 'included.md'
     includer_file = tmp_path / 'includer.md'
@@ -387,7 +388,7 @@ def test_include(
     includer_file.write_text(page_content)
 
     assert on_page_markdown(
-        page_content, page(includer_file), tmp_path,
+        page_content, page(includer_file), tmp_path, plugin,
     ) == expected_result
 
     # assert warnings

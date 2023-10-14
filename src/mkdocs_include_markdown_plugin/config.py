@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from mkdocs.config.base import Config
 from mkdocs.config.config_options import (
     ListOfItems,
     Optional,
@@ -9,73 +10,17 @@ from mkdocs.config.config_options import (
 )
 
 
-CONFIG_DEFAULTS = {
-    'opening-tag': '{%',
-    'closing-tag': '%}',
-    'encoding': 'utf-8',
-    'preserve-includer-indent': True,
-    'dedent': False,
-    'trailing-newlines': True,
-    'comments': True,
-    'rewrite-relative-urls': True,
-    'heading-offset': 0,
-    'start': None,
-    'end': None,
-    'exclude': None,
-    'cache': 0,
-}
-
-CONFIG_SCHEME = (
-    (
-        'opening_tag',
-        MkType(str, default=CONFIG_DEFAULTS['opening-tag']),
-    ),
-    (
-        'closing_tag',
-        MkType(str, default=CONFIG_DEFAULTS['closing-tag']),
-    ),
-    (
-        'encoding',
-        MkType(str, default=CONFIG_DEFAULTS['encoding']),
-    ),
-    (
-        'preserve_includer_indent',
-        MkType(bool, default=CONFIG_DEFAULTS['preserve-includer-indent']),
-    ),
-    (
-        'dedent',
-        MkType(bool, default=CONFIG_DEFAULTS['dedent']),
-    ),
-    (
-        'trailing_newlines',
-        MkType(bool, default=CONFIG_DEFAULTS['trailing-newlines']),
-    ),
-    (
-        'comments',
-        MkType(bool, default=CONFIG_DEFAULTS['comments']),
-    ),
-    (
-        'rewrite_relative_urls',
-        MkType(bool, default=CONFIG_DEFAULTS['rewrite-relative-urls']),
-    ),
-    (
-        'heading_offset',
-        MkType(int, default=CONFIG_DEFAULTS['heading-offset']),
-    ),
-    (
-        'start',
-        MkType(str, default=CONFIG_DEFAULTS['start']),
-    ),
-    (
-        'end',
-        MkType(str, default=CONFIG_DEFAULTS['end']),
-    ),
-    (
-        'exclude',
-        Optional(ListOfItems(MkType(str))),
-    ),
-    (
-        'cache',
-        MkType(int, default=CONFIG_DEFAULTS['cache']),
-    ),
-)
+class PluginConfig(Config):  # noqa: D101
+    opening_tag = MkType(str, default='{%')
+    closing_tag = MkType(str, default='%}')
+    encoding = MkType(str, default='utf-8')
+    preserve_includer_indent = MkType(bool, default=True)
+    dedent = MkType(bool, default=False)
+    trailing_newlines = MkType(bool, default=True)
+    comments = MkType(bool, default=True)
+    rewrite_relative_urls = MkType(bool, default=True)
+    heading_offset = MkType(int, default=0)
+    start = Optional(MkType(str))
+    end = Optional(MkType(str))
+    exclude = ListOfItems(MkType(str), default=[])
+    cache = MkType(int, default=0)

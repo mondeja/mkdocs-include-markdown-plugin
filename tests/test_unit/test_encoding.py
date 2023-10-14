@@ -4,7 +4,7 @@ from testing_helpers import parametrize_directives, unix_only
 
 
 @parametrize_directives
-def test_encoding(directive, page, tmp_path):
+def test_encoding(directive, page, tmp_path, plugin):
     page_to_include_file = tmp_path / 'included.md'
     page_to_include_file.write_text('''Á
 <!-- start -->
@@ -24,12 +24,13 @@ Content to include
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
+            plugin,
         )
 
 
 @unix_only
 @parametrize_directives
-def test_default_encoding(directive, page, tmp_path):
+def test_default_encoding(directive, page, tmp_path, plugin):
     page_to_include_file = tmp_path / 'included.md'
     page_to_include_file.write_text('''Á
 <!-- start -->
@@ -47,13 +48,14 @@ Content to include
 %}}''',
         page(tmp_path / 'includer.md'),
         tmp_path,
+        plugin,
     )
     assert result == '\nContent to include\n'
 
 
 @unix_only
 @parametrize_directives
-def test_explicit_default_encoding(directive, page, tmp_path):
+def test_explicit_default_encoding(directive, page, tmp_path, plugin):
     page_to_include_file = tmp_path / 'included.md'
     page_to_include_file.write_text('''Á
 <!-- start -->
@@ -72,5 +74,6 @@ Content to include
 %}}''',
         page(tmp_path / 'includer.md'),
         tmp_path,
+        plugin,
     )
     assert result == '\nContent to include\n'

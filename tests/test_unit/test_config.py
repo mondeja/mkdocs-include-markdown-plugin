@@ -9,7 +9,7 @@ TESTS_ARGUMENTS = (
     'includer_schema',
     'content_to_include',
     'expected_result',
-    'config',
+    'plugin',
 )
 
 
@@ -17,7 +17,7 @@ def _run_test(
     includer_schema,
     content_to_include,
     expected_result,
-    config,
+    plugin,
     page,
     caplog,
     tmp_path,
@@ -47,7 +47,7 @@ def _run_test(
             page_content,
             page(includer_file),
             tmp_path,
-            config,
+            plugin,
         )
         == expected_result
     )
@@ -152,12 +152,13 @@ def _run_test(
             id='custom-comments',
         ),
     ),
+    indirect=['plugin'],
 )
 def test_config_options(
     includer_schema,
     content_to_include,
     expected_result,
-    config,
+    plugin,
     page,
     caplog,
     tmp_path,
@@ -166,7 +167,7 @@ def test_config_options(
         includer_schema,
         content_to_include,
         expected_result,
-        config,
+        plugin,
         page,
         caplog,
         tmp_path,
@@ -193,12 +194,13 @@ def test_config_options(
             id='custom-encoding',
         ),
     ),
+    indirect=['plugin'],
 )
 def test_config_encoding_option(
     includer_schema,
     content_to_include,
     expected_result,
-    config,
+    plugin,
     page,
     caplog,
     tmp_path,
@@ -207,7 +209,7 @@ def test_config_encoding_option(
         includer_schema,
         content_to_include,
         expected_result,
-        config,
+        plugin,
         page,
         caplog,
         tmp_path,

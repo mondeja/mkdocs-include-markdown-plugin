@@ -240,7 +240,7 @@ def rewrite_relative_urls(
 
     def found_href(m: re.Match[str], url_group_index: int = -1) -> str:
         match_start, match_end = m.span(0)
-        href = m.group(url_group_index)
+        href = m[url_group_index]
         href_start, href_end = m.span(url_group_index)
         rewritten_url = rewrite_url(href)
         return (

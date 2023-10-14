@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import re
 import string
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from wcmatch import glob
@@ -12,12 +13,14 @@ from wcmatch import glob
 from mkdocs_include_markdown_plugin import process
 
 
+@dataclass
+class DirectiveBoolArgument:  # noqa: D101
+    value: bool
+    regex: re.Pattern[str]
+
+
 if TYPE_CHECKING:
     from typing import TypedDict
-
-    class DirectiveBoolArgument(TypedDict):  # noqa: D101
-        value: bool
-        regex: re.Pattern[str]
 
     DirectiveBoolArgumentsDict = dict[str, DirectiveBoolArgument]
 
@@ -30,8 +33,8 @@ if TYPE_CHECKING:
             'comments': bool,
             'rewrite-relative-urls': bool,
             'heading-offset': int,
-            'start': str,
-            'end': str,
+            'start': str | None,
+            'end': str | None,
         },
     )
 
@@ -102,9 +105,9 @@ def parse_filename_argument(
         match: re.Match[str],
 ) -> tuple[str | None, str | None]:
     """Return filename argument matched by ``match``."""
-    raw_filename = match.group('double_quoted_filename')
+    raw_filename = match['double_quoted_filename']
     if raw_filename is None:
-        raw_filename = match.group('single_quoted_filename')
+        raw_filename = match['single_quoted_filename']
         if raw_filename is None:
             filename = None
         else:
@@ -116,9 +119,9 @@ def parse_filename_argument(
 
 def parse_string_argument(match: re.Match[str]) -> str | None:
     """Return the string argument matched by ``match``."""
-    value = match.group(1)
+    value = match[1]
     if value is None:
-        value = match.group(3)
+        value = match[3]
         if value is not None:
             value = value.replace("\\'", "'")
     else:
@@ -152,20 +155,18 @@ def parse_bool_options(
 
     bool_options: dict[str, DirectiveBoolArgument] = {}
     for option_name in option_names:
-        bool_options[option_name] = {
-            'value': defaults[option_name],  # type: ignore
-            'regex': ARGUMENT_REGEXES[option_name],
-        }
+        bool_options[option_name] = DirectiveBoolArgument(
+            value=defaults[option_name],  # type: ignore
+            regex=ARGUMENT_REGEXES[option_name],
+        )
 
     for arg_name, arg in bool_options.items():
-        bool_arg_match = arg['regex'].search(arguments_string)
+        bool_arg_match = arg.regex.search(arguments_string)
         if bool_arg_match is None:
             continue
         try:
-            bool_options[arg_name]['value'] = TRUE_FALSE_STR_BOOL[
-                bool_arg_match.group(
-                    1,
-                ) or TRUE_FALSE_BOOL_STR[arg['value']]
+            bool_options[arg_name].value = TRUE_FALSE_STR_BOOL[
+                bool_arg_match[1] or TRUE_FALSE_BOOL_STR[arg.value]
             ]
         except KeyError:
             invalid_args.append(arg_name)
