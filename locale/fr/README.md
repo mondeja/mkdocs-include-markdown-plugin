@@ -263,8 +263,8 @@ autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
 [license-image]: https://img.shields.io/pypi/l/mkdocs-include-markdown-plugin?color=light-green&logo=apache&logoColor=white
 [license-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/LICENSE
 [platformdirs]: https://pypi.org/project/platformdirs/
-[cibuildwheel-470]: https://github.com/joerick/cibuildwheel/issues/470
-[cibuildwheel-repo-link]: https://github.com/joerick/cibuildwheel
+[cibuildwheel-470]: https://github.com/pypa/cibuildwheel/issues/470
+[cibuildwheel-repo-link]: https://github.com/pypa/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
 [Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax

@@ -42,6 +42,7 @@ if TYPE_CHECKING:  # remove this for mypyc compiling
         },
     )
 
+
 @dataclass
 class Settings:  # noqa: D101
     exclude: list[str] | None
