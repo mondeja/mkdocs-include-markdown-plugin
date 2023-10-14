@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 
+import mkdocs_include_markdown_plugin.cache
 import pytest
+from mkdocs.exceptions import PluginError
+from mkdocs_include_markdown_plugin import IncludeMarkdownPlugin
 from mkdocs_include_markdown_plugin.cache import (
     CACHE_AVAILABLE,
     Cache,
@@ -76,3 +80,20 @@ def test_page_included_by_url_is_cached(
     assert os.path.isfile(file_path)
 
     os.remove(file_path)
+
+
+def test_cache_setting_when_not_available_raises_error(monkeypatch):
+    @dataclass
+    class FakeConfig:
+        cache: int
+
+    monkeypatch.setattr(
+        mkdocs_include_markdown_plugin.cache,
+        'CACHE_AVAILABLE',
+        False,
+    )
+    plugin = IncludeMarkdownPlugin()
+    plugin.config = FakeConfig(cache=600)
+    with pytest.raises(PluginError) as exc:
+        plugin.on_config({})
+    assert 'The "platformdirs" package is required' in str(exc.value)
