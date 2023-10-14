@@ -184,7 +184,7 @@ def resolve_file_paths_to_include(
         return [filename_or_url], True
 
     if process.is_absolute_path(filename_or_url):
-        if os.name == 'nt':
+        if os.name == 'nt':  # pragma: nt cover
             # Windows
             fpath = os.path.normpath(filename_or_url)
             if not os.path.isfile(fpath):

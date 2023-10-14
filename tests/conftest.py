@@ -16,12 +16,12 @@ from mkdocs_include_markdown_plugin import IncludeMarkdownPlugin  # noqa: E402
 @pytest.fixture
 def page():
     """Fake mkdocs page object."""
-    def _page(filepath):
+    def _page(file_path):
         return type(
             'FakeMkdocsPage', (), {
                 'file': type(
                     'FakeMdocsPageFile', (), {
-                        'abs_src_path': filepath,
+                        'abs_src_path': file_path,
                     },
                 ),
             },
