@@ -1,9 +1,10 @@
 import os
 from dataclasses import dataclass
 
-import mkdocs_include_markdown_plugin.cache
 import pytest
 from mkdocs.exceptions import PluginError
+
+import mkdocs_include_markdown_plugin.cache
 from mkdocs_include_markdown_plugin import IncludeMarkdownPlugin
 from mkdocs_include_markdown_plugin.cache import (
     CACHE_AVAILABLE,

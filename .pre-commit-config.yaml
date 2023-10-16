@@ -16,7 +16,7 @@ repos:
         minimum_pre_commit_version: 2.9.0
         exclude: ^locale
   - repo: https://github.com/mondeja/project-config
-    rev: v0.8.0
+    rev: v0.9.2
     hooks:
       - id: project-config
   - repo: meta

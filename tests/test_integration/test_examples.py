@@ -6,6 +6,7 @@ import pytest
 from mkdocs import config
 from mkdocs.commands.build import build
 from mkdocs.exceptions import Abort
+
 from mkdocs_include_markdown_plugin.cache import CACHE_AVAILABLE
 from testing_helpers import rootdir
 
