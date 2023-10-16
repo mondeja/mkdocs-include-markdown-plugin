@@ -103,9 +103,9 @@ targets = [{ file = "pyproject.toml" }]
 [tool.project-config]
 cache = "2 days"
 style = [
-  "gh://mondeja/project-config-styles@v5/base/pre-commit/md2po2md.json5",
-  "gh://mondeja/project-config-styles@v5/python/base.json5",
-  "gh://mondeja/project-config-styles@v5/python/mypy.json5",
+  "gh://mondeja/project-config-styles@v5.1/base/pre-commit/md2po2md.json5",
+  "gh://mondeja/project-config-styles@v5.1/python/base.json5",
+  "gh://mondeja/project-config-styles@v5.1/python/mypy.json5",
 ]
 
 [tool.coverage.run]
@@ -165,6 +165,7 @@ parametrize-values-row-type = "tuple"
 lines-after-imports = 2
 combine-as-imports = true
 force-wrap-aliases = true
+known-first-party = ["mkdocs_include_markdown_plugin", "testing_helpers"]
 known-local-folder = ["tests"]
 required-imports = ["from __future__ import annotations"]
 extra-standard-library = [

@@ -4,6 +4,7 @@ import re
 
 import pytest
 from mkdocs.exceptions import PluginError
+
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 from testing_helpers import parametrize_directives, unix_only
 
