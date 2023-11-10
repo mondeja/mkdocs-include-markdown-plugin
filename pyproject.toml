@@ -1,6 +1,6 @@
 [project]
 name = "mkdocs-include-markdown-plugin"
-version = "6.0.3"
+version = "6.0.4"
 description = "Mkdocs Markdown includer plugin."
 readme = "README.md"
 license = "Apache-2.0"
@@ -148,6 +148,8 @@ select = [
   "COM",
   "SLOT",
 ]
+# TODO: Remove G004 when https://github.com/mkdocs/mkdocs/issues/3461 closed
+ignore = ["G004"]
 
 [tool.ruff.pydocstyle]
 convention = "google"

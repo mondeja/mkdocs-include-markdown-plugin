@@ -48,6 +48,9 @@ Included content
     ) == expected_result
 
     rec = caplog.records[0]
+
+    # TODO: Temporally disabled, see https://github.com/mkdocs/mkdocs/issues/3461
+    return
     assert rec.delimiter_name == missing_argument
     assert rec.delimiter_value == f'<!--{missing_argument}-->'
     assert rec.directive == directive

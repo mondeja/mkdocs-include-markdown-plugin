@@ -48,7 +48,9 @@ class Settings:  # noqa: D101
     exclude: list[str] | None
 
 
-logger = logging.getLogger('mkdocs.plugins.mkdocs_include_markdown_plugin')
+# TODO: when Mkdocs < 1.5.0 support is dropped, use
+# mkdocs.plugin.get_plugin_logger
+logger = logging.getLogger('mkdocs.plugins.include_markdown')
 
 
 def lineno_from_content_start(content: str, start: int) -> int:
@@ -276,26 +278,15 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     markdown,
                     directive_match_start,
                 )
+                relative_path = os.path.relpath(page_src_path, docs_dir)
                 logger.warning(
                     (
-                        "Delimiter {delimiter_name} '{delimiter_value}'"
-                        " of '{directive}' directive at"
-                        ' {relative_path}:{line_number}'
-                        ' not detected in the file{plural_suffix}'
-                        ' {readable_files_to_include}'
+                        f"Delimiter {delimiter_name} '{delimiter_value}'"
+                        " of 'include' directive at"
+                        f' {relative_path}:{lineno}'
+                        f' not detected in the file{plural_suffix}'
+                        f' {readable_files_to_include}'
                     ),
-                    extra={
-                        'delimiter_name': delimiter_name,
-                        'delimiter_value': delimiter_value,
-                        'directive': 'include',
-                        'relative_path': os.path.relpath(
-                            page_src_path,
-                            docs_dir,
-                        ),
-                        'line_number': lineno,
-                        'plural_suffix': plural_suffix,
-                        'readable_files_to_include': readable_files_to_include,
-                    },
                 )
 
         return text_to_include
@@ -586,26 +577,15 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     markdown,
                     directive_match_start,
                 )
+                relative_path = os.path.relpath(page_src_path, docs_dir)
                 logger.warning(
                     (
-                        "Delimiter {delimiter_name} '{delimiter_value}' of"
-                        " '{directive}' directive at"
-                        ' {relative_path}:{line_number}'
-                        ' not detected in the file{plural_suffix}'
-                        ' {readable_files_to_include}'
+                        f"Delimiter {delimiter_name} '{delimiter_value}' of"
+                        " 'include-markdown' directive at"
+                        f' {relative_path}:{lineno}'
+                        f' not detected in the file{plural_suffix}'
+                        f' {readable_files_to_include}'
                     ),
-                    extra={
-                        'delimiter_name': delimiter_name,
-                        'delimiter_value': delimiter_value,
-                        'directive': 'include-markdown',
-                        'relative_path': os.path.relpath(
-                            page_src_path,
-                            docs_dir,
-                        ),
-                        'line_number': lineno,
-                        'plural_suffix': plural_suffix,
-                        'readable_files_to_include': readable_files_to_include,
-                    },
                 )
 
         return text_to_include
