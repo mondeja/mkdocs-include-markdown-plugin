@@ -99,46 +99,30 @@ barbaz
 %}
 ''',
             [
-                {
-                    'delimiter_name': 'start',
-                    'delimiter_value': '<!-- start-not-found-2 -->',
-                    'relative_path': '{includer_file}',
-                    'line_number': 3,
-                    'plural_suffix': 's',
-                    'readable_files_to_include': (
-                        '{included_file_01}, {included_file_02}'
-                    ),
-                },
-                {
-                    'delimiter_name': 'end',
-                    'delimiter_value': '<!-- end-not-found-2 -->',
-                    'relative_path': '{includer_file}',
-                    'line_number': 3,
-                    'plural_suffix': 's',
-                    'readable_files_to_include': (
-                        '{included_file_01}, {included_file_02}'
-                    ),
-                },
-                {
-                    'delimiter_name': 'start',
-                    'delimiter_value': '<!-- start-not-found-1 -->',
-                    'relative_path': '{includer_file}',
-                    'line_number': 10,
-                    'plural_suffix': 's',
-                    'readable_files_to_include': (
-                        '{included_file_01}, {included_file_02}'
-                    ),
-                },
-                {
-                    'delimiter_name': 'end',
-                    'delimiter_value': '<!-- end-not-found-1 -->',
-                    'relative_path': '{includer_file}',
-                    'line_number': 10,
-                    'plural_suffix': 's',
-                    'readable_files_to_include': (
-                        '{included_file_01}, {included_file_02}'
-                    ),
-                },
+                (
+                    "Delimiter end '<!-- end-not-found-1 -->'"
+                    " of '{directive}' directive"
+                    ' at {includer_file}:10 not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
+                ),
+                (
+                    "Delimiter end '<!-- end-not-found-2 -->'"
+                    " of '{directive}' directive"
+                    ' at {includer_file}:3 not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
+                ),
+                (
+                    "Delimiter start '<!-- start-not-found-1 -->'"
+                    " of '{directive}' directive"
+                    ' at {includer_file}:10 not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
+                ),
+                (
+                    "Delimiter start '<!-- start-not-found-2 -->'"
+                    " of '{directive}' directive"
+                    ' at {includer_file}:3 not detected in'
+                    ' the files {included_file_01}, {included_file_02}'
+                ),
             ],
             id='start-end-not-found',
         ),
@@ -149,9 +133,9 @@ def test_glob_include(
     directive,
     expected_warnings_schemas,
     page,
+    plugin,
     caplog,
     tmp_path,
-    plugin,
 ):
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
@@ -185,22 +169,20 @@ This 02 must appear only without specifying end.
 
     # assert warnings
     expected_warnings_schemas = expected_warnings_schemas or []
-    for warning in expected_warnings_schemas:
-        warning['directive'] = directive
-        warning['relative_path'] = warning['relative_path'].replace(
-            '{includer_file}', str(includer_file.relative_to(tmp_path)),
-        )
-        warning['readable_files_to_include'] = warning[
-            'readable_files_to_include'
-        ].replace(
+    expected_warnings = [
+        msg_schema.replace(
+            '{includer_file}',
+            str(includer_file.relative_to(tmp_path)),
+        ).replace(
             '{included_file_01}',
             str(included_01_file.relative_to(tmp_path)),
         ).replace(
             '{included_file_02}',
             str(included_02_file.relative_to(tmp_path)),
-        )
+        ).replace('{directive}', directive)
+        for msg_schema in expected_warnings_schemas
+    ]
 
-    for i, warning in enumerate(expected_warnings_schemas):
-        for key in warning:
-            assert getattr(caplog.records[i], key) == warning[key]
+    for record in caplog.records:
+        assert record.msg in expected_warnings
     assert len(expected_warnings_schemas) == len(caplog.records)

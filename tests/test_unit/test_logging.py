@@ -47,10 +47,8 @@ Included content
         includer_content, page(includer_file), tmp_path, plugin,
     ) == expected_result
 
-    rec = caplog.records[0]
-    assert rec.delimiter_name == missing_argument
-    assert rec.delimiter_value == f'<!--{missing_argument}-->'
-    assert rec.directive == directive
-    assert rec.relative_path == includer_file_name
-    assert rec.line_number == 3
-    assert rec.readable_files_to_include == included_file_name
+    assert (
+        f"Delimiter {missing_argument} '<!--{missing_argument}-->' of"
+        f" '{directive}' directive at {includer_file_name}:3"
+        f' not detected in the file {included_file_name}'
+    ) in caplog.text
