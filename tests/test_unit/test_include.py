@@ -192,13 +192,11 @@ Some text
 
 ''',
             [
-                {
-                    'delimiter_name': 'start',
-                    'delimiter_value': '<!--start-->',
-                    'relative_path': '{includer_file}',
-                    'line_number': 3,
-                    'readable_files_to_include': '{included_file}',
-                },
+                (
+                    "Delimiter start '<!--start-->' of 'include'"
+                    ' directive at {filepath}:3'
+                    ' not detected in the file {included_file}'
+                ),
             ],
             id='start=foo (not found)-end=None',
         ),
@@ -219,14 +217,11 @@ Some text
 Some text
 ''',
             [
-                {
-                    'delimiter_name': 'end',
-                    'delimiter_value': '<!--end-->',
-                    'relative_path': '{includer_file}',
-                    'line_number': 2,
-                    'readable_files_to_include': '{included_file}',
-                    'directive': 'include',
-                },
+                (
+                    "Delimiter end '<!--end-->' of 'include'"
+                    ' directive at {filepath}:2'
+                    ' not detected in the file {included_file}'
+                ),
             ],
             id='start=None-end=foo (not found)',
         ),
@@ -370,9 +365,9 @@ def test_include(
     expected_result,
     expected_warnings_schemas,
     page,
+    plugin,
     caplog,
     tmp_path,
-    plugin,
 ):
     included_file = tmp_path / 'included.md'
     includer_file = tmp_path / 'includer.md'
@@ -394,18 +389,16 @@ def test_include(
 
     # assert warnings
     expected_warnings_schemas = expected_warnings_schemas or []
-    for warning in expected_warnings_schemas:
-        warning['directive'] = 'include'
-        warning['relative_path'] = str(includer_file.relative_to(tmp_path))
-        warning['readable_files_to_include'] = warning[
-            'readable_files_to_include'
-        ].replace(
+    expected_warnings = [
+        msg_schema.replace(
+            '{filepath}',
+            str(includer_file.relative_to(tmp_path)),
+        ).replace(
             '{included_file}',
             str(included_file.relative_to(tmp_path)),
-        )
+        ) for msg_schema in expected_warnings_schemas
+    ]
 
-    for _i, warning in enumerate(expected_warnings_schemas):
-        for _key in warning:
-            pass
-            # TODO: Temporally disabled, see https://github.com/mkdocs/mkdocs/issues/3461
+    for record in caplog.records:
+        assert record.msg in expected_warnings
     assert len(expected_warnings_schemas) == len(caplog.records)

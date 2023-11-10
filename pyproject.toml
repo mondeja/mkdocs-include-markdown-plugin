@@ -148,7 +148,6 @@ select = [
   "COM",
   "SLOT",
 ]
-# TODO: Remove G004 when https://github.com/mkdocs/mkdocs/issues/3461 closed
 ignore = ["G004"]
 
 [tool.ruff.pydocstyle]

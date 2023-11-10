@@ -281,13 +281,11 @@ Some text
             '''# Header
 ''',
             [
-                {
-                    'delimiter_name': 'start',
-                    'delimiter_value': '<!--start-->',
-                    'relative_path': '{filepath}',
-                    'readable_files_to_include': '{included_file}',
-                    'line_number': 2,
-                },
+                (
+                    "Delimiter start '<!--start-->' of 'include-markdown'"
+                    ' directive at {filepath}:2 not detected in the file'
+                    ' {included_file}'
+                ),
             ],
             id='start=foo (not found)-end=None',
         ),
@@ -308,13 +306,11 @@ Some text
 Some text
 ''',
             [
-                {
-                    'delimiter_name': 'end',
-                    'delimiter_value': '<!--end-->',
-                    'relative_path': '{filepath}',
-                    'readable_files_to_include': '{included_file}',
-                    'line_number': 2,
-                },
+                (
+                    "Delimiter end '<!--end-->' of 'include-markdown'"
+                    ' directive at {filepath}:2'
+                    ' not detected in the file {included_file}'
+                ),
             ],
             id='start=None-end=foo (not found)',
         ),
@@ -743,7 +739,6 @@ It is a code block
 
 With some text after it
 ''',
-            # ruff: noqa: ISC003  TODO: error in ruff
             '''1.  This is the first number line
 
 1.  <!-- BEGIN INCLUDE {filepath} -->
@@ -759,7 +754,7 @@ With some text after it
     <!-- END INCLUDE -->
 
 1.  If everything works as expected this should be number 3
-''',
+''',  # noqa: ISC003
             [],
             id='include-code-block-to-list-item (#123)',
         ),
@@ -771,9 +766,9 @@ def test_include_markdown(
     expected_result_schema,
     expected_warnings_schemas,
     page,
+    plugin,
     caplog,
     tmp_path,
-    plugin,
 ):
     included_file = tmp_path / 'included.md'
     includer_file = tmp_path / 'includer.md'
@@ -803,23 +798,18 @@ def test_include_markdown(
 
     # assert warnings
     expected_warnings_schemas = expected_warnings_schemas or []
-    for warning in expected_warnings_schemas:
-        warning['directive'] = 'include-markdown'
-        warning['relative_path'] = warning['relative_path'].replace(
+    expected_warnings = [
+        msg_schema.replace(
             '{filepath}',
             str(includer_file.relative_to(tmp_path)),
-        )
-        warning['readable_files_to_include'] = (
-            warning['readable_files_to_include'].replace(
-                '{included_file}',
-                str(included_file.relative_to(tmp_path)),
-            )
-        )
+        ).replace(
+            '{included_file}',
+            str(included_file.relative_to(tmp_path)),
+        ) for msg_schema in expected_warnings_schemas
+    ]
 
-    for _i, warning in enumerate(expected_warnings_schemas):
-        for _key in warning:
-            pass
-            # TODO: Temporally disabled, see https://github.com/mkdocs/mkdocs/issues/3461
+    for record in caplog.records:
+        assert record.msg in expected_warnings
     assert len(expected_warnings_schemas) == len(caplog.records)
 
 
@@ -827,8 +817,8 @@ def test_include_markdown(
 def test_include_markdown_relative_rewrite(
     page,
     tmp_path,
-    plugin,
     rewrite_relative_urls,
+    plugin,
 ):
     option_value = '' if rewrite_relative_urls is None else (
         'rewrite-relative-urls=' + rewrite_relative_urls

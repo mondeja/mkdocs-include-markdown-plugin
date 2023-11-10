@@ -171,22 +171,16 @@ Some test from final included.
 
 ''',
             [
-                {
-                    'delimiter_name': 'start',
-                    'delimiter_value': '<!--start-->',
-                    'relative_path': '{first_includer_file}',
-                    'line_number': 3,
-                    'readable_files_to_include': '{second_includer_file}',
-                    'directive': 'include-markdown',
-                },
-                {
-                    'delimiter_name': 'end',
-                    'delimiter_value': '<!--end-->',
-                    'relative_path': '{first_includer_file}',
-                    'line_number': 3,
-                    'readable_files_to_include': '{second_includer_file}',
-                    'directive': 'include-markdown',
-                },
+                (
+                    "Delimiter start '<!--start-->' of 'include-markdown'"
+                    ' directive at {first_includer_file}:3 not detected'
+                    ' in the file {second_includer_file}'
+                ),
+                (
+                    "Delimiter end '<!--end-->' of 'include-markdown'"
+                    ' directive at {first_includer_file}:3 not detected'
+                    ' in the file {second_includer_file}'
+                ),
             ],
             id='start-end-not-found (first-level)',
         ),
@@ -219,22 +213,16 @@ Included content
 Included content
 ''',
             [
-                {
-                    'delimiter_name': 'start',
-                    'delimiter_value': '<!--start-->',
-                    'relative_path': '{second_includer_file}',
-                    'line_number': 3,
-                    'readable_files_to_include': '{included_file}',
-                    'directive': 'include-markdown',
-                },
-                {
-                    'delimiter_name': 'end',
-                    'delimiter_value': '<!--end-->',
-                    'relative_path': '{second_includer_file}',
-                    'line_number': 3,
-                    'readable_files_to_include': '{included_file}',
-                    'directive': 'include-markdown',
-                },
+                (
+                    "Delimiter start '<!--start-->' of 'include-markdown'"
+                    ' directive at {second_includer_file}:3 not detected'
+                    ' in the file {included_file}'
+                ),
+                (
+                    "Delimiter end '<!--end-->' of 'include-markdown'"
+                    ' directive at {second_includer_file}:3 not detected'
+                    ' in the file {included_file}'
+                ),
             ],
             id='start-end-not-found (second-level)',
         ),
@@ -247,9 +235,9 @@ def test_nested_include(
     expected_result,
     expected_warnings_schemas,
     page,
+    plugin,
     caplog,
     tmp_path,
-    plugin,
 ):
     first_includer_file = tmp_path / 'first-includer.txt'
     second_includer_file = tmp_path / 'second-includer.txt'
@@ -273,25 +261,21 @@ def test_nested_include(
 
     # assert warnings
     expected_warnings_schemas = expected_warnings_schemas or []
-    for warning in expected_warnings_schemas:
-        warning['relative_path'] = warning['relative_path'].replace(
+    expected_warnings = [
+        msg_schema.replace(
             '{first_includer_file}',
             str(first_includer_file.relative_to(tmp_path)),
         ).replace(
             '{second_includer_file}',
             str(second_includer_file.relative_to(tmp_path)),
-        )
-        warning['readable_files_to_include'] = warning[
-            'readable_files_to_include'
-        ].replace(
-            '{second_includer_file}',
-            str(second_includer_file.relative_to(tmp_path)),
-        ).replace('{included_file}', str(included_file.relative_to(tmp_path)))
+        ).replace(
+            '{included_file}',
+            str(included_file.relative_to(tmp_path)),
+        ) for msg_schema in expected_warnings_schemas
+    ]
 
-    for _i, warning in enumerate(expected_warnings_schemas):
-        for _key in warning:
-            pass
-            # TODO: Temporally disabled, see https://github.com/mkdocs/mkdocs/issues/3461
+    for record in caplog.records:
+        assert record.msg in expected_warnings
     assert len(expected_warnings_schemas) == len(caplog.records)
 
 
