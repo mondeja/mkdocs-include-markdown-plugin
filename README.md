@@ -113,7 +113,7 @@ Paths of included files can be either:
 - Local files:
   - Absolute paths (starting with a path separator).
   - Relative from the file that includes them (starting with `./` or `../`).
-  - Relative from the _docs/_ directory.
+  - Relative from the _docs/_ directory. For instance, _includes/header.md_ will match the file _docs/includes/header.md_.
 - [Bash wildcard globs] matching multiple local files.
 
 File paths to include and string arguments can be wrapped by double `"` or
@@ -177,7 +177,7 @@ content to include.
 
 ```jinja
 {%
-   include-markdown 'docs/includes/header.md'
+   include-markdown 'includes/header.md'
    start='<!--\n\ttable-start\n-->'
    end='<!--\n\ttable-end\n-->'
    rewrite-relative-urls=false
@@ -187,7 +187,7 @@ content to include.
 
 ```jinja
 {%
-   include-markdown "docs/includes/header.md"
+   include-markdown "includes/header.md"
    heading-offset=1
 %}
 ```
