@@ -114,7 +114,7 @@ Paths of included files can be either:
   - Absolute paths (starting with a path separator).
   - Relative from the file that includes them (starting with `./` or `../`).
   - Relative to the `docs_dir` directory. For instance if your `docs_dir` is
-    _docs_, then _includes/header.md_ will match the file _docs/includes/header.md_`.
+    _./docs/_, then _includes/header.md_ will match the file _./docs/includes/header.md_`.
 - [Bash wildcard globs] matching multiple local files.
 
 File paths to include and string arguments can be wrapped by double `"` or

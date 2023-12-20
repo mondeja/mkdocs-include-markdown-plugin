@@ -102,9 +102,9 @@ Les chemins des fichiers inclus peuvent être soit:
 - Fichiers locaux:
    - Chemins de fichier absolus (commençant par un séparateur de chemin).
    - Relatifs du fichiers qui les inclut (commençant par `./` ou `../`).
-   - Relatif au répertoire `docs_dir`. Par exemple, si votre `docs_dir` est _docs_,
-alors _includes/header.md_ va correspondre au fichier
-*_docs/includes/header.md_*.
+   - Relatif au répertoire `docs_dir`. Par exemple, si votre `docs_dir` est
+_./docs/_, alors _includes/header.md_ va correspondre au fichier
+*_./docs/includes/header.md_*.
 - Globs génériques Bash correspondant à plusieurs fichiers locaux.
 
 Les chemins d'accès aux fichiers à inclure et les arguments de chaîne peuvent
