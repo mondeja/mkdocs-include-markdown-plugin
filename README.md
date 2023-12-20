@@ -61,9 +61,9 @@ plugins:
       end: <!--end-->
 ```
 
-- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
-  **closing_tag**: The default opening and closing tags. By default are
-  `{%` and `%}`.
+#### `opening_tag` and `closing_tag`
+
+Default opening and closing tags. When not specified they are `{%` and `%}`.
 
 ```yaml
 plugins:
@@ -72,9 +72,12 @@ plugins:
       closing_tag: "!}"
 ```
 
-- <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Define
-  global exclusion wildcard patterns. Relative paths defined here will be
-  relative to the _docs/_ directory.
+<!-- mdpo-disable-next-line -->
+
+#### `exclude`
+
+Global exclusion wildcard patterns. Relative paths defined here will be
+relative to the [`docs_dir`] directory.
 
 ```yaml
 plugins:
@@ -84,9 +87,11 @@ plugins:
         - api/**
 ```
 
-- <a name="config_cache" href="#config_cache">#</a> **cache**: Define a
-  expiration time in seconds for cached HTTP requests when including
-  from URLs.
+<!-- mdpo-disable-next-line -->
+
+#### `cache`
+
+Expiration time in seconds for cached HTTP requests when including from URLs.
 
 ```yaml
 plugins:
@@ -113,8 +118,8 @@ Paths of included files can be either:
 - Local files:
   - Absolute paths (starting with a path separator).
   - Relative from the file that includes them (starting with `./` or `../`).
-  - Relative to the `docs_dir` directory. For instance if your `docs_dir` is
-    _./docs/_, then `includes/header.md` will match the file _./docs/includes/header.md_`.
+  - Relative to the [`docs_dir`] directory. For instance if your `docs_dir` is
+    _./docs/_, then `includes/header.md` will match the file _./docs/includes/header.md_.
 - [Bash wildcard globs] matching multiple local files.
 
 File paths to include and string arguments can be wrapped by double `"` or
@@ -283,3 +288,4 @@ Includes the content of a file or a group of files.
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
 [Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax
+[`docs_dir`]: https://www.mkdocs.org/user-guide/configuration/#docs_dir

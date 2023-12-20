@@ -50,8 +50,9 @@ plugins:
       end: <!--end-->
 ```
 
-- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
-**closing_tag**: Las etiquetas de apertura y cierre. Por defecto son `{%` y
+#### `opening_tag` y `closing_tag`
+
+Etiquetas de apertura y cierre por defecto. Cuando no se especifican son `{%` y
 `%}`.
 
 ```yaml
@@ -61,9 +62,10 @@ plugins:
       closing_tag: "!}"
 ```
 
-- <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Define
-patrones de comodín de exclusión globales. Las rutas relativas definidas aquí
-serán relativas al directorio *docs/*.
+#### `exclude`
+
+Patrones de comodín de exclusión globales. Las rutas relativas definidas aquí
+serán relativas al directorio [`docs_dir`].
 
 ```yaml
 plugins:
@@ -73,8 +75,9 @@ plugins:
         - api/**
 ```
 
-- <a name="config_cache" href="#config_cache">#</a> **cache**: Define un tiempo
-de caducidad en segundos para las solicitudes HTTP almacenadas en caché al
+#### `cache`
+
+Tiempo de caducidad en segundos para las solicitudes HTTP almacenadas en caché al
 incluir desde URL.
 
 ```yaml
@@ -102,8 +105,8 @@ Las rutas de los archivos a incluir pueden ser:
 - Archivos locales:
    - Rutas absolutas (comenzando con un separador de rutas).
    - Relativas desde el archivo que las incluye (empezando por `./` o `../`).
-   - Relativo al directorio `docs_dir`. Por ejemplo, si tu `docs_dir` es _./docs/_,
-entonces `includes/header.md` coincidirá con el archivo
+   - Relativo al directorio [`docs_dir`]. Por ejemplo, si tu `docs_dir` es
+_./docs/_, entonces `includes/header.md` coincidirá con el archivo
 *_./docs/includes/header.md_*.
 - [Bash wildcard globs] matching multiple local files.
 [Patrones glob de Bash]
@@ -279,3 +282,4 @@ separar este plugin de la documentación de
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
 [Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax
+[`docs_dir`]: https://www.mkdocs.org/user-guide/configuration/#docs_dir
