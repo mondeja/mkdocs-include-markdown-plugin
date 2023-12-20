@@ -49,9 +49,10 @@ plugins:
       end: <!--end-->
 ```
 
-- <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
-**closing_tag**: Les balises d'ouverture et de fermeture par défaut. Par
-défaut sont `{%` et `%}`.
+#### `opening_tag` et `closing_tag`
+
+Balises d'ouverture et de fermeture par défaut. Lorsqu'elles ne sont pas
+spécifiées, elles sont `{%` et `%}`.
 
 ```yaml
 plugins:
@@ -60,9 +61,10 @@ plugins:
       closing_tag: "!}"
 ```
 
-- <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Définissez
-des modèles génériques d'exclusion globale. Les chemins de fichiers relatifs
-définis ici seront relatifs au répertoire *docs/*.
+#### `exclude`
+
+Modèles de globes d'exclusion globaux. Les chemins relatifs définis ici seront
+relatifs au répertoire [`docs_dir`].
 
 ```yaml
 plugins:
@@ -72,8 +74,9 @@ plugins:
         - api/**
 ```
 
-- <a name="config_cache" href="#config_cache">#</a> **cache**: Définissez un
-délai d'expiration en secondes pour les requêtes HTTP mises en cache lors de
+#### `cache`
+
+Délai d'expiration en secondes pour les requêtes HTTP mises en cache lors de
 l'inclusion d'URL.
 
 ```yaml
@@ -102,7 +105,7 @@ Les chemins des fichiers inclus peuvent être soit:
 - Fichiers locaux:
    - Chemins de fichier absolus (commençant par un séparateur de chemin).
    - Relatifs du fichiers qui les inclut (commençant par `./` ou `../`).
-   - Relatif au répertoire `docs_dir`. Par exemple, si votre `docs_dir` est
+   - Relatif au répertoire [`docs_dir`]. Par exemple, si votre `docs_dir` est
 _./docs/_, alors `includes/header.md` va correspondre au fichier
 *_./docs/includes/header.md_*.
 - Globs génériques Bash correspondant à plusieurs fichiers locaux.
@@ -276,3 +279,4 @@ autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
 [Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax
+[`docs_dir`]: https://www.mkdocs.org/user-guide/configuration/#docs_dir
