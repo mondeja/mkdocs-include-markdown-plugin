@@ -52,38 +52,44 @@ plugins:
 - <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
 **closing_tag**: Les balises d'ouverture et de fermeture par défaut. Par
 défaut sont `{%` et `%}`.
-   ```yaml
-   plugins:
+
+```yaml
+plugins:
   - include-markdown:
       opening_tag: "{!"
       closing_tag: "!}"
-   ```
+```
+
 - <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Définissez
 des modèles génériques d'exclusion globale. Les chemins de fichiers relatifs
 définis ici seront relatifs au répertoire *docs/*.
-   ```yaml
-   plugins:
+
+```yaml
+plugins:
   - include-markdown:
       exclude:
         - LICENSE.md
         - api/**
-   ```
+```
+
 - <a name="config_cache" href="#config_cache">#</a> **cache**: Définissez un
 délai d'expiration en secondes pour les requêtes HTTP mises en cache lors de
 l'inclusion d'URL.
-   ```yaml
-   plugins:
+
+```yaml
+plugins:
   - include-markdown:
       cache: 600
-   ```
+```
 
-   Pour utiliser cette fonctionnalité, la dépendance [platformdirs] doit être
+Pour utiliser cette fonctionnalité, la dépendance [platformdirs] doit être
 installée. Vous pouvez l'inclure dans l'installation du plugin en ajoutant le
 supplément `cache`:
-   ```txt
-   # requirements.txt
+
+```txt
+# requirements.txt
 mkdocs-include-markdown-plugin[cache]
-   ```
+```
 
 ### Référence
 
@@ -96,7 +102,9 @@ Les chemins des fichiers inclus peuvent être soit:
 - Fichiers locaux:
    - Chemins de fichier absolus (commençant par un séparateur de chemin).
    - Relatifs du fichiers qui les inclut (commençant par `./` ou `../`).
-   - Relatif du répertoire *docs/*.
+   - Relatif au répertoire `docs_dir`. Par exemple, si votre `docs_dir` est
+_./docs/_, alors `includes/header.md` va correspondre au fichier
+*_./docs/includes/header.md_*.
 - Globs génériques Bash correspondant à plusieurs fichiers locaux.
 
 Les chemins d'accès aux fichiers à inclure et les arguments de chaîne peuvent
@@ -164,7 +172,7 @@ négatives pour supprimer les caractères `#` de tête.
 
 ```jinja
 {%
-   include-markdown 'docs/includes/header.md'
+   include-markdown 'includes/header.md'
    start='<!--\n\ttable-start\n-->'
    end='<!--\n\ttable-end\n-->'
    rewrite-relative-urls=false
@@ -174,7 +182,7 @@ négatives pour supprimer les caractères `#` de tête.
 
 ```jinja
 {%
-   include-markdown "docs/includes/header.md"
+   include-markdown "includes/header.md"
    heading-offset=1
 %}
 ```

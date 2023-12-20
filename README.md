@@ -65,42 +65,42 @@ plugins:
   **closing_tag**: The default opening and closing tags. By default are
   `{%` and `%}`.
 
-  ```yaml
-  plugins:
-    - include-markdown:
-        opening_tag: "{!"
-        closing_tag: "!}"
-  ```
+```yaml
+plugins:
+  - include-markdown:
+      opening_tag: "{!"
+      closing_tag: "!}"
+```
 
 - <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Define
   global exclusion wildcard patterns. Relative paths defined here will be
   relative to the _docs/_ directory.
 
-  ```yaml
-  plugins:
-    - include-markdown:
-        exclude:
-          - LICENSE.md
-          - api/**
-  ```
+```yaml
+plugins:
+  - include-markdown:
+      exclude:
+        - LICENSE.md
+        - api/**
+```
 
 - <a name="config_cache" href="#config_cache">#</a> **cache**: Define a
   expiration time in seconds for cached HTTP requests when including
   from URLs.
 
-  ```yaml
-  plugins:
-    - include-markdown:
-        cache: 600
-  ```
+```yaml
+plugins:
+  - include-markdown:
+      cache: 600
+```
 
-  In order to use this feature, the dependency [platformdirs] must be installed.
-  You can include it in the installation of the plugin adding the `cache` extra:
+In order to use this feature, the dependency [platformdirs] must be installed.
+You can include it in the installation of the plugin adding the `cache` extra:
 
-  ```txt
-  # requirements.txt
-  mkdocs-include-markdown-plugin[cache]
-  ```
+```txt
+# requirements.txt
+mkdocs-include-markdown-plugin[cache]
+```
 
 ### Reference
 
@@ -113,7 +113,8 @@ Paths of included files can be either:
 - Local files:
   - Absolute paths (starting with a path separator).
   - Relative from the file that includes them (starting with `./` or `../`).
-  - Relative from the _docs/_ directory.
+  - Relative to the `docs_dir` directory. For instance if your `docs_dir` is
+    _./docs/_, then `includes/header.md` will match the file _./docs/includes/header.md_`.
 - [Bash wildcard globs] matching multiple local files.
 
 File paths to include and string arguments can be wrapped by double `"` or
@@ -177,7 +178,7 @@ content to include.
 
 ```jinja
 {%
-   include-markdown 'docs/includes/header.md'
+   include-markdown 'includes/header.md'
    start='<!--\n\ttable-start\n-->'
    end='<!--\n\ttable-end\n-->'
    rewrite-relative-urls=false
@@ -187,7 +188,7 @@ content to include.
 
 ```jinja
 {%
-   include-markdown "docs/includes/header.md"
+   include-markdown "includes/header.md"
    heading-offset=1
 %}
 ```

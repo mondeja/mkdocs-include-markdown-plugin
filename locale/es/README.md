@@ -53,37 +53,43 @@ plugins:
 - <a name="config_tags" href="#config_tags">#</a> **opening_tag** and
 **closing_tag**: Las etiquetas de apertura y cierre. Por defecto son `{%` y
 `%}`.
-   ```yaml
-   plugins:
+
+```yaml
+plugins:
   - include-markdown:
       opening_tag: "{!"
       closing_tag: "!}"
-   ```
+```
+
 - <a name="config_exclude" href="#config_exclude">#</a> **exclude**: Define
 patrones de comodín de exclusión globales. Las rutas relativas definidas aquí
 serán relativas al directorio *docs/*.
-   ```yaml
-   plugins:
+
+```yaml
+plugins:
   - include-markdown:
       exclude:
         - LICENSE.md
         - api/**
-   ```
+```
+
 - <a name="config_cache" href="#config_cache">#</a> **cache**: Define un tiempo
 de caducidad en segundos para las solicitudes HTTP almacenadas en caché al
 incluir desde URL.
-   ```yaml
-   plugins:
+
+```yaml
+plugins:
   - include-markdown:
       cache: 600
-   ```
+```
 
-   Para usar esta funcionalidad, la dependencia [platformdirs] debe ser instalada.
+Para usar esta funcionalidad, la dependencia [platformdirs] debe ser instalada.
 Puedes incluirla en la instalación del plugin añadiendo el extra `cache`:
-   ```txt
-   # requirements.txt
+
+```txt
+# requirements.txt
 mkdocs-include-markdown-plugin[cache]
-   ```
+```
 
 ### Referencia
 
@@ -96,7 +102,9 @@ Las rutas de los archivos a incluir pueden ser:
 - Archivos locales:
    - Rutas absolutas (comenzando con un separador de rutas).
    - Relativas desde el archivo que las incluye (empezando por `./` o `../`).
-   - Relativas desde el directorio *docs/*.
+   - Relativo al directorio `docs_dir`. Por ejemplo, si tu `docs_dir` es _./docs/_,
+entonces `includes/header.md` coincidirá con el archivo
+*_./docs/includes/header.md_*.
 - [Bash wildcard globs] matching multiple local files.
 [Patrones glob de Bash]
 que coincidan con múltiples archivos locales.
@@ -166,7 +174,7 @@ especificado. Sólo soporta la sintaxis de encabezado de caracteres de hash
 
 ```jinja
 {%
-   include-markdown 'docs/includes/header.md'
+   include-markdown 'includes/header.md'
    start='<!--\n\ttable-start\n-->'
    end='<!--\n\ttable-end\n-->'
    rewrite-relative-urls=false
@@ -176,7 +184,7 @@ especificado. Sólo soporta la sintaxis de encabezado de caracteres de hash
 
 ```jinja
 {%
-   include-markdown "docs/includes/header.md"
+   include-markdown "includes/header.md"
    heading-offset=1
 %}
 ```
