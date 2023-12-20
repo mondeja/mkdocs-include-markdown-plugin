@@ -104,7 +104,7 @@ Las rutas de los archivos a incluir pueden ser:
    - Relativas desde el archivo que las incluye (empezando por `./` o `../`).
    - Relativo al directorio `docs_dir`. Por ejemplo, si tu `docs_dir` es _docs_,
 entonces _includes/header.md_ coincidirá con el archivo
-_docs/includes/header.md_`.
+*_docs/includes/header.md_*.
 - [Bash wildcard globs] matching multiple local files.
 [Patrones glob de Bash]
 que coincidan con múltiples archivos locales.
