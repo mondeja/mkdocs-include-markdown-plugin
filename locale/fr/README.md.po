@@ -356,6 +356,9 @@ msgstr "Fichiers locaux:"
 msgid "Absolute paths (starting with a path separator)."
 msgstr "Chemins de fichier absolus (commençant par un séparateur de chemin)."
 
+msgid "Relative to the `docs_dir` directory. For instance if your `docs_dir` is _docs_, then _includes/header.md_ will match the file _docs/includes/header.md_`."
+msgstr "Relatif au répertoire `docs_dir`. Par exemple, si le répertoire `docs_dir` est _docs_, alors _includes/header.md_ va correspondre au fichier _docs/includes/header.md_`."
+
 msgid "[Bash wildcard globs] matching multiple local files."
 msgstr "Globs génériques Bash correspondant à plusieurs fichiers locaux."
 
