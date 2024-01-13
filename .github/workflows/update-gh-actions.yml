@@ -9,11 +9,11 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v4.1.1
         with:
           token: ${{ secrets.UPDATE_GH_ACTIONS_TOKEN }}
 
       - name: Run GitHub Actions Version Updater
-        uses: saadmk11/github-actions-version-updater@v0.7.2
+        uses: saadmk11/github-actions-version-updater@v0.8.1
         with:
           token: ${{ secrets.UPDATE_GH_ACTIONS_TOKEN }}
