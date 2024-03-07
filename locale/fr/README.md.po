@@ -282,9 +282,6 @@ msgstr ""
 "Le comportement global du plugin peut être personnalisé dans la "
 "configuration."
 
-msgid "[pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin"
-msgstr "[pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin"
-
 msgid ""
 "[coverage-image]: https://img.shields.io/codecov/c/github/mondeja/mkdocs-"
 "include-markdown-plugin?logo=codecov&logoColor=white"
@@ -345,12 +342,7 @@ msgid "Absolute paths (starting with a path separator)."
 msgstr "Chemins de fichier absolus (commençant par un séparateur de chemin)."
 
 msgid "[Bash wildcard globs] matching multiple local files."
-msgstr "Globs génériques Bash correspondant à plusieurs fichiers locaux."
-
-msgid ""
-"[Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax"
-msgstr ""
-"[Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax"
+msgstr "[Globs génériques Bash] correspondant à plusieurs fichiers locaux."
 
 msgid ""
 "Relative from the file that includes them (starting with `./` or `../`)."
@@ -404,3 +396,12 @@ msgstr ""
 "Relatif au répertoire [`docs_dir`]. Par exemple, si votre `docs_dir` est "
 "_./docs/_, alors `includes/header.md` va correspondre au fichier "
 "*_./docs/includes/header.md_*."
+
+msgid ""
+"[Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax"
+msgstr ""
+"[Globs génériques Bash]: https://facelessuser.github.io/wcmatch/glob/#syntax"
+
+#, fuzzy
+msgid "[pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin"
+msgstr "[pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin"

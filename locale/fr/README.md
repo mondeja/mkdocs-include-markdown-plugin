@@ -108,7 +108,7 @@ Les chemins des fichiers inclus peuvent être soit:
    - Relatif au répertoire [`docs_dir`]. Par exemple, si votre `docs_dir` est
 _./docs/_, alors `includes/header.md` va correspondre au fichier
 *_./docs/includes/header.md_*.
-- Globs génériques Bash correspondant à plusieurs fichiers locaux.
+- [Globs génériques Bash] correspondant à plusieurs fichiers locaux.
 
 Les chemins d'accès aux fichiers à inclure et les arguments de chaîne peuvent
 être entourés de guillemets doubles `"` ou simples `'`, qui peuvent être
@@ -265,6 +265,7 @@ valeurs possibles sont `true` et `false`.
 autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
 [cibuildwheel][cibuildwheel-repo-link].
 
+[Globs génériques Bash]: https://facelessuser.github.io/wcmatch/glob/#syntax
 [pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin
 [pypi-version-badge-link]: https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white
 [tests-image]: https://img.shields.io/github/actions/workflow/status/mondeja/mkdocs-include-markdown-plugin/ci.yml?logo=github&label=tests&branch=master
@@ -278,5 +279,4 @@ autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
 [cibuildwheel-repo-link]: https://github.com/pypa/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
-[Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax
 [`docs_dir`]: https://www.mkdocs.org/user-guide/configuration/#docs_dir
