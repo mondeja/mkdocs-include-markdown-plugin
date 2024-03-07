@@ -103,9 +103,9 @@ targets = [{ file = "pyproject.toml" }]
 [tool.project-config]
 cache = "2 days"
 style = [
-  "gh://mondeja/project-config-styles@v5.1/base/pre-commit/md2po2md.json5",
-  "gh://mondeja/project-config-styles@v5.1/python/base.json5",
-  "gh://mondeja/project-config-styles@v5.1/python/mypy.json5",
+  "gh://mondeja/project-config-styles@v5.2.1/base/pre-commit/md2po2md.json5",
+  "gh://mondeja/project-config-styles@v5.2.1/python/base.json5",
+  "gh://mondeja/project-config-styles@v5.2.1/python/mypy.json5",
 ]
 
 [tool.coverage.run]
@@ -121,6 +121,8 @@ fail_under = 1
 [tool.ruff]
 line-length = 80
 target-version = "py38"
+
+[tool.ruff.lint]
 select = [
   "W",
   "B",
@@ -150,19 +152,19 @@ select = [
 ]
 ignore = ["G004"]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.flake8-quotes]
 inline-quotes = "single"
 multiline-quotes = "single"
 
-[tool.ruff.flake8-pytest-style]
+[tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
 parametrize-values-type = "tuple"
 parametrize-values-row-type = "tuple"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 lines-after-imports = 2
 combine-as-imports = true
 force-wrap-aliases = true
@@ -176,7 +178,7 @@ extra-standard-library = [
   "wsgiref.types"
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/**" = [
   "I002",
   "D100",

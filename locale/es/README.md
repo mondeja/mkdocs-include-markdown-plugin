@@ -108,9 +108,7 @@ Las rutas de los archivos a incluir pueden ser:
    - Relativo al directorio [`docs_dir`]. Por ejemplo, si tu `docs_dir` es
 _./docs/_, entonces `includes/header.md` coincidirá con el archivo
 *_./docs/includes/header.md_*.
-- [Bash wildcard globs] matching multiple local files.
-[Patrones glob de Bash]
-que coincidan con múltiples archivos locales.
+- [Patrones glob de Bash] que coincidan con múltiples archivos locales.
 
 Las rutas de archivo para incluir y los argumentos de cadena se pueden envolver
 con comillas dobles `"` o simples `'`, que se pueden escapar anteponiendo un
@@ -268,6 +266,7 @@ se usará `utf-8`.
 separar este plugin de la documentación de
 [cibuildwheel][cibuildwheel-repo-link].
 
+[Patrones glob de Bash]: https://facelessuser.github.io/wcmatch/glob/#syntax
 [pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin
 [pypi-version-badge-link]: https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white
 [tests-image]: https://img.shields.io/github/actions/workflow/status/mondeja/mkdocs-include-markdown-plugin/ci.yml?logo=github&label=tests&branch=master
@@ -281,5 +280,4 @@ separar este plugin de la documentación de
 [cibuildwheel-repo-link]: https://github.com/pypa/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
-[Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax
 [`docs_dir`]: https://www.mkdocs.org/user-guide/configuration/#docs_dir

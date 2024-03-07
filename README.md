@@ -119,7 +119,8 @@ Paths of included files can be either:
   - Absolute paths (starting with a path separator).
   - Relative from the file that includes them (starting with `./` or `../`).
   - Relative to the [`docs_dir`] directory. For instance if your `docs_dir` is
-    _./docs/_, then `includes/header.md` will match the file _./docs/includes/header.md_.
+    _./docs/_, then `includes/header.md` will match the file
+    _./docs/includes/header.md_.
 - [Bash wildcard globs] matching multiple local files.
 
 File paths to include and string arguments can be wrapped by double `"` or
@@ -274,6 +275,10 @@ Includes the content of a file or a group of files.
   [giving me the permissions][cibuildwheel-470] to separate this plugin from the
   documentation of [cibuildwheel][cibuildwheel-repo-link].
 
+[Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax
+
+<!-- mdpo-disable -->
+
 [pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin
 [pypi-version-badge-link]: https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin?logo=pypi&logoColor=white
 [tests-image]: https://img.shields.io/github/actions/workflow/status/mondeja/mkdocs-include-markdown-plugin/ci.yml?logo=github&label=tests&branch=master
@@ -287,5 +292,4 @@ Includes the content of a file or a group of files.
 [cibuildwheel-repo-link]: https://github.com/pypa/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
-[Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax
 [`docs_dir`]: https://www.mkdocs.org/user-guide/configuration/#docs_dir
