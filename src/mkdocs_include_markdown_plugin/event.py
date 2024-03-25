@@ -444,8 +444,8 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             arguments_string,
         )
         if offset_match:
-            offset = offset_match[1]
-            if offset == '':
+            offset_raw_value = offset_match[1]
+            if offset_raw_value == '':
                 lineno = lineno_from_content_start(
                     markdown,
                     directive_match_start,
@@ -456,15 +456,15 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     f' {os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 )
             try:
-                offset = int(offset)
+                offset = int(offset_raw_value)
             except ValueError:
                 lineno = lineno_from_content_start(
                     markdown,
                     directive_match_start,
                 )
                 raise PluginError(
-                    f"Invalid 'heading-offset' argument \"{offset}\" in"
-                    " 'include-markdown' directive at "
+                    f"Invalid 'heading-offset' argument \"{offset_raw_value}\""
+                    " in 'include-markdown' directive at "
                     f'{os.path.relpath(page_src_path, docs_dir)}:{lineno}',
                 ) from None
         else:
@@ -556,7 +556,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     )
                 )
 
-            if offset_match:
+            if offset:
                 new_text_to_include = process.increase_headings_offset(
                     new_text_to_include,
                     offset=offset + cumulative_heading_offset,
