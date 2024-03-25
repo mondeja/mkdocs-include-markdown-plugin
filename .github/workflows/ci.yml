@@ -82,6 +82,8 @@ jobs:
           coverage xml
       - name: Upload coverage
         uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   build-dist:
     if: startsWith(github.ref, 'refs/tags/')
