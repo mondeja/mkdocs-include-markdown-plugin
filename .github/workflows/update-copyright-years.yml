@@ -13,9 +13,9 @@ jobs:
   action-update-license-year:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v3.0.2
+      - uses: FantasticFiasco/action-update-license-year@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

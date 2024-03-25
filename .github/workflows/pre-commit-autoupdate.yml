@@ -13,9 +13,9 @@ jobs:
   autoupdate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v5.0.0
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Install pre-commit
@@ -23,7 +23,7 @@ jobs:
       - name: Run pre-commit autoupdate
         run: pre-commit autoupdate
       - name: Open pull request
-        uses: peter-evans/create-pull-request@v5.0.2
+        uses: peter-evans/create-pull-request@v5
         with:
           branch: pre-commit-autoupdate
           title: Upgrade pre-commit hooks revisions
