@@ -8,6 +8,7 @@ import string
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from mkdocs.exceptions import PluginError
 from wcmatch import glob
 
 from mkdocs_include_markdown_plugin import process
@@ -174,19 +175,19 @@ def parse_bool_options(
 
 
 def resolve_file_paths_to_include(
-    filename_or_url: str,
-    includer_page_src_path: str,
+    include_string: str,
+    includer_page_src_path: str | None,
     docs_dir: str,
     ignore_paths: list[str],
 ) -> tuple[list[str], bool]:
     """Resolve the file paths to include for a directive."""
-    if process.is_url(filename_or_url):
-        return [filename_or_url], True
+    if process.is_url(include_string):
+        return [include_string], True
 
-    if process.is_absolute_path(filename_or_url):
+    if process.is_absolute_path(include_string):
         if os.name == 'nt':  # pragma: nt cover
             # Windows
-            fpath = os.path.normpath(filename_or_url)
+            fpath = os.path.normpath(include_string)
             if not os.path.isfile(fpath):
                 return [], False
 
@@ -195,13 +196,19 @@ def resolve_file_paths_to_include(
             ), False
         return process.filter_paths(
             glob.iglob(
-                os.path.normpath(filename_or_url),
+                os.path.normpath(include_string),
                 flags=GLOB_FLAGS,
             ),
             ignore_paths,
         ), False
 
-    if process.is_relative_path(filename_or_url):
+    if process.is_relative_path(include_string):
+        if includer_page_src_path is None:
+            raise PluginError(
+                'Relative paths are not allowed when the includer page'
+                ' source path is not provided. The include string'
+                f" '{include_string}' is located inside a generated page.",
+            )
         root_dir = os.path.abspath(
             os.path.dirname(includer_page_src_path),
         )
@@ -209,7 +216,7 @@ def resolve_file_paths_to_include(
             (
                 os.path.normpath(os.path.join(root_dir, fp))
                 for fp in glob.iglob(
-                    filename_or_url,
+                    include_string,
                     flags=GLOB_FLAGS,
                     root_dir=root_dir,
                 )
@@ -221,7 +228,7 @@ def resolve_file_paths_to_include(
         (
             os.path.normpath(os.path.join(docs_dir, fp))
             for fp in glob.iglob(
-                filename_or_url,
+                include_string,
                 flags=GLOB_FLAGS,
                 root_dir=docs_dir,
             )
@@ -232,7 +239,7 @@ def resolve_file_paths_to_include(
 
 def resolve_file_paths_to_exclude(
     exclude_string: str,
-    includer_page_src_path: str,
+    includer_page_src_path: str | None,
     docs_dir: str,
 ) -> list[str]:
     """Resolve the file paths to exclude for a directive."""
@@ -241,6 +248,12 @@ def resolve_file_paths_to_exclude(
         return glob.glob(exclude_string, flags=GLOB_FLAGS)
 
     if process.is_relative_path(exclude_string):
+        if includer_page_src_path is None:
+            raise PluginError(
+                'Relative paths are not allowed when the includer page'
+                ' source path is not provided. The exclude string'
+                f" '{exclude_string}' is located inside a generated page.",
+            )
         root_dir = os.path.abspath(
             os.path.dirname(includer_page_src_path),
         )
