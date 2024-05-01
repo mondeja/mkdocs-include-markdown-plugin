@@ -30,51 +30,36 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: ubuntu-latest
-            python-version: 3.8
-            py: py38
-          - platform: ubuntu-latest
-            python-version: 3.9
-            py: py39
-          - platform: ubuntu-latest
-            python-version: "3.10"
-            py: py310
-          - platform: ubuntu-latest
-            python-version: "3.11"
-            py: py311
-          - platform: ubuntu-latest
-            python-version: "3.12"
-            py: py312
-          - platform: macos-latest
-            python-version: 3.8
-            py: py38
-          - platform: macos-latest
-            python-version: "3.11"
-            py: py311
-          - platform: macos-latest
-            python-version: "3.12"
-            py: py312
-          - platform: windows-latest
-            python-version: 3.8
-            py: py38
-          - platform: windows-latest
-            python-version: "3.11"
-            py: py311
-          - platform: windows-latest
-            python-version: "3.12"
-            py: py312
+        py:
+          - 3.8
+          - 3.9
+          - "3.10"
+          - "3.11"
+          - "3.12"
+        platform:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python v${{ matrix.python-version }}
+      - name: Set up Python v${{ matrix.py }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.py }}
+      - name: Pick environment to run
+        id: env
+        shell: python
+        run: |
+          import codecs, os, sys
+          env = f"py=py3{sys.version_info[1]}\n"
+          print(f"Picked {env.split('=')[1].strip()} for {sys.version}")
+          with codecs.open(os.environ["GITHUB_OUTPUT"], "a", "utf-8") as file_handler:
+              file_handler.write(env)
       - name: Install dependencies
         run: pip install -U hatch
       - name: Run tests
         run: |
-          hatch run +py=${{ matrix.py }} tests:all
+          hatch run +py=${{ steps.env.outputs.py }} tests:all
       - name: Convert coverage to XML
         run: |
           pip install coverage covdefaults
@@ -97,7 +82,7 @@ jobs:
       - uses: actions/setup-python@v5
         name: Install Python
         with:
-          python-version: "3.10"
+          python-version: "3.11"
       - name: Install build dependencies
         run: pip install -U hatch
       - name: Build package
