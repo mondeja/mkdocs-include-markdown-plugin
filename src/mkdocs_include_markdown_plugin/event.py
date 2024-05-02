@@ -64,7 +64,7 @@ def file_lineno_message(
         lineno: int,
 ) -> str:
     """Return a message with the file path and line number."""
-    if page_src_path is None:
+    if page_src_path is None:  # pragma: no cover
         return f'generated page content (line {lineno})'
     return (
         f'{os.path.relpath(page_src_path, docs_dir)}'
@@ -541,7 +541,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
 
             # relative URLs rewriting
             if bool_options['rewrite-relative-urls'].value:
-                if page_src_path is None:
+                if page_src_path is None:  # pragma: no cover
                     logger.warning(
                         'Relative URLs rewriting is not supported in'
                         ' generated pages.',

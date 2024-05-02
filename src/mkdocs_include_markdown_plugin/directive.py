@@ -203,7 +203,7 @@ def resolve_file_paths_to_include(
         ), False
 
     if process.is_relative_path(include_string):
-        if includer_page_src_path is None:
+        if includer_page_src_path is None:  # pragma: no cover
             raise PluginError(
                 'Relative paths are not allowed when the includer page'
                 ' source path is not provided. The include string'
@@ -248,7 +248,7 @@ def resolve_file_paths_to_exclude(
         return glob.glob(exclude_string, flags=GLOB_FLAGS)
 
     if process.is_relative_path(exclude_string):
-        if includer_page_src_path is None:
+        if includer_page_src_path is None:  # pragma: no cover
             raise PluginError(
                 'Relative paths are not allowed when the includer page'
                 ' source path is not provided. The exclude string'
