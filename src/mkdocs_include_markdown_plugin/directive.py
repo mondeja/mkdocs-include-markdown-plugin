@@ -34,6 +34,7 @@ if TYPE_CHECKING:
             'comments': bool,
             'rewrite-relative-urls': bool,
             'heading-offset': int,
+            'recursive': bool,
             'start': str | None,
             'end': str | None,
         },
@@ -96,6 +97,7 @@ ARGUMENT_REGEXES = {
     'dedent': arg('dedent'),
     'trailing-newlines': arg('trailing-newlines'),
     'rewrite-relative-urls': arg('rewrite-relative-urls'),
+    'recursive': arg('recursive'),
 
     # int
     'heading-offset': arg('heading-offset'),

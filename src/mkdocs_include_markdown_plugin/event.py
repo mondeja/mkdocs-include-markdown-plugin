@@ -165,7 +165,8 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             files_watcher.included_files.extend(file_paths_to_include)
 
         bool_options, invalid_bool_args = parse_bool_options(
-            ['preserve-includer-indent', 'dedent', 'trailing-newlines'],
+            ['preserve-includer-indent', 'dedent',
+                'trailing-newlines', 'recursive'],
             defaults,
             arguments_string,
         )
@@ -248,16 +249,17 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                         expected_but_any_found[i] = False
 
             # nested includes
-            new_text_to_include = get_file_content(
-                new_text_to_include,
-                file_path,
-                docs_dir,
-                tags,
-                defaults,
-                settings,
-                files_watcher=files_watcher,
-                http_cache=http_cache,
-            )
+            if bool_options['recursive'].value:
+                new_text_to_include = get_file_content(
+                    new_text_to_include,
+                    file_path,
+                    docs_dir,
+                    tags,
+                    defaults,
+                    settings,
+                    files_watcher=files_watcher,
+                    http_cache=http_cache,
+                )
 
             # trailing newlines right stripping
             if not bool_options['trailing-newlines'].value:
@@ -616,12 +618,12 @@ def get_file_content(  # noqa: PLR0913, PLR0915
 
         return text_to_include
 
-    markdown = tags['include'].sub(
-        found_include_tag,
+    markdown = tags['include-markdown'].sub(
+        found_include_markdown_tag,
         markdown,
     )
-    return tags['include-markdown'].sub(
-        found_include_markdown_tag,
+    return tags['include'].sub(
+        found_include_tag,
         markdown,
     )
 
@@ -651,6 +653,7 @@ def on_page_markdown(
             'comments': config.comments,
             'rewrite-relative-urls': config.rewrite_relative_urls,
             'heading-offset': config.heading_offset,
+            'recursive': config.recursive,
             'start': config.start,
             'end': config.end,
         },
