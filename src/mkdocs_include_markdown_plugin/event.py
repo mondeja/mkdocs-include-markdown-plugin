@@ -66,9 +66,9 @@ def safe_os_path_relpath(path: str, start: str) -> str:
     On Windows, `ValueError` is raised when `path` and `start` are on
     different drives.
     """
-    if os.name != 'nt':
+    if os.name != 'nt':  # pragma: nt no cover
         return os.path.relpath(path, start)
-    try:
+    try:  # pragma: nt cover
         return os.path.relpath(path, start)
     except ValueError:  # pragma: no cover
         return path
