@@ -63,8 +63,8 @@ def safe_os_path_relpath(path: str, start: str) -> str:
 
     Safe version of `os.path.relpath` that catches `ValueError` exceptions
     on Windows and returns the original path in case of error.
-    On Windows, `ValueError` is raised when path and start are on different
-    drives.
+    On Windows, `ValueError` is raised when `path` and `start` are on
+    different drives.
     """
     if os.name != 'nt':
         return os.path.relpath(path, start)
