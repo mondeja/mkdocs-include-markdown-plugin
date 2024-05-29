@@ -58,6 +58,22 @@ def lineno_from_content_start(content: str, start: int) -> int:
     return content[:start].count('\n') + 1
 
 
+def safe_os_path_relpath(path: str, start: str) -> str:
+    """Return the relative path of a file from a start directory.
+
+    This function is a safe version of `os.path.relpath` that catches
+    `ValueError` exceptions on Windows and returns the original path
+    in case of error. On Windows, `ValueError` is raised when path
+    and start are on different drives.
+    """
+    if os.name != 'nt':
+        return os.path.relpath(path, start)
+    try:
+        return os.path.relpath(path, start)
+    except ValueError:  # pragma: no cover
+        return path
+
+
 def file_lineno_message(
         page_src_path: str | None,
         docs_dir: str,
@@ -67,7 +83,7 @@ def file_lineno_message(
     if page_src_path is None:  # pragma: no cover
         return f'generated page content (line {lineno})'
     return (
-        f'{os.path.relpath(page_src_path, docs_dir)}'
+        f'{safe_os_path_relpath(page_src_path, docs_dir)}'
         f':{lineno}'
     )
 
@@ -287,7 +303,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             if expected_but_any_found[i]:
                 delimiter_value = locals()[delimiter_name]
                 readable_files_to_include = ', '.join([
-                    os.path.relpath(fpath, docs_dir)
+                    safe_os_path_relpath(fpath, docs_dir)
                     for fpath in file_paths_to_include
                 ])
                 plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
@@ -593,7 +609,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             if expected_but_any_found[i]:
                 delimiter_value = locals()[delimiter_name]
                 readable_files_to_include = ', '.join([
-                    os.path.relpath(fpath, docs_dir)
+                    safe_os_path_relpath(fpath, docs_dir)
                     for fpath in file_paths_to_include
                 ])
                 plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
