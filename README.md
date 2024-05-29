@@ -245,6 +245,9 @@ Includes the content of a file or a group of files.
 - <a name="include_encoding" href="#include_encoding">#</a>
   **encoding** (_utf-8_): Specify the encoding of the included file.
   If not defined `utf-8` will be used.
+- <a name="recursive" href="#recursive">#</a>
+  **recursive** (_true_): When this option is disabled, it will not process
+  included files recursively. Possible values are `true` and `false`.
 
 ##### Examples
 
