@@ -226,6 +226,32 @@ Included content
             ],
             id='start-end-not-found (second-level)',
         ),
+        # recursive inclusion disabled with `include` directive
+        pytest.param(
+            '''# Header
+
+{%
+  include "{filepath}"
+  comments=false
+  recursive=false
+%}''',
+            '''# Header 2
+
+{% include "{filepath}" %}
+''',
+            '''# Header 3
+
+This content must not be included.
+''',
+            '''# Header
+
+# Header 2
+
+{% include "{filepath}" %}
+''',
+            [],
+            id='include-recursive=false',
+        ),
     ),
 )
 def test_nested_include(
@@ -247,6 +273,9 @@ def test_nested_include(
         '{filepath}', second_includer_file.as_posix(),
     )
     second_includer_content = second_includer_content.replace(
+        '{filepath}', included_file.as_posix(),
+    )
+    expected_result = expected_result.replace(
         '{filepath}', included_file.as_posix(),
     )
 

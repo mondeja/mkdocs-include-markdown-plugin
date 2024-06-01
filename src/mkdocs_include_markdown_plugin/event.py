@@ -103,6 +103,22 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         http_cache: Cache | None = None,
 ) -> str:
     """Return the content of the file to include."""
+    settings_ignore_paths = []
+    if settings.exclude is not None:
+        for path in glob.glob(
+                [
+                    os.path.join(docs_dir, fp)
+                    if not os.path.isabs(fp)
+                    else fp for fp in settings.exclude
+                ],
+                flags=GLOB_FLAGS,
+                root_dir=docs_dir,
+        ):
+            if path not in settings_ignore_paths:
+                settings_ignore_paths.append(path)
+        if page_src_path in settings_ignore_paths:
+            return markdown
+
     def found_include_tag(  # noqa: PLR0912, PLR0915
             match: re.Match[str],
     ) -> str:
@@ -125,19 +141,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         arguments_string = match['arguments']
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
-        ignore_paths = []
-        if settings.exclude:
-            ignore_paths.extend(
-                glob.glob(
-                    [
-                        os.path.join(docs_dir, fp)
-                        if not os.path.isabs(fp)
-                        else fp for fp in settings.exclude
-                    ],
-                    flags=GLOB_FLAGS,
-                    root_dir=docs_dir,
-                ),
-            )
+        ignore_paths = [*settings_ignore_paths]
         if exclude_match is not None:
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
@@ -151,14 +155,13 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
                 )
 
-            ignore_paths.extend(
-                resolve_file_paths_to_exclude(
+            for path in resolve_file_paths_to_exclude(
                     exclude_string,
                     page_src_path,
                     docs_dir,
-                ),
-            )
-        ignore_paths = list(set(ignore_paths))
+            ):
+                if path not in ignore_paths:
+                    ignore_paths.append(path)
 
         file_paths_to_include, is_url = resolve_file_paths_to_include(
             filename,
@@ -181,7 +184,8 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             files_watcher.included_files.extend(file_paths_to_include)
 
         bool_options, invalid_bool_args = parse_bool_options(
-            ['preserve-includer-indent', 'dedent', 'trailing-newlines'],
+            ['preserve-includer-indent', 'dedent',
+                'trailing-newlines', 'recursive'],
             defaults,
             arguments_string,
         )
@@ -264,16 +268,17 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                         expected_but_any_found[i] = False
 
             # nested includes
-            new_text_to_include = get_file_content(
-                new_text_to_include,
-                file_path,
-                docs_dir,
-                tags,
-                defaults,
-                settings,
-                files_watcher=files_watcher,
-                http_cache=http_cache,
-            )
+            if bool_options['recursive'].value:
+                new_text_to_include = get_file_content(
+                    new_text_to_include,
+                    file_path,
+                    docs_dir,
+                    tags,
+                    defaults,
+                    settings,
+                    files_watcher=files_watcher,
+                    http_cache=http_cache,
+                )
 
             # trailing newlines right stripping
             if not bool_options['trailing-newlines'].value:
@@ -349,19 +354,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         arguments_string = match['arguments']
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
-        ignore_paths = []
-        if settings.exclude is not None:
-            ignore_paths.extend(
-                glob.glob(
-                    [
-                        os.path.join(docs_dir, fp)
-                        if not os.path.isabs(fp)
-                        else fp for fp in settings.exclude
-                    ],
-                    flags=GLOB_FLAGS,
-                    root_dir=docs_dir,
-                ),
-            )
+        ignore_paths = [*settings_ignore_paths]
         if exclude_match is not None:
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
@@ -374,14 +367,13 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     f' directive at'
                     f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
                 )
-            ignore_paths.extend(
-                resolve_file_paths_to_exclude(
+            for path in resolve_file_paths_to_exclude(
                     exclude_string,
                     page_src_path,
                     docs_dir,
-                ),
-            )
-        ignore_paths = list(set(ignore_paths))
+            ):
+                if path not in ignore_paths:
+                    ignore_paths.append(path)
 
         file_paths_to_include, is_url = resolve_file_paths_to_include(
             filename,
@@ -667,6 +659,7 @@ def on_page_markdown(
             'comments': config.comments,
             'rewrite-relative-urls': config.rewrite_relative_urls,
             'heading-offset': config.heading_offset,
+            'recursive': config.recursive,
             'start': config.start,
             'end': config.end,
         },

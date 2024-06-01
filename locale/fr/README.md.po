@@ -402,6 +402,15 @@ msgid ""
 msgstr ""
 "[Globs génériques Bash]: https://facelessuser.github.io/wcmatch/glob/#syntax"
 
-#, fuzzy
 msgid "[pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin"
 msgstr "[pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin"
+
+msgid ""
+"<a name=\"recursive\" href=\"#include_recursive\">#</a> **recursive** "
+"(*true*): When this option is disabled, included files are not processed for"
+" recursive includes. Possible values are `true` and `false`."
+msgstr ""
+"<a name=\"recursive\" href=\"#include_recursive\">#</a> **recursive** "
+"(*true*): Lorsque cette option est désactivée, les fichiers inclus ne sont "
+"pas traités pour des inclusions récursives. Les valeurs possibles sont "
+"`true` et `false`."

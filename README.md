@@ -59,6 +59,7 @@ plugins:
       heading_offset: 0
       start: <!--start-->
       end: <!--end-->
+      recursive: true
 ```
 
 #### `opening_tag` and `closing_tag`
@@ -245,6 +246,9 @@ Includes the content of a file or a group of files.
 - <a name="include_encoding" href="#include_encoding">#</a>
   **encoding** (_utf-8_): Specify the encoding of the included file.
   If not defined `utf-8` will be used.
+- <a name="recursive" href="#include_recursive">#</a>
+  **recursive** (_true_): When this option is disabled, included files are not
+  processed for recursive includes. Possible values are `true` and `false`.
 
 ##### Examples
 
