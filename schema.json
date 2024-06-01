@@ -79,6 +79,11 @@
               "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#configuration",
               "type": "integer",
               "default": 0
+            },
+            "recursive": {
+              "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include_recursive",
+              "type": "boolean",
+              "default": true
             }
           },
           "additionalProperties": false
