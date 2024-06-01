@@ -33,7 +33,7 @@ repos:
       - id: end-of-file-fixer
         name: end-of-file-fixer
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.2
+    rev: v0.4.6
     hooks:
       - id: ruff
         args:
@@ -99,7 +99,7 @@ repos:
           - platformdirs
           - wcmatch
   - repo: https://github.com/tcort/markdown-link-check
-    rev: v3.12.1
+    rev: v3.12.2
     hooks:
       - id: markdown-link-check
         name: markdown-link-check
