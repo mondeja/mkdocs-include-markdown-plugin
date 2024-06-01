@@ -47,6 +47,7 @@ plugins:
       heading_offset: 0
       start: <!--start-->
       end: <!--end-->
+      recursive: true
 ```
 
 #### `opening_tag` et `closing_tag`
