@@ -406,3 +406,13 @@ msgstr ""
 
 msgid "[pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin"
 msgstr "[pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin"
+
+msgid ""
+"<a name=\"recursive\" href=\"#include_recursive\">#</a> **recursive** "
+"(*true*): When this option is disabled, included files are not processed for"
+" recursive includes. Possible values are `true` and `false`."
+msgstr ""
+"<a name=\"recursive\" href=\"#include_recursive\">#</a> **recursive** "
+"(*true*): Cuando esta opción está deshabilitada, los archivos incluidos no "
+"son procesados para incluir de forma recursiva. Los valores posibles son "
+"`true` y `false`."

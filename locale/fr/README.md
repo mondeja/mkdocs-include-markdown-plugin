@@ -235,6 +235,9 @@ valeurs possibles sont `true` et `false`.
 - <a name="include_encoding" href="#include_encoding">#</a> **encoding**
 (*utf-8*): Spécifiez l'encodage du fichier inclus. S'il n'est pas défini,
 `utf-8` sera utilisé.
+- <a name="recursive" href="#include_recursive">#</a> **recursive** (*true*):
+Lorsque cette option est désactivée, les fichiers inclus ne sont pas traités
+pour des inclusions récursives. Les valeurs possibles sont `true` et `false`.
 
 ##### Exemples
 
