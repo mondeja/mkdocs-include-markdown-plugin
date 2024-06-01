@@ -237,10 +237,8 @@ Included content
 %}''',
             '''# Header 2
 
-{%
-  include "{filepath}"
-  comments=false
-%}''',
+{% include "{filepath}" %}
+''',
             '''# Header 3
 
 This content must not be included.
@@ -249,10 +247,8 @@ This content must not be included.
 
 # Header 2
 
-{%
-  include "{filepath}"
-  comments=false
-%}''',
+{% include "{filepath}" %}
+''',
             [],
             id='include-recursive=false',
         ),
