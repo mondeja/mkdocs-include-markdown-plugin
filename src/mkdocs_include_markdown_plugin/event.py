@@ -608,12 +608,12 @@ def get_file_content(  # noqa: PLR0913, PLR0915
 
         return text_to_include
 
-    markdown = tags['include-markdown'].sub(
-        found_include_markdown_tag,
+    markdown = tags['include'].sub(
+        found_include_tag,
         markdown,
     )
-    return tags['include'].sub(
-        found_include_tag,
+    return tags['include-markdown'].sub(
+        found_include_markdown_tag,
         markdown,
     )
 
