@@ -452,3 +452,38 @@ def read_url(url: str, http_cache: Cache | None) -> Any:
     if http_cache is not None:
         http_cache.set_(url, content)
     return content
+
+
+def safe_os_path_relpath(path: str, start: str) -> str:
+    """Return the relative path of a file from a start directory.
+
+    Safe version of `os.path.relpath` that catches `ValueError` exceptions
+    on Windows and returns the original path in case of error.
+    On Windows, `ValueError` is raised when `path` and `start` are on
+    different drives.
+    """
+    if os.name != 'nt':  # pragma: nt no cover
+        return os.path.relpath(path, start)
+    try:  # pragma: nt cover
+        return os.path.relpath(path, start)
+    except ValueError:  # pragma: no cover
+        return path
+
+
+def file_lineno_message(
+        page_src_path: str | None,
+        docs_dir: str,
+        lineno: int,
+) -> str:
+    """Return a message with the file path and line number."""
+    if page_src_path is None:  # pragma: no cover
+        return f'generated page content (line {lineno})'
+    return (
+        f'{safe_os_path_relpath(page_src_path, docs_dir)}'
+        f':{lineno}'
+    )
+
+
+def lineno_from_content_start(content: str, start: int) -> int:
+    """Return the line number of the first line of ``start`` in ``content``."""
+    return content[:start].count('\n') + 1

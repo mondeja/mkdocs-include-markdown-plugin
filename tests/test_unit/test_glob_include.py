@@ -137,6 +137,9 @@ def test_glob_include(
     caplog,
     tmp_path,
 ):
+    if directive == 'include':
+        includer_content = includer_content.replace('comments=false', '')
+
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
     included_02_file = tmp_path / 'included_02.txt'

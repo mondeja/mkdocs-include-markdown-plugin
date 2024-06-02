@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import html
-import logging
 import os
 import re
 import textwrap
@@ -23,8 +22,10 @@ from mkdocs_include_markdown_plugin.directive import (
     parse_string_argument,
     resolve_file_paths_to_exclude,
     resolve_file_paths_to_include,
+    warn_invalid_directive_arguments,
 )
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
+from mkdocs_include_markdown_plugin.logger import logger
 
 
 if TYPE_CHECKING:
@@ -46,46 +47,6 @@ if TYPE_CHECKING:
 @dataclass
 class Settings:  # noqa: D101
     exclude: list[str] | None
-
-
-# TODO: when Mkdocs < 1.5.0 support is dropped, use
-# mkdocs.plugin.get_plugin_logger
-logger = logging.getLogger('mkdocs.plugins.include_markdown')
-
-
-def lineno_from_content_start(content: str, start: int) -> int:
-    """Return the line number of the first line of ``start`` in ``content``."""
-    return content[:start].count('\n') + 1
-
-
-def safe_os_path_relpath(path: str, start: str) -> str:
-    """Return the relative path of a file from a start directory.
-
-    Safe version of `os.path.relpath` that catches `ValueError` exceptions
-    on Windows and returns the original path in case of error.
-    On Windows, `ValueError` is raised when `path` and `start` are on
-    different drives.
-    """
-    if os.name != 'nt':  # pragma: nt no cover
-        return os.path.relpath(path, start)
-    try:  # pragma: nt cover
-        return os.path.relpath(path, start)
-    except ValueError:  # pragma: no cover
-        return path
-
-
-def file_lineno_message(
-        page_src_path: str | None,
-        docs_dir: str,
-        lineno: int,
-) -> str:
-    """Return a message with the file path and line number."""
-    if page_src_path is None:  # pragma: no cover
-        return f'generated page content (line {lineno})'
-    return (
-        f'{safe_os_path_relpath(page_src_path, docs_dir)}'
-        f':{lineno}'
-    )
 
 
 def get_file_content(  # noqa: PLR0913, PLR0915
@@ -123,42 +84,48 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             match: re.Match[str],
     ) -> str:
         directive_match_start = match.start()
+        directive_lineno = process.lineno_from_content_start(
+            markdown,
+            directive_match_start,
+        )
 
         includer_indent = match['_includer_indent']
 
         filename, raw_filename = parse_filename_argument(match)
         if filename is None:
-            lineno = lineno_from_content_start(
-                markdown,
-                directive_match_start,
+            location = process.file_lineno_message(
+                page_src_path, docs_dir, directive_lineno,
             )
             raise PluginError(
                 "Found no path passed including with 'include'"
-                ' directive at'
-                f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                f' directive at {location}',
             )
 
         arguments_string = match['arguments']
+
+        warn_invalid_directive_arguments(
+            arguments_string,
+            directive_lineno,
+            'include',
+            page_src_path,
+            docs_dir,
+        )
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         ignore_paths = [*settings_ignore_paths]
         if exclude_match is not None:
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 raise PluginError(
                     "Invalid empty 'exclude' argument in 'include'"
-                    ' directive at'
-                    f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                    f' directive at {location}',
                 )
 
             for path in resolve_file_paths_to_exclude(
-                    exclude_string,
-                    page_src_path,
-                    docs_dir,
+                exclude_string, page_src_path, docs_dir,
             ):
                 if path not in ignore_paths:
                     ignore_paths.append(path)
@@ -171,13 +138,11 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         )
 
         if not file_paths_to_include:
-            lineno = lineno_from_content_start(
-                markdown,
-                directive_match_start,
+            location = process.file_lineno_message(
+                page_src_path, docs_dir, directive_lineno,
             )
             raise PluginError(
-                f"No files found including '{raw_filename}' at"
-                f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                f"No files found including '{raw_filename}' at {location}",
             )
 
         if files_watcher is not None and not is_url:
@@ -190,14 +155,12 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             arguments_string,
         )
         if invalid_bool_args:
-            lineno = lineno_from_content_start(
-                markdown,
-                directive_match_start,
+            location = process.file_lineno_message(
+                page_src_path, docs_dir, directive_lineno,
             )
             raise PluginError(
                 f"Invalid value for '{invalid_bool_args[0]}' argument of"
-                " 'include' directive at"
-                f' {file_lineno_message(page_src_path, docs_dir, lineno)}.'
+                f" 'include' directive at {location}."
                 f' Possible values are true or false.',
             )
 
@@ -205,13 +168,12 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         if start_match:
             start = parse_string_argument(start_match)
             if start is None:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 raise PluginError(
                     "Invalid empty 'start' argument in 'include' directive at"
-                    f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                    f' {location}',
                 )
         else:
             start = defaults['start']
@@ -220,13 +182,12 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         if end_match:
             end = parse_string_argument(end_match)
             if end is None:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 raise PluginError(
                     "Invalid empty 'end' argument in 'include' directive at"
-                    f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                    f' {location}',
                 )
         else:
             end = defaults['end']
@@ -235,14 +196,12 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         if encoding_match:
             encoding = parse_string_argument(encoding_match)
             if encoding is None:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 raise PluginError(
                     "Invalid empty 'encoding' argument in 'include'"
-                    ' directive at'
-                    f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                    f' directive at {location}',
                 )
         else:
             encoding = defaults['encoding']
@@ -308,25 +267,18 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             if expected_but_any_found[i]:
                 delimiter_value = locals()[delimiter_name]
                 readable_files_to_include = ', '.join([
-                    safe_os_path_relpath(fpath, docs_dir)
+                    process.safe_os_path_relpath(fpath, docs_dir)
                     for fpath in file_paths_to_include
                 ])
                 plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
-                )
-                file_lineno = file_lineno_message(
-                    page_src_path, docs_dir, lineno,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 logger.warning(
-                    (
-                        f"Delimiter {delimiter_name} '{delimiter_value}'"
-                        " of 'include' directive at"
-                        f' {file_lineno}'
-                        f' not detected in the file{plural_suffix}'
-                        f' {readable_files_to_include}'
-                    ),
+                    f"Delimiter {delimiter_name} '{delimiter_value}'"
+                    f" of 'include' directive at {location}"
+                    f' not detected in the file{plural_suffix}'
+                    f' {readable_files_to_include}',
                 )
 
         return text_to_include
@@ -335,42 +287,48 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             match: re.Match[str],
     ) -> str:
         directive_match_start = match.start()
+        directive_lineno = process.lineno_from_content_start(
+            markdown,
+            directive_match_start,
+        )
 
         includer_indent = match['_includer_indent']
         empty_includer_indent = ' ' * len(includer_indent)
 
         filename, raw_filename = parse_filename_argument(match)
         if filename is None:
-            lineno = lineno_from_content_start(
-                markdown,
-                directive_match_start,
+            location = process.file_lineno_message(
+                page_src_path, docs_dir, directive_lineno,
             )
             raise PluginError(
                 "Found no path passed including with 'include-markdown'"
-                f' directive at'
-                f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                f' directive at {location}',
             )
 
         arguments_string = match['arguments']
+
+        warn_invalid_directive_arguments(
+            arguments_string,
+            directive_lineno,
+            'include-markdown',
+            page_src_path,
+            docs_dir,
+        )
 
         exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
         ignore_paths = [*settings_ignore_paths]
         if exclude_match is not None:
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 raise PluginError(
                     "Invalid empty 'exclude' argument in 'include-markdown'"
-                    f' directive at'
-                    f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                    f' directive at {location}',
                 )
             for path in resolve_file_paths_to_exclude(
-                    exclude_string,
-                    page_src_path,
-                    docs_dir,
+                exclude_string, page_src_path, docs_dir,
             ):
                 if path not in ignore_paths:
                     ignore_paths.append(path)
@@ -383,13 +341,11 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         )
 
         if not file_paths_to_include:
-            lineno = lineno_from_content_start(
-                markdown,
-                directive_match_start,
+            location = process.file_lineno_message(
+                page_src_path, docs_dir, directive_lineno,
             )
             raise PluginError(
-                f"No files found including '{raw_filename}' at"
-                f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                f"No files found including '{raw_filename}' at {location}",
             )
 
         if files_watcher is not None and not is_url:
@@ -405,15 +361,13 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             arguments_string,
         )
         if invalid_bool_args:
-            lineno = lineno_from_content_start(
-                markdown,
-                directive_match_start,
+            location = process.file_lineno_message(
+                page_src_path, docs_dir, directive_lineno,
             )
             raise PluginError(
                 f"Invalid value for '{invalid_bool_args[0]}' argument of"
                 " 'include-markdown' directive at"
-                f' {file_lineno_message(page_src_path, docs_dir, lineno)}.'
-                f' Possible values are true or false.',
+                f' {location}. Possible values are true or false.',
             )
 
         # start and end arguments
@@ -421,14 +375,12 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         if start_match:
             start = parse_string_argument(start_match)
             if start is None:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 raise PluginError(
                     "Invalid empty 'start' argument in 'include-markdown'"
-                    f' directive at'
-                    f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                    f' directive at {location}',
                 )
         else:
             start = defaults['start']
@@ -437,14 +389,12 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         if end_match:
             end = parse_string_argument(end_match)
             if end is None:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 raise PluginError(
                     "Invalid empty 'end' argument in 'include-markdown'"
-                    f' directive at'
-                    f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                    f' directive at {location}',
                 )
         else:
             end = defaults['end']
@@ -453,14 +403,12 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         if encoding_match:
             encoding = parse_string_argument(encoding_match)
             if encoding is None:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 raise PluginError(
                     "Invalid empty 'encoding' argument in 'include-markdown'"
-                    ' directive at'
-                    f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                    f' directive at {location}',
                 )
         else:
             encoding = defaults['encoding']
@@ -472,26 +420,22 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         if offset_match:
             offset_raw_value = offset_match[1]
             if offset_raw_value == '':
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 raise PluginError(
                     "Invalid empty 'heading-offset' argument in"
-                    " 'include-markdown' directive at"
-                    f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                    f" 'include-markdown' directive at {location}",
                 )
             try:
                 offset = int(offset_raw_value)
             except ValueError:
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 raise PluginError(
                     f"Invalid 'heading-offset' argument \"{offset_raw_value}\""
-                    " in 'include-markdown' directive at"
-                    f' {file_lineno_message(page_src_path, docs_dir, lineno)}',
+                    f" in 'include-markdown' directive at {location}",
                 ) from None
         else:
             offset = defaults['heading-offset']
@@ -601,25 +545,18 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             if expected_but_any_found[i]:
                 delimiter_value = locals()[delimiter_name]
                 readable_files_to_include = ', '.join([
-                    safe_os_path_relpath(fpath, docs_dir)
+                    process.safe_os_path_relpath(fpath, docs_dir)
                     for fpath in file_paths_to_include
                 ])
                 plural_suffix = 's' if len(file_paths_to_include) > 1 else ''
-                lineno = lineno_from_content_start(
-                    markdown,
-                    directive_match_start,
-                )
-                file_lineno = file_lineno_message(
-                    page_src_path, docs_dir, lineno,
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno,
                 )
                 logger.warning(
-                    (
-                        f"Delimiter {delimiter_name} '{delimiter_value}' of"
-                        " 'include-markdown' directive at"
-                        f' {file_lineno}'
-                        f' not detected in the file{plural_suffix}'
-                        f' {readable_files_to_include}'
-                    ),
+                    f"Delimiter {delimiter_name} '{delimiter_value}' of"
+                    f" 'include-markdown' directive at {location}"
+                    f' not detected in the file{plural_suffix}'
+                    f' {readable_files_to_include}',
                 )
 
         return text_to_include

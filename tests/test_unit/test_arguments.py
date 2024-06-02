@@ -75,20 +75,25 @@ Content to include
 More content that should be ignored
 ''')
 
-    result = on_page_markdown(
-        f'''{{%
+    includer_file_content = f'''{{%
   {directive} "{page_to_include_filepath}"
   comments=false
   start='<!-- "s\\'tar\\'t" -->'
   end="<!-- 'en\\"d' -->"
-%}}''',
+%}}'''
+    if directive == 'include':
+        includer_file_content = includer_file_content.replace(
+            'comments=false', '',
+        )
+    result = on_page_markdown(
+        includer_file_content,
         page(tmp_path / 'includer.md'),
         tmp_path,
         plugin,
     )
     assert result == '\nContent to include\n'
 
-    assert len(caplog.records) == 0
+    assert caplog.records == []
 
 
 @pytest.mark.parametrize('argument', ('start', 'end'))
@@ -110,14 +115,19 @@ More content that should be ignored
 '''
     page_to_include_filepath.write_text(included_content)
 
-    with pytest.raises(PluginError) as exc:
-        on_page_markdown(
-            f'''
+    includer_file_content = f'''
 {{%
   {directive} "{page_to_include_filepath}"
   comments=false
   {argument}=''
-%}}''',
+%}}'''
+    if directive == 'include':
+        includer_file_content = includer_file_content.replace(
+            'comments=false', '',
+        )
+    with pytest.raises(PluginError) as exc:
+        on_page_markdown(
+            includer_file_content,
             page(tmp_path / 'includer.md'),
             tmp_path,
             plugin,
@@ -132,7 +142,9 @@ More content that should be ignored
 
 @unix_only
 @parametrize_directives
-def test_exclude_double_quote_escapes(directive, page, tmp_path, plugin):
+def test_exclude_double_quote_escapes(
+    directive, page, tmp_path, plugin, caplog,
+):
     drectory_to_include = tmp_path / 'exclude_double_quote_escapes'
     drectory_to_include.mkdir()
 
@@ -146,17 +158,23 @@ def test_exclude_double_quote_escapes(directive, page, tmp_path, plugin):
     ).replace('"', '\\"')
 
     includer_glob = os.path.join(str(drectory_to_include), '*.md')
-    result = on_page_markdown(
-        f'''{{%
+    includer_file_content = f'''{{%
   {directive} "{includer_glob}"
   comments=false
   exclude="{page_to_exclude_escaped_filepath}"
-%}}''',
+%}}'''
+    if directive == 'include':
+        includer_file_content = includer_file_content.replace(
+            'comments=false', '',
+        )
+    result = on_page_markdown(
+        includer_file_content,
         page(tmp_path / 'includer.md'),
         tmp_path,
         plugin,
     )
     assert result == 'Content that should be included\n'
+    assert caplog.records == []
 
 
 @unix_only
@@ -172,13 +190,20 @@ def test_invalid_exclude_argument(directive, page, tmp_path, caplog, plugin):
     page_to_exclude_filepath.write_text('Content that should be excluded\n')
 
     includer_glob = os.path.join(str(drectory_to_include), '*.md')
-    with pytest.raises(PluginError) as exc:
-        on_page_markdown(
-            f'''{{%
+
+    includer_file_content = f'''{{%
   {directive} "{includer_glob}"
   comments=false
   exclude=
-%}}''',
+%}}'''
+    if directive == 'include':
+        includer_file_content = includer_file_content.replace(
+            'comments=false', '',
+        )
+
+    with pytest.raises(PluginError) as exc:
+        on_page_markdown(
+            includer_file_content,
             page(tmp_path / 'includer.md'),
             tmp_path,
             plugin,
@@ -196,13 +221,19 @@ def test_empty_encoding_argument(directive, page, tmp_path, plugin, caplog):
     page_to_include_filepath = tmp_path / 'included.md'
     page_to_include_filepath.write_text('Content to include')
 
-    with pytest.raises(PluginError) as exc:
-        on_page_markdown(
-            f'''{{%
+    includer_file_content = f'''{{%
   {directive} "{page_to_include_filepath}"
   comments=false
   encoding=
-%}}''',
+%}}'''
+    if directive == 'include':
+        includer_file_content = includer_file_content.replace(
+            'comments=false', '',
+        )
+
+    with pytest.raises(PluginError) as exc:
+        on_page_markdown(
+            includer_file_content,
             page(tmp_path / 'includer.md'),
             tmp_path,
             plugin,
@@ -259,6 +290,34 @@ def test_invalid_heading_offset_arguments(
 
     assert len(caplog.records) == 0
     assert str(exc.value) == exception_message
+
+
+@parametrize_directives
+def test_invalid_argument_name(directive, page, tmp_path, plugin, caplog):
+    page_to_include_filepath = tmp_path / 'included.md'
+    page_to_include_filepath.write_text('Content to include')
+
+    includer_file_content = f'''{{%
+  {directive} "{page_to_include_filepath}"
+  comments=false
+  invalid-argument=true
+%}}'''
+    if directive == 'include':
+        includer_file_content = includer_file_content.replace(
+            'comments=false', '',
+        )
+    assert on_page_markdown(
+        includer_file_content,
+        page(tmp_path / 'includer.md'),
+        tmp_path,
+        plugin,
+    ) == 'Content to include'
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].msg == (
+        f"Invalid argument 'invalid-argument=true' in '{directive}'"
+        " directive at includer.md:1. Ignoring..."
+    )
 
 
 class TestFilename:
