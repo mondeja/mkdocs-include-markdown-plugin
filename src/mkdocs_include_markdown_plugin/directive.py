@@ -128,8 +128,7 @@ def warn_invalid_directive_arguments(
         INCLUDE_DIRECTIVE_ARGS if directive == 'include'
         else INCLUDE_MARKDOWN_DIRECTIVE_ARGS
     )
-    for arg_value_match in re.finditer(arg_re, arguments_string):
-        arg_value = arg_value_match.group(0)
+    for arg_value in re.findall(arg_re, arguments_string):
         if arg_value.split('=', 1)[0] not in valid_args:
             location = process.file_lineno_message(
                 page_src_path, docs_dir, directive_lineno,
