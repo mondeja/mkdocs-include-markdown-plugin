@@ -232,7 +232,6 @@ Included content
 
 {%
   include "{filepath}"
-  comments=false
   recursive=false
 %}''',
             '''# Header 2

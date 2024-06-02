@@ -184,7 +184,6 @@ Some text
 {%
     include "{filepath}"
     start="<!--start-->"
-    comments=false
 %}''',
             '''Some text
 ''',
@@ -207,7 +206,6 @@ Some text
 {%
     include "{filepath}"
     end="<!--end-->"
-    comments=false
 %}''',
             '''
 Some text

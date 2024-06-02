@@ -12,6 +12,7 @@ from mkdocs.exceptions import PluginError
 from wcmatch import glob
 
 from mkdocs_include_markdown_plugin import process
+from mkdocs_include_markdown_plugin.logger import logger
 
 
 @dataclass
@@ -21,7 +22,7 @@ class DirectiveBoolArgument:  # noqa: D101
 
 
 if TYPE_CHECKING:
-    from typing import TypedDict
+    from typing import Literal, TypedDict
 
     DirectiveBoolArgumentsDict = dict[str, DirectiveBoolArgument]
 
@@ -44,8 +45,8 @@ if TYPE_CHECKING:
 GLOB_FLAGS = glob.NEGATE | glob.EXTGLOB | glob.GLOBSTAR | glob.BRACE
 RE_ESCAPED_PUNCTUATION = re.escape(string.punctuation)
 
-DOUBLE_QUOTED_STR_RE = r'([^"]|(?<=\\)["])+'
-SINGLE_QUOTED_STR_RE = r"([^']|(?<=\\)['])+"
+DOUBLE_QUOTED_STR_RE = r'([^"]|(?<=\\)")+'
+SINGLE_QUOTED_STR_RE = r"([^']|(?<=\\)')+"
 
 # In the following regular expression, the substrings "$OPENING_TAG"
 # and "$CLOSING_TAG" will be replaced by the effective opening and
@@ -102,6 +103,41 @@ ARGUMENT_REGEXES = {
     # int
     'heading-offset': arg('heading-offset'),
 }
+
+INCLUDE_DIRECTIVE_ARGS = {
+    key for key in ARGUMENT_REGEXES if key not in (
+        'rewrite-relative-urls', 'heading-offset', 'comments',
+    )
+}
+
+INCLUDE_MARKDOWN_DIRECTIVE_ARGS = {
+    key for key in ARGUMENT_REGEXES if key != 'recursive'
+}
+
+
+def warn_invalid_directive_arguments(
+    arguments_string: str,
+    directive_lineno: int,
+    directive: Literal['include', 'include-markdown'],
+    page_src_path: str | None,
+    docs_dir: str,
+) -> None:
+    """Warns about the invalid arguments passed to a directive."""
+    arg_re = re.compile(rf'[\w-]*=[{RE_ESCAPED_PUNCTUATION}\w]*')
+    valid_args = (
+        INCLUDE_DIRECTIVE_ARGS if directive == 'include'
+        else INCLUDE_MARKDOWN_DIRECTIVE_ARGS
+    )
+    for arg_value_match in re.finditer(arg_re, arguments_string):
+        arg_value = arg_value_match.group(0)
+        if arg_value.split('=', 1)[0] not in valid_args:
+            location = process.file_lineno_message(
+                page_src_path, docs_dir, directive_lineno,
+            )
+            logger.warning(
+                f"Invalid argument '{arg_value}' in"
+                f" '{directive}' directive at {location}. Ignoring...",
+            )
 
 
 def parse_filename_argument(

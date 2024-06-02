@@ -168,42 +168,42 @@ especificado. Sólo soporta la sintaxis de encabezado de caracteres de hash
 
 ```jinja
 {%
-   include-markdown "../README.md"
-   start="<!--intro-start-->"
-   end="<!--intro-end-->"
+    include-markdown "../README.md"
+    start="<!--intro-start-->"
+    end="<!--intro-end-->"
 %}
 ```
 
 ```jinja
 {%
-   include-markdown 'includes/header.md'
-   start='<!--\n\ttable-start\n-->'
-   end='<!--\n\ttable-end\n-->'
-   rewrite-relative-urls=false
-   comments=false
+    include-markdown 'includes/header.md'
+    start='<!--\n\ttable-start\n-->'
+    end='<!--\n\ttable-end\n-->'
+    rewrite-relative-urls=false
+    comments=false
 %}
 ```
 
 ```jinja
 {%
-   include-markdown "includes/header.md"
-   heading-offset=1
+    include-markdown "includes/header.md"
+    heading-offset=1
 %}
 ```
 
 ```jinja
 {%
-   include-markdown "../LICENSE*"
-   start="<!--license \"start\" -->"
-   end='<!--license "end" -->'
-   exclude="../*.rst"
+    include-markdown "../LICENSE*"
+    start="<!--license \"start\" -->"
+    end='<!--license "end" -->'
+    exclude="../*.rst"
 %}
 ```
 
 ```jinja
 {%
-   include-markdown "**"
-   exclude="./{index,LICENSE}.md"
+    include-markdown "**"
+    exclude="./{index,LICENSE}.md"
 %}
 ```
 
@@ -252,16 +252,16 @@ procesados para incluir de forma recursiva. Los valores posibles son `true` y
 
 ```jinja
     {%
-      include "../examples.md"
-      start="~~~yaml"
-      end="~~~\n"
+        include "../examples.md"
+        start="~~~yaml"
+        end="~~~\n"
     %}
 ```
 
 ```jinja
 {%
-   include '**'
-   exclude='./*.md'
+    include '**'
+    exclude='./*.md'
 %}
 ```
 
