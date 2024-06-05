@@ -13,6 +13,8 @@ from urllib.request import Request, urlopen
 
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from mkdocs_include_markdown_plugin.cache import Cache
 
 
