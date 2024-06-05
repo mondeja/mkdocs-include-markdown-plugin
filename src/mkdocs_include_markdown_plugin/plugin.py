@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from functools import cached_property
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from mkdocs.exceptions import PluginError
 from mkdocs.livereload import LiveReloadServer
@@ -98,7 +98,7 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
             self,
             server: LiveReloadServer,
             config: MkDocsConfig,  # noqa: ARG002
-            builder: Callable[[Any], Any],  # noqa: ARG002
+            builder: Callable,  # noqa: ARG002
     ) -> None:
         if self._server is None:  # pragma: no cover
             self._server = server
