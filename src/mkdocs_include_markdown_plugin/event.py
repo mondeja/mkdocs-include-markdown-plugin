@@ -52,7 +52,7 @@ ETX = '\u0003'
 INLINE_PLACEHOLDER_PREFIX = f'{STX}klzzwxh:'
 
 
-def placeholder(
+def build_placeholder(
         num: int,
         directive: Literal['include', 'include-markdown'],
 ) -> str:
@@ -97,8 +97,8 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         if page_src_path in settings_ignore_paths:
             return markdown
 
-    new_found_include_contents: list[str] = []
-    new_found_include_markdown_contents: list[str] = []
+    new_found_include_contents: list[tuple[str, str]] = []
+    new_found_include_markdown_contents: list[tuple[str, str]] = []
 
     def found_include_tag(  # noqa: PLR0912, PLR0915
             match: re.Match[str],
@@ -303,8 +303,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
 
         nonlocal new_found_include_contents
         include_index = len(new_found_include_contents)
-        new_found_include_contents.append(text_to_include)
-        return placeholder(include_index, 'include')
+        placeholder = build_placeholder(include_index, 'include')
+        new_found_include_contents.append((placeholder, text_to_include))
+        return placeholder
 
     def found_include_markdown_tag(  # noqa: PLR0912, PLR0915
             match: re.Match[str],
@@ -584,8 +585,11 @@ def get_file_content(  # noqa: PLR0913, PLR0915
 
         nonlocal new_found_include_markdown_contents
         markdown_include_index = len(new_found_include_markdown_contents)
-        new_found_include_markdown_contents.append(text_to_include)
-        return placeholder(markdown_include_index, 'include-markdown')
+        placeholder = build_placeholder(
+            markdown_include_index, 'include-markdown')
+        new_found_include_markdown_contents.append(
+            (placeholder, text_to_include))
+        return placeholder
 
     # Replace contents by placeholders
     markdown = tags['include-markdown'].sub(
@@ -598,11 +602,10 @@ def get_file_content(  # noqa: PLR0913, PLR0915
     )
 
     # Replace placeholders by contents
-    for i, text in enumerate(new_found_include_contents):
-        markdown = markdown.replace(placeholder(i, 'include'), text, 1)
-    for i, text in enumerate(new_found_include_markdown_contents):
-        markdown = markdown.replace(
-            placeholder(i, 'include-markdown'), text, 1)
+    for placeholder, text in new_found_include_contents:
+        markdown = markdown.replace(placeholder, text, 1)
+    for placeholder, text in new_found_include_markdown_contents:
+        markdown = markdown.replace(placeholder, text, 1)
     return markdown
 
 
