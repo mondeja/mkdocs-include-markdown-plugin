@@ -110,9 +110,7 @@ INCLUDE_DIRECTIVE_ARGS = {
     )
 }
 
-INCLUDE_MARKDOWN_DIRECTIVE_ARGS = {
-    key for key in ARGUMENT_REGEXES if key != 'recursive'
-}
+INCLUDE_MARKDOWN_DIRECTIVE_ARGS = set(ARGUMENT_REGEXES)
 
 
 def warn_invalid_directive_arguments(

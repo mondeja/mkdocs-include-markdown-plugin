@@ -379,7 +379,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             [
                 'rewrite-relative-urls', 'comments',
                 'preserve-includer-indent', 'dedent',
-                'trailing-newlines',
+                'trailing-newlines', 'recursive',
             ],
             defaults,
             arguments_string,
@@ -498,16 +498,17 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                         expected_but_any_found[i] = False
 
             # nested includes
-            new_text_to_include = get_file_content(
-                new_text_to_include,
-                file_path,
-                docs_dir,
-                tags,
-                defaults,
-                settings,
-                files_watcher=files_watcher,
-                http_cache=http_cache,
-            )
+            if bool_options['recursive'].value:
+                new_text_to_include = get_file_content(
+                    new_text_to_include,
+                    file_path,
+                    docs_dir,
+                    tags,
+                    defaults,
+                    settings,
+                    files_watcher=files_watcher,
+                    http_cache=http_cache,
+                )
 
             # trailing newlines right stripping
             if not bool_options['trailing-newlines'].value:

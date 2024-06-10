@@ -155,6 +155,9 @@ content to include.
 - <a name="include-markdown_trailing-newlines" href="#include-markdown_trailing-newlines">#</a>
   **trailing-newlines** (_true_): When this option is disabled, the trailing newlines
   found in the content to include are stripped. Possible values are `true` and `false`.
+- <a name="include-markdown_recursive" href="#include-markdown_recursive">#</a>
+  **recursive** (_true_): When this option is disabled, included files are not
+  processed for recursive includes. Possible values are `true` and `false`.
 - <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a>
   **encoding** (_utf-8_): Specify the encoding of the included file.
   If not defined `utf-8` will be used.
@@ -243,12 +246,12 @@ Includes the content of a file or a group of files.
 - <a name="include_trailing-newlines" href="#include_trailing-newlines">#</a>
   **trailing-newlines** (_true_): When this option is disabled, the trailing newlines
   found in the content to include are stripped. Possible values are `true` and `false`.
+- <a name="include_recursive" href="#include_recursive">#</a>
+  **recursive** (_true_): When this option is disabled, included files are not
+  processed for recursive includes. Possible values are `true` and `false`.
 - <a name="include_encoding" href="#include_encoding">#</a>
   **encoding** (_utf-8_): Specify the encoding of the included file.
   If not defined `utf-8` will be used.
-- <a name="recursive" href="#include_recursive">#</a>
-  **recursive** (_true_): When this option is disabled, included files are not
-  processed for recursive includes. Possible values are `true` and `false`.
 
 ##### Examples
 

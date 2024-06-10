@@ -144,6 +144,10 @@ href="#include-markdown_trailing-newlines">#</a> **trailing-newlines**
 (*true*): Cuando esta opción está deshabilitada, los saltos de línea finales que
 se encuentran en el contenido a incluir se eliminan. Los valores posibles son
 `true` y `false`.
+- <a name="include-markdown_recursive" href="#include-markdown_recursive">#</a>
+**recursive** (*true*): Cuando esta opción está deshabilitada, los archivos
+incluidos no son procesados para incluir de forma recursiva. Los valores
+posibles son `true` y `false`.
 - <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a>
 **encoding** (*utf-8*): Especifica la codificación del archivo incluído. Si no
 se define, se usará `utf-8`.
@@ -234,13 +238,13 @@ globs para incluir múltiples archivos.
 **trailing-newlines** (*true*): Cuando esta opción está deshabilitada, los
 saltos de línea finales que se encuentran en el contenido a incluir se eliminan.
 Los valores posibles son `true` y `false`.
+- <a name="include_recursive" href="#include_recursive">#</a> **recursive**
+(*true*): Cuando esta opción está deshabilitada, los archivos incluidos no son
+procesados para incluir de forma recursiva. Los valores posibles son `true` y
+`false`.
 - <a name="include_encoding" href="#include_encoding">#</a> **encoding**
 (*utf-8*): Especifica la codificación del archivo incluído. Si no se define,
 se usará `utf-8`.
-- <a name="recursive" href="#include_recursive">#</a> **recursive** (*true*):
-Cuando esta opción está deshabilitada, los archivos incluidos no son
-procesados para incluir de forma recursiva. Los valores posibles son `true` y
-`false`.
 
 ##### Ejemplos
 
