@@ -230,7 +230,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         expected_but_any_found = [start is not None, end is not None]
         for file_path in file_paths_to_include:
             if process.is_url(filename):
-                new_text_to_include = process.read_url(file_path, http_cache)
+                new_text_to_include = process.read_url(
+                    file_path, http_cache, encoding,
+                )
             else:
                 new_text_to_include = process.read_file(file_path, encoding)
 
@@ -481,7 +483,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         text_to_include = ''
         for file_path in file_paths_to_include:
             if process.is_url(filename):
-                new_text_to_include = process.read_url(file_path, http_cache)
+                new_text_to_include = process.read_url(
+                    file_path, http_cache, encoding,
+                )
             else:
                 new_text_to_include = process.read_file(file_path, encoding)
 
@@ -587,9 +591,11 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         nonlocal new_found_include_markdown_contents
         markdown_include_index = len(new_found_include_markdown_contents)
         placeholder = build_placeholder(
-            markdown_include_index, 'include-markdown')
+            markdown_include_index, 'include-markdown',
+        )
         new_found_include_markdown_contents.append(
-            (placeholder, text_to_include))
+            (placeholder, text_to_include),
+        )
         return placeholder
 
     # Replace contents by placeholders

@@ -443,16 +443,20 @@ def read_file(file_path: str, encoding: str) -> str:
         return f.read()
 
 
-def read_url(url: str, http_cache: Cache | None) -> Any:
+def read_url(
+        url: str,
+        http_cache: Cache | None,
+        encoding: str = 'utf-8',
+) -> Any:
     """Read an HTTP location and return its content."""
     if http_cache is not None:
-        cached_content = http_cache.get_(url)
+        cached_content = http_cache.get_(url, encoding)
         if cached_content is not None:
             return cached_content
     with urlopen(Request(url)) as response:
-        content = response.read().decode('UTF-8')
+        content = response.read().decode(encoding)
     if http_cache is not None:
-        http_cache.set_(url, content)
+        http_cache.set_(url, content, encoding)
     return content
 
 

@@ -159,8 +159,8 @@ content to include.
   **recursive** (_true_): When this option is disabled, included files are not
   processed for recursive includes. Possible values are `true` and `false`.
 - <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a>
-  **encoding** (_utf-8_): Specify the encoding of the included file.
-  If not defined `utf-8` will be used.
+  **encoding** (_'utf-8'_): Specify the encoding of the included file.
+  If not defined `'utf-8'` will be used.
 - <a name="include-markdown_rewrite-relative-urls" href="#include-markdown_rewrite-relative-urls">#</a>
   **rewrite-relative-urls** (_true_): When this option is enabled (default),
   Markdown links and images in the content that are specified by a relative URL
@@ -250,8 +250,8 @@ Includes the content of a file or a group of files.
   **recursive** (_true_): When this option is disabled, included files are not
   processed for recursive includes. Possible values are `true` and `false`.
 - <a name="include_encoding" href="#include_encoding">#</a>
-  **encoding** (_utf-8_): Specify the encoding of the included file.
-  If not defined `utf-8` will be used.
+  **encoding** (_'utf-8'_): Specify the encoding of the included file.
+  If not defined `'utf-8'` will be used.
 
 ##### Examples
 
