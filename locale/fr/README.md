@@ -144,6 +144,10 @@ href="#include-markdown_trailing-newlines">#</a> **trailing-newlines**
 (*true*): Lorsque cette option est désactivée, les nouvelles lignes de fin
 trouvées dans le contenu à inclure sont supprimées. Les valeurs possibles sont
 `true` et `false`.
+- <a name="include-markdown_recursive" href="#include-markdown_recursive">#</a>
+**recursive** (*true*): Lorsque cette option est désactivée, les fichiers
+inclus ne sont pas traités pour des inclusions récursives. Les valeurs possibles
+sont `true` et `false`.
 - <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a>
 **encoding** (*utf-8*): Spécifiez l'encodage du fichier inclus. S'il n'est pas
 défini, `utf-8` sera utilisé.
@@ -233,12 +237,13 @@ passage de globs pour inclure plusieurs fichiers.
 **trailing-newlines** (*true*): Lorsque cette option est désactivée, les
 nouvelles lignes de fin trouvées dans le contenu à inclure sont supprimées. Les
 valeurs possibles sont `true` et `false`.
+- <a name="include_recursive" href="#include_recursive">#</a> **recursive**
+(*true*): Lorsque cette option est désactivée, les fichiers inclus ne sont pas
+traités pour des inclusions récursives. Les valeurs possibles sont `true` et
+`false`.
 - <a name="include_encoding" href="#include_encoding">#</a> **encoding**
 (*utf-8*): Spécifiez l'encodage du fichier inclus. S'il n'est pas défini,
 `utf-8` sera utilisé.
-- <a name="recursive" href="#include_recursive">#</a> **recursive** (*true*):
-Lorsque cette option est désactivée, les fichiers inclus ne sont pas traités
-pour des inclusions récursives. Les valeurs possibles sont `true` et `false`.
 
 ##### Exemples
 
@@ -265,9 +270,9 @@ pour des inclusions récursives. Les valeurs possibles sont `true` et `false`.
 
 ## Reconnaissance
 
-- Joe Rickerby et des contributeurs pour [m'avoir donné les
-autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
-[cibuildwheel][cibuildwheel-repo-link].
+- [Joe Rickerby] et [des contributeurs] pour [m'avoir donné les
+autorisations][cibuildwheel-470] pour [séparer ce plugin][cibuildwheel-475] de
+la documentation de [cibuildwheel][cibuildwheel-repo-link].
 
 [Globs génériques Bash]: https://facelessuser.github.io/wcmatch/glob/#syntax
 [pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin
@@ -280,7 +285,10 @@ autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
 [license-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/LICENSE
 [platformdirs]: https://pypi.org/project/platformdirs/
 [cibuildwheel-470]: https://github.com/pypa/cibuildwheel/issues/470
+[cibuildwheel-475]: https://github.com/pypa/cibuildwheel/pull/475
 [cibuildwheel-repo-link]: https://github.com/pypa/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
 [`docs_dir`]: https://www.mkdocs.org/user-guide/configuration/#docs_dir
+[Joe Rickerby]: https://github.com/joerick
+[des contributeurs]: https://github.com/mondeja/mkdocs-include-markdown-plugin/graphs/contributors

@@ -251,6 +251,32 @@ This content must not be included.
             [],
             id='include-recursive=false',
         ),
+        # recursive inclusion disabled with `include-markdown` directive
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  recursive=false
+  comments=false
+%}''',
+            '''# Header 2
+
+{% include-markdown "{filepath}" %}
+''',
+            '''# Header 3
+
+This content must not be included.
+''',
+            '''# Header
+
+# Header 2
+
+{% include-markdown "{filepath}" %}
+''',
+            [],
+            id='include-markdown-recursive=false',
+        ),
     ),
 )
 def test_nested_include(
