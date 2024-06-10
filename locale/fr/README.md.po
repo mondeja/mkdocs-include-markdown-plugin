@@ -438,3 +438,15 @@ msgstr ""
 
 msgid "[cibuildwheel-475]: https://github.com/pypa/cibuildwheel/pull/475"
 msgstr "[cibuildwheel-475]: https://github.com/pypa/cibuildwheel/pull/475"
+
+msgid ""
+"[downloads-image]: https://img.shields.io/pypi/dm/mkdocs-include-markdown-"
+"plugin"
+msgstr ""
+"[downloads-image]: https://img.shields.io/pypi/dm/mkdocs-include-markdown-"
+"plugin"
+
+msgid ""
+"[downloads-link]: https://pepy.tech/project/mkdocs-include-markdown-plugin"
+msgstr ""
+"[downloads-link]: https://pepy.tech/project/mkdocs-include-markdown-plugin"

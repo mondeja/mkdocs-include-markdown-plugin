@@ -3,6 +3,7 @@
 [![PyPI][pypi-version-badge-link]][pypi-link]
 [![License][license-image]][license-link] [![Tests][tests-image]][tests-link]
 [![Coverage status][coverage-image]][coverage-link]
+[![Downloads][downloads-image]][downloads-link]
 
 Plugin d'inclusion de Markdown pour Mkdocs.
 
@@ -283,6 +284,8 @@ la documentation de [cibuildwheel][cibuildwheel-repo-link].
 [coverage-link]: https://app.codecov.io/gh/mondeja/mkdocs-include-markdown-plugin
 [license-image]: https://img.shields.io/pypi/l/mkdocs-include-markdown-plugin?color=light-green&logo=apache&logoColor=white
 [license-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/LICENSE
+[downloads-image]: https://img.shields.io/pypi/dm/mkdocs-include-markdown-plugin
+[downloads-link]: https://pepy.tech/project/mkdocs-include-markdown-plugin
 [platformdirs]: https://pypi.org/project/platformdirs/
 [cibuildwheel-470]: https://github.com/pypa/cibuildwheel/issues/470
 [cibuildwheel-475]: https://github.com/pypa/cibuildwheel/pull/475
