@@ -39,24 +39,24 @@ class Cache:
             hashlib.sha3_512(url.encode()).digest(),
         ).decode('utf-8')
 
-    def read_file(self, fpath: str) -> str:  # noqa: D102
-        with open(fpath, encoding='utf-8') as f:
+    def read_file(self, fpath: str, encoding: str = 'utf-8') -> str:  # noqa: D102
+        with open(fpath, encoding=encoding) as f:
             return f.read().split('\n', 1)[1]
 
-    def get_(self, url: str) -> str | None:  # noqa: D102
+    def get_(self, url: str, encoding: str = 'utf-8') -> str | None:  # noqa: D102
         key = self.generate_unique_key_from_url(url)
         fpath = os.path.join(self.cache_dir, key)
         if os.path.isfile(fpath):
             creation_time = self.get_creation_time_from_fpath(fpath)
             if time.time() < creation_time + self.expiration_seconds:
-                return self.read_file(fpath)
+                return self.read_file(fpath, encoding=encoding)
             os.remove(fpath)
         return None
 
-    def set_(self, url: str, value: str) -> None:  # noqa: D102
+    def set_(self, url: str, value: str, encoding: str = 'utf-8') -> None:  # noqa: D102
         key = self.generate_unique_key_from_url(url)
         fpath = os.path.join(self.cache_dir, key)
-        with open(fpath, 'w', encoding='utf-8') as f:
+        with open(fpath, 'w', encoding=encoding) as f:
             f.write(f'{int(time.time())}\n')
             f.write(value)
 

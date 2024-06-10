@@ -149,8 +149,8 @@ se encuentran en el contenido a incluir se eliminan. Los valores posibles son
 incluidos no son procesados para incluir de forma recursiva. Los valores
 posibles son `true` y `false`.
 - <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a>
-**encoding** (*utf-8*): Especifica la codificación del archivo incluído. Si no
-se define, se usará `utf-8`.
+**encoding** (*'utf-8'*): Especifica la codificación del archivo incluído. Si
+no se define, se usará `'utf-8'`.
 - <a name="include-markdown_rewrite-relative-urls"
 href="#include-markdown_rewrite-relative-urls">#</a> **rewrite-relative-urls**
 (*true*): Cuando esta opción está habilitada (por defecto), los enlaces e
@@ -243,8 +243,8 @@ Los valores posibles son `true` y `false`.
 procesados para incluir de forma recursiva. Los valores posibles son `true` y
 `false`.
 - <a name="include_encoding" href="#include_encoding">#</a> **encoding**
-(*utf-8*): Especifica la codificación del archivo incluído. Si no se define,
-se usará `utf-8`.
+(*'utf-8'*): Especifica la codificación del archivo incluído. Si no se define,
+se usará `'utf-8'`.
 
 ##### Ejemplos
 
