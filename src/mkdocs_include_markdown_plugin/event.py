@@ -29,7 +29,7 @@ from mkdocs_include_markdown_plugin.logger import logger
 
 
 if TYPE_CHECKING:
-    from typing import TypedDict
+    from typing import Literal, TypedDict
 
     from mkdocs.structure.pages import Page
 
@@ -42,6 +42,23 @@ if TYPE_CHECKING:
             'include-markdown': re.Pattern[str],
         },
     )
+
+
+# Placeholders (taken from Python-Markdown)
+STX = '\u0002'
+''' "Start of Text" marker for placeholder templates. '''
+ETX = '\u0003'
+''' "End of Text" marker for placeholder templates. '''
+INLINE_PLACEHOLDER_PREFIX = f'{STX}klzzwxh:'
+
+
+def build_placeholder(
+        num: int,
+        directive: Literal['include', 'include-markdown'],
+) -> str:
+    """Return a placeholder."""
+    directive_prefix = 'im' if directive == 'include-markdown' else 'i'
+    return f'{INLINE_PLACEHOLDER_PREFIX}{directive_prefix}{num}{ETX}'
 
 
 @dataclass
@@ -79,6 +96,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 settings_ignore_paths.append(path)
         if page_src_path in settings_ignore_paths:
             return markdown
+
+    new_found_include_contents: list[tuple[str, str]] = []
+    new_found_include_markdown_contents: list[tuple[str, str]] = []
 
     def found_include_tag(  # noqa: PLR0912, PLR0915
             match: re.Match[str],
@@ -281,7 +301,11 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     f' {readable_files_to_include}',
                 )
 
-        return text_to_include
+        nonlocal new_found_include_contents
+        include_index = len(new_found_include_contents)
+        placeholder = build_placeholder(include_index, 'include')
+        new_found_include_contents.append((placeholder, text_to_include))
+        return placeholder
 
     def found_include_markdown_tag(  # noqa: PLR0912, PLR0915
             match: re.Match[str],
@@ -559,16 +583,30 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     f' {readable_files_to_include}',
                 )
 
-        return text_to_include
+        nonlocal new_found_include_markdown_contents
+        markdown_include_index = len(new_found_include_markdown_contents)
+        placeholder = build_placeholder(
+            markdown_include_index, 'include-markdown')
+        new_found_include_markdown_contents.append(
+            (placeholder, text_to_include))
+        return placeholder
 
+    # Replace contents by placeholders
     markdown = tags['include-markdown'].sub(
         found_include_markdown_tag,
         markdown,
     )
-    return tags['include'].sub(
+    markdown = tags['include'].sub(
         found_include_tag,
         markdown,
     )
+
+    # Replace placeholders by contents
+    for placeholder, text in new_found_include_contents:
+        markdown = markdown.replace(placeholder, text, 1)
+    for placeholder, text in new_found_include_markdown_contents:
+        markdown = markdown.replace(placeholder, text, 1)
+    return markdown
 
 
 def on_page_markdown(
