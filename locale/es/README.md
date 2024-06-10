@@ -271,8 +271,8 @@ se usará `utf-8`.
 
 ## Agradecimiento
 
-- Joe Rickerby y contribuidores por [darme los permisos][cibuildwheel-470] para
-separar este plugin de la documentación de
+- [Joe Rickerby] y [contribuidores] por [darme los permisos][cibuildwheel-470]
+para [separar este plugin][cibuildwheel-475] de la documentación de
 [cibuildwheel][cibuildwheel-repo-link].
 
 [Patrones glob de Bash]: https://facelessuser.github.io/wcmatch/glob/#syntax
@@ -286,7 +286,10 @@ separar este plugin de la documentación de
 [license-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/LICENSE
 [platformdirs]: https://pypi.org/project/platformdirs/
 [cibuildwheel-470]: https://github.com/pypa/cibuildwheel/issues/470
+[cibuildwheel-475]: https://github.com/pypa/cibuildwheel/pull/475
 [cibuildwheel-repo-link]: https://github.com/pypa/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
 [`docs_dir`]: https://www.mkdocs.org/user-guide/configuration/#docs_dir
+[Joe Rickerby]: https://github.com/joerick
+[contribuidores]: https://github.com/mondeja/mkdocs-include-markdown-plugin/graphs/contributors

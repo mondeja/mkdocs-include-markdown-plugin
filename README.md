@@ -278,8 +278,9 @@ Includes the content of a file or a group of files.
 
 ## Acknowledgment
 
-- Joe Rickerby and contributors for
-  [giving me the permissions][cibuildwheel-470] to separate this plugin from the
+- [Joe Rickerby] and [contributors] for
+  [giving me the permissions][cibuildwheel-470] to
+  [separate this plugin][cibuildwheel-475] from the
   documentation of [cibuildwheel][cibuildwheel-repo-link].
 
 [Bash wildcard globs]: https://facelessuser.github.io/wcmatch/glob/#syntax
@@ -296,7 +297,10 @@ Includes the content of a file or a group of files.
 [license-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/LICENSE
 [platformdirs]: https://pypi.org/project/platformdirs/
 [cibuildwheel-470]: https://github.com/pypa/cibuildwheel/issues/470
+[cibuildwheel-475]: https://github.com/pypa/cibuildwheel/pull/475
 [cibuildwheel-repo-link]: https://github.com/pypa/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
 [`docs_dir`]: https://www.mkdocs.org/user-guide/configuration/#docs_dir
+[Joe Rickerby]: https://github.com/joerick
+[contributors]: https://github.com/mondeja/mkdocs-include-markdown-plugin/graphs/contributors

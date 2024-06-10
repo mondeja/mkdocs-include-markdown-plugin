@@ -270,9 +270,9 @@ traités pour des inclusions récursives. Les valeurs possibles sont `true` et
 
 ## Reconnaissance
 
-- Joe Rickerby et des contributeurs pour [m'avoir donné les
-autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
-[cibuildwheel][cibuildwheel-repo-link].
+- [Joe Rickerby] et [des contributeurs] pour [m'avoir donné les
+autorisations][cibuildwheel-470] pour [séparer ce plugin][cibuildwheel-475] de
+la documentation de [cibuildwheel][cibuildwheel-repo-link].
 
 [Globs génériques Bash]: https://facelessuser.github.io/wcmatch/glob/#syntax
 [pypi-link]: https://pypi.org/project/mkdocs-include-markdown-plugin
@@ -285,7 +285,10 @@ autorisations][cibuildwheel-470] pour séparer ce plugin de la documentation de
 [license-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/LICENSE
 [platformdirs]: https://pypi.org/project/platformdirs/
 [cibuildwheel-470]: https://github.com/pypa/cibuildwheel/issues/470
+[cibuildwheel-475]: https://github.com/pypa/cibuildwheel/pull/475
 [cibuildwheel-repo-link]: https://github.com/pypa/cibuildwheel
 [es-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/es/README.md
 [fr-readme-link]: https://github.com/mondeja/mkdocs-include-markdown-plugin/blob/master/locale/fr/README.md
 [`docs_dir`]: https://www.mkdocs.org/user-guide/configuration/#docs_dir
+[Joe Rickerby]: https://github.com/joerick
+[des contributeurs]: https://github.com/mondeja/mkdocs-include-markdown-plugin/graphs/contributors
