@@ -33,7 +33,7 @@ repos:
       - id: end-of-file-fixer
         name: end-of-file-fixer
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.6
+    rev: v0.4.10
     hooks:
       - id: ruff
         args:
