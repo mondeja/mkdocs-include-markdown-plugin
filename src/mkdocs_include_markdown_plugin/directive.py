@@ -52,7 +52,7 @@ SINGLE_QUOTED_STR_RE = r"([^']|(?<=\\)')+"
 # and "$CLOSING_TAG" will be replaced by the effective opening and
 # closing tags in the `on_config` plugin event.
 INCLUDE_TAG_RE = rf'''
-    (?P<_includer_indent>[ \t\f\v\w{re.escape(string.punctuation)}]*?)$OPENING_TAG
+    (?P<_includer_indent>[ \t\w\\.]*?)$OPENING_TAG
     \s*
     include
     \s+
@@ -171,7 +171,7 @@ def create_include_tag(
     """Create a regex pattern to match an inclusion tag directive.
 
     Replaces the substrings '$OPENING_TAG' and '$CLOSING_TAG' from
-    INCLUDE_TAG_REGEX by the effective tag.
+    INCLUDE_TAG_RE by the effective tag.
     """
     return re.compile(
         INCLUDE_TAG_RE.replace(' include', f' {tag}').replace(
