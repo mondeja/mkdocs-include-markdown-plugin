@@ -23,7 +23,7 @@ jobs:
       - name: Run pre-commit autoupdate
         run: pre-commit autoupdate
       - name: Open pull request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6.1.0
         with:
           branch: pre-commit-autoupdate
           title: Upgrade pre-commit hooks revisions
