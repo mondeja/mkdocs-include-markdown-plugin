@@ -1,6 +1,6 @@
 [project]
 name = "mkdocs-include-markdown-plugin"
-version = "6.2.1"
+version = "6.2.2"
 description = "Mkdocs Markdown includer plugin."
 readme = "README.md"
 license = "Apache-2.0"
@@ -19,12 +19,13 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12"
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 keywords = ["markdown", "mkdocs", "includer", "plugin"]
 dependencies = [
   "mkdocs>=1.4",
-  "wcmatch>=8,<9"
+  "wcmatch"
 ]
 
 [[project.authors]]
@@ -73,7 +74,7 @@ matrix-name-format = "{variable}-{value}"
 dependencies = ["pytest~=7.0", "coverage~=6.4", "covdefaults"]
 
 [[tool.hatch.envs.tests.matrix]]
-python = ["py38", "py39", "py310", "py311", "py312"]
+python = ["py38", "py39", "py310", "py311", "py312", "py313"]
 mkdocs = ["1.4.0", "1.4.3", "1.5.0", "1.5.3", "1.6.0"]
 cache = ["yes", "no"]
 
@@ -104,9 +105,9 @@ targets = [{ file = "pyproject.toml" }]
 [tool.project-config]
 cache = "2 days"
 style = [
-  "gh://mondeja/project-config-styles@v5.2.1/base/pre-commit/md2po2md.json5",
-  "gh://mondeja/project-config-styles@v5.2.1/python/base.json5",
-  "gh://mondeja/project-config-styles@v5.2.1/python/mypy.json5",
+  "gh://mondeja/project-config-styles@v5.3/base/pre-commit/md2po2md.json5",
+  "gh://mondeja/project-config-styles@v5.3/python/base.json5",
+  "gh://mondeja/project-config-styles@v5.3/python/mypy.json5",
 ]
 
 [tool.coverage.run]
@@ -203,7 +204,7 @@ extra-standard-library = [
 
 [tool.mypy]
 strict = true
-python_version = "3.11"
+python_version = "3.12"
 allow_untyped_calls = true
 allow_any_generics = true
 
