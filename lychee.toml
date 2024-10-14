@@ -1,0 +1,9 @@
+exclude = [
+  '^http://127\.0\.0\.1:8088/$',
+  '^https://img\.shields\.io/github/actions/workflow/status/mondeja/mkdocs-',
+  '^https://github.com/mondeja/mkdocs-include-markdown-',
+  '^https://img/'
+]
+exclude_path = [
+  "tests/",
+]
