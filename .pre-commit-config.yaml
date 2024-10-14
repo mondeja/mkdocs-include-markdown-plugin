@@ -1,6 +1,6 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.3.3
     hooks:
       - id: prettier
         types_or:
@@ -15,6 +15,10 @@ repos:
           - prettier-plugin-toml
         minimum_pre_commit_version: 2.9.0
         exclude: ^locale
+        args:
+          - --cache
+          - --cache-location=.prettier-cache
+          - --ignore-path=.gitignore
   - repo: https://github.com/mondeja/project-config
     rev: v0.9.5
     hooks:
@@ -32,6 +36,13 @@ repos:
         name: trailing-whitespace
       - id: end-of-file-fixer
         name: end-of-file-fixer
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.29.4
+    hooks:
+      - id: check-github-workflows
+        name: check-github-workflows
+        args:
+          - --verbose
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.7
     hooks:
@@ -98,12 +109,7 @@ repos:
           - mkdocs>=1.6.0,<1.7.0
           - platformdirs
           - wcmatch
-  - repo: https://github.com/tcort/markdown-link-check
-    rev: v3.12.2
+  - repo: https://github.com/mondeja/rust-pc-hooks
+    rev: v1.3.0
     hooks:
-      - id: markdown-link-check
-        name: markdown-link-check
-        files: ^README\.md$
-        args:
-          - --config
-          - .markdown-link-check.json
+      - id: lychee

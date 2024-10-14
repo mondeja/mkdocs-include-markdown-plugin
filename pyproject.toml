@@ -105,9 +105,9 @@ targets = [{ file = "pyproject.toml" }]
 [tool.project-config]
 cache = "2 days"
 style = [
-  "gh://mondeja/project-config-styles@v5.3/base/pre-commit/md2po2md.json5",
-  "gh://mondeja/project-config-styles@v5.3/python/base.json5",
-  "gh://mondeja/project-config-styles@v5.3/python/mypy.json5",
+  "gh://mondeja/project-config-styles@v5.4/base/pre-commit/md2po2md.json5",
+  "gh://mondeja/project-config-styles@v5.4/python/base.json5",
+  "gh://mondeja/project-config-styles@v5.4/python/mypy.json5",
 ]
 
 [tool.coverage.run]

@@ -40,7 +40,6 @@ rules:
   quoted-strings:
     extra-required:
       # Dependabot does not parse unquoted hours as strings:
-      # https://github.com/mondeja/latex-ji18n/runs/1459035577
       # https://github.community/t/dependabot-parser-treat-hours-as-integers/145596
       - \d\d:\d\d
     quote-type: double
