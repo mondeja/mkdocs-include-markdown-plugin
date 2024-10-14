@@ -37,7 +37,6 @@ jobs:
           - "3.11"
           - "3.12"
           - "3.13"
-          - 3.14.0-alpha.0
         platform:
           - ubuntu-latest
           - macos-latest
