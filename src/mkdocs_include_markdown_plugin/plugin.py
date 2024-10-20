@@ -80,6 +80,8 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
 
         # watch new included files
         for file_path in watcher.included_files:
+            if 'mkdocs_gen_files_' in file_path:
+                continue
             server.watch(file_path, recursive=False)  # type: ignore
         watcher.included_files = []
 
