@@ -1,10 +1,10 @@
 [project]
 name = "mkdocs-include-markdown-plugin"
-version = "6.2.2"
+version = "7.0.0"
 description = "Mkdocs Markdown includer plugin."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Operating System :: OS Independent",
@@ -15,7 +15,6 @@ classifiers = [
   "Topic :: Text Processing",
   "Topic :: Text Processing :: Markup :: Markdown",
   "Environment :: Console",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -74,7 +73,7 @@ matrix-name-format = "{variable}-{value}"
 dependencies = ["pytest~=7.0", "coverage~=6.4", "covdefaults"]
 
 [[tool.hatch.envs.tests.matrix]]
-python = ["py38", "py39", "py310", "py311", "py312", "py313"]
+python = ["py39", "py310", "py311", "py312", "py313"]
 mkdocs = ["1.4.0", "1.4.3", "1.5.0", "1.5.3", "1.6.0"]
 cache = ["yes", "no"]
 
@@ -122,7 +121,7 @@ fail_under = 1
 
 [tool.ruff]
 line-length = 80
-target-version = "py38"
+target-version = "py39"
 
 [tool.ruff.lint]
 select = [
