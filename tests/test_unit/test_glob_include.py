@@ -58,14 +58,12 @@ barbaz
   {directive} "./included*.txt"
   start="<!-- start-2 -->"
   end="<!-- end-2 -->"
-  comments=false
 %}
 
 {%
   {directive} "./included*.txt"
   start="<!-- start-1 -->"
   end="<!-- end-1 -->"
-  comments=false
 %}
 ''',
             [],
@@ -75,7 +73,6 @@ barbaz
             '''{%
   {directive} "./included*.txt"
   end="<!-- end-2 -->"
-  comments=false
 %}
 ''',
             [],
@@ -88,21 +85,19 @@ barbaz
   {directive} "./included*.txt"
   start="<!-- start-not-found-2 -->"
   end="<!-- end-not-found-2 -->"
-  comments=false
 %}
 
 {%
   {directive} "./included*.txt"
   start="<!-- start-not-found-1 -->"
   end="<!-- end-not-found-1 -->"
-  comments=false
 %}
 ''',
             [
                 (
                     "Delimiter end '<!-- end-not-found-1 -->'"
                     " of '{directive}' directive"
-                    ' at {includer_file}:10 not detected in'
+                    ' at {includer_file}:9 not detected in'
                     ' the files {included_file_01}, {included_file_02}'
                 ),
                 (
@@ -114,7 +109,7 @@ barbaz
                 (
                     "Delimiter start '<!-- start-not-found-1 -->'"
                     " of '{directive}' directive"
-                    ' at {includer_file}:10 not detected in'
+                    ' at {includer_file}:9 not detected in'
                     ' the files {included_file_01}, {included_file_02}'
                 ),
                 (
@@ -137,9 +132,6 @@ def test_glob_include(
     caplog,
     tmp_path,
 ):
-    if directive == 'include':
-        includer_content = includer_content.replace('comments=false', '')
-
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
     included_02_file = tmp_path / 'included_02.txt'

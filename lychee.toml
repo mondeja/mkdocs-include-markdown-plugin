@@ -5,4 +5,4 @@ exclude = [
   'https://raw\.githubusercontent\.com/mondeja/',
   'https://github.com/user/repo'
 ]
-exclude_path = ["lychee.toml"]
+exclude_path = ["lychee.toml", "^locale"]

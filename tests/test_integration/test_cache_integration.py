@@ -64,7 +64,6 @@ def test_page_included_by_url_is_cached(
         return on_page_markdown(
             f'''{{%
     {directive} "{url}"
-    comments=false
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,

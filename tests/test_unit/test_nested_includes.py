@@ -20,13 +20,11 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
 
 {%
   include-markdown "{filepath}"
-  comments=false
 %}''',
             '''Some text from second includer.
 
 {%
   include-markdown "{filepath}"
-  comments=false
 %}
 ''',
             '''Some test from final included.''',
@@ -46,7 +44,6 @@ Some test from final included.
 
 {%
   include-markdown "{filepath}"
-  comments=false
 %}''',
             '''Some text from second includer.
 
@@ -102,7 +99,6 @@ Some test from final included.
   include-markdown "{filepath}"
   start="<!-- start -->"
   end="<!-- end -->"
-  comments=false
 %}
 ''',
             '''This must be ignored
@@ -127,14 +123,12 @@ Some test from final included.
 {%
   include-markdown "{filepath}"
   heading-offset=1
-  comments=false
 %}''',
             '''# Header 2
 
 {%
   include-markdown "{filepath}"
   heading-offset=1
-  comments=false
 %}
 ''',
             '''# Header 3
@@ -156,7 +150,6 @@ Some test from final included.
 
 {%
   include-markdown '{filepath}'
-  comments=false
   start="<!--start-->"
   end="<!--end-->"
 %}''',
@@ -190,13 +183,11 @@ Some test from final included.
 
 {%
   include-markdown "{filepath}"
-  comments=false
 %}''',
             '''# Header 2
 
 {%
   include-markdown "{filepath}"
-  comments=false
   start="<!--start-->"
   end="<!--end-->"
 %}''',
@@ -258,7 +249,6 @@ This content must not be included.
 {%
   include-markdown "{filepath}"
   recursive=false
-  comments=false
 %}''',
             '''# Header 2
 
@@ -345,7 +335,6 @@ def test_nested_include_relpath(page, tmp_path, plugin):
 
 {%
   include-markdown "./docs/second-includer.txt"
-  comments=false
 %}
 '''
     first_includer_file.write_text(first_includer_content)
@@ -354,7 +343,6 @@ def test_nested_include_relpath(page, tmp_path, plugin):
 
 {%
   include-markdown "../included.txt"
-  comments=false
 %}
 '''
     second_includer_file.write_text(second_includer_content)

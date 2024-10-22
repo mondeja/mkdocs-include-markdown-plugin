@@ -159,7 +159,7 @@ Markdown dans le contenu qui sont spécifiés par une URL relative sont réécri
 pour fonctionner correctement dans leur nouvel emplacement. Les valeurs
 possibles sont `true` et `false`.
 - <a name="include-markdown_comments" href="#include-markdown_comments">#</a>
-**comments** (*true*): Lorsque cette option est activée (par défaut), le
+**comments** (*false*): Lorsque cette option est activée (par défaut), le
 contenu à inclure est entouré de `<!-- BEGIN INCLUDE -->` et
 `<!-- END INCLUDE -->` commentaires qui aident à identifier que le contenu a été
 inclus. Les valeurs possibles sont `true` et `false`.
@@ -185,7 +185,7 @@ négatives pour supprimer les caractères `#` de tête.
     start='<!--\n\ttable-start\n-->'
     end='<!--\n\ttable-end\n-->'
     rewrite-relative-urls=false
-    comments=false
+    comments=true
 %}
 ```
 

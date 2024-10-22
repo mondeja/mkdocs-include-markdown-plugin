@@ -168,7 +168,7 @@ content to include.
   are rewritten to work correctly in their new location. Possible values are
   `true` and `false`.
 - <a name="include-markdown_comments" href="#include-markdown_comments">#</a>
-  **comments** (_true_): When this option is enabled (default), the content to
+  **comments** (_false_): When this option is enabled (default), the content to
   include is wrapped by `<!-- BEGIN INCLUDE -->` and `<!-- END INCLUDE -->`
   comments which help to identify that the content has been included. Possible
   values are `true` and `false`.
@@ -193,7 +193,7 @@ content to include.
     start='<!--\n\ttable-start\n-->'
     end='<!--\n\ttable-end\n-->'
     rewrite-relative-urls=false
-    comments=false
+    comments=true
 %}
 ```
 

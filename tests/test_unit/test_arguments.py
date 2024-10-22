@@ -77,14 +77,9 @@ More content that should be ignored
 
     includer_file_content = f'''{{%
   {directive} "{page_to_include_filepath}"
-  comments=false
   start='<!-- "s\\'tar\\'t" -->'
   end="<!-- 'en\\"d' -->"
 %}}'''
-    if directive == 'include':
-        includer_file_content = includer_file_content.replace(
-            'comments=false', '',
-        )
     result = on_page_markdown(
         includer_file_content,
         page(tmp_path / 'includer.md'),
@@ -118,13 +113,8 @@ More content that should be ignored
     includer_file_content = f'''
 {{%
   {directive} "{page_to_include_filepath}"
-  comments=false
   {argument}=''
 %}}'''
-    if directive == 'include':
-        includer_file_content = includer_file_content.replace(
-            'comments=false', '',
-        )
     with pytest.raises(PluginError) as exc:
         on_page_markdown(
             includer_file_content,
@@ -160,13 +150,8 @@ def test_exclude_double_quote_escapes(
     includer_glob = os.path.join(str(drectory_to_include), '*.md')
     includer_file_content = f'''{{%
   {directive} "{includer_glob}"
-  comments=false
   exclude="{page_to_exclude_escaped_filepath}"
 %}}'''
-    if directive == 'include':
-        includer_file_content = includer_file_content.replace(
-            'comments=false', '',
-        )
     result = on_page_markdown(
         includer_file_content,
         page(tmp_path / 'includer.md'),
@@ -193,13 +178,8 @@ def test_invalid_exclude_argument(directive, page, tmp_path, caplog, plugin):
 
     includer_file_content = f'''{{%
   {directive} "{includer_glob}"
-  comments=false
   exclude=
 %}}'''
-    if directive == 'include':
-        includer_file_content = includer_file_content.replace(
-            'comments=false', '',
-        )
 
     with pytest.raises(PluginError) as exc:
         on_page_markdown(
@@ -223,13 +203,8 @@ def test_empty_encoding_argument(directive, page, tmp_path, plugin, caplog):
 
     includer_file_content = f'''{{%
   {directive} "{page_to_include_filepath}"
-  comments=false
   encoding=
 %}}'''
-    if directive == 'include':
-        includer_file_content = includer_file_content.replace(
-            'comments=false', '',
-        )
 
     with pytest.raises(PluginError) as exc:
         on_page_markdown(
@@ -280,7 +255,6 @@ def test_invalid_heading_offset_arguments(
         on_page_markdown(
             f'''{{%
   include-markdown "{page_to_include_filepath}"
-  comments=false
   heading-offset={argument_value}
 %}}''',
             page(tmp_path / 'includer.md'),
@@ -299,13 +273,8 @@ def test_invalid_argument_name(directive, page, tmp_path, plugin, caplog):
 
     includer_file_content = f'''{{%
   {directive} "{page_to_include_filepath}"
-  comments=false
   invalid-argument=true
 %}}'''
-    if directive == 'include':
-        includer_file_content = includer_file_content.replace(
-            'comments=false', '',
-        )
     assert on_page_markdown(
         includer_file_content,
         page(tmp_path / 'includer.md'),
@@ -368,7 +337,6 @@ class TestFilename:
         result = on_page_markdown(
             f'''{{%
   {directive} "{escaped_page_to_include_filepath}"
-  {'comments=false' if directive == 'include-markdown' else ''}
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
@@ -392,7 +360,6 @@ class TestFilename:
         result = on_page_markdown(
             f'''{{%
   {directive} '{escaped_page_to_include_filepath}'
-  {'comments=false' if directive == 'include-markdown' else ''}
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
@@ -413,7 +380,6 @@ class TestFilename:
         result = on_page_markdown(
             f'''{{%
   {directive} '{page_to_include_filepath}'
-  {'comments=false' if directive == 'include-markdown' else ''}
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
@@ -433,7 +399,6 @@ class TestFilename:
         result = on_page_markdown(
             f'''{{%
   {directive} "{page_to_include_filepath}"
-  {'comments=false' if directive == 'include-markdown' else ''}
 %}}''',
             page(tmp_path / 'includer.md'),
             tmp_path,
@@ -476,7 +441,6 @@ class TestFilename:
 
         markdown = f'''{{%
   {directive} {quote}{escaped_page_to_include_filepath}{quote}
-  {'comments=false' if directive == 'include-markdown' else ''}
 %}}'''
 
         func = functools.partial(

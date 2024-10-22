@@ -2,7 +2,7 @@
 
 |>
 include-markdown "./included.md"
-comments=false
+comments=true
 <|
 
 |> include './included.md' <|

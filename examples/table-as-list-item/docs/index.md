@@ -5,7 +5,6 @@
 
    {%
      include-markdown "./table.md"
-     comments=false
    %}
 
 1. Another list entry

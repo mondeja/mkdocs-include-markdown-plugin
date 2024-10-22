@@ -102,7 +102,6 @@ This must be included.
   include-markdown "{filepath}"
   start="<!--start-tag-->"
   end="<!--end-tag-->"
-  comments=false
 %}''',
             '''Some text
 
