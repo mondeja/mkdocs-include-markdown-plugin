@@ -17,7 +17,7 @@ class PluginConfig(Config):  # noqa: D101
     preserve_includer_indent = MkType(bool, default=True)
     dedent = MkType(bool, default=False)
     trailing_newlines = MkType(bool, default=True)
-    comments = MkType(bool, default=True)
+    comments = MkType(bool, default=False)
     rewrite_relative_urls = MkType(bool, default=True)
     heading_offset = MkType(int, default=0)
     start = Optional(MkType(str))

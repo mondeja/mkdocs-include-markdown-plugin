@@ -85,11 +85,7 @@ def test_exclude(
     includer_file_content = f'''{{%
   {directive} "{tmp_path}{os.sep}content/*"
   exclude='{exclude_prefix}{exclude}'
-  comments=false
 %}}'''
-    if directive == 'include':
-        includer_file_content = includer_file_content.replace(
-            'comments=false', '')
     for basename, file in files.items():
         file.write_text(f'{basename}\n')
 

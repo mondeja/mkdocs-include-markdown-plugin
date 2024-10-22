@@ -159,8 +159,8 @@ imágenes Markdown en el contenido que están definidas mediante una URL relativ
 son rescritos para funcionar correctamente en su nueva localización. Los valores
 posibles son `true` y `false`.
 - <a name="include-markdown_comments" href="#include-markdown_comments">#</a>
-**comments** (*true*): Cuando esta opción está habilitada (por defecto), el
-contenido a incluir es envuelto por comentarios `<!-- BEGIN INCLUDE -->` y
+**comments** (*false*): Cuando esta opción está habilitada, el contenido a
+incluir es envuelto por comentarios `<!-- BEGIN INCLUDE -->` y
 `<!-- END INCLUDE -->` que ayudan a identificar que el contenido ha sido
 incluido. Los valores posibles son `true` y `false`.
 - <a name="include-markdown_heading-offset"
@@ -185,7 +185,7 @@ especificado. Sólo soporta la sintaxis de encabezado de caracteres de hash
     start='<!--\n\ttable-start\n-->'
     end='<!--\n\ttable-end\n-->'
     rewrite-relative-urls=false
-    comments=false
+    comments=true
 %}
 ```
 

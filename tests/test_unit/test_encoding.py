@@ -18,7 +18,6 @@ Content to include
         on_page_markdown(
             f'''{{%
     {directive} "{page_to_include_file}"
-    comments=false
     start='<!-- start -->'
     end="<!-- end -->"
     encoding="ascii"
@@ -43,7 +42,6 @@ Content to include
     result = on_page_markdown(
         f'''{{%
   {directive} "{page_to_include_file}"
-  comments=false
   start="<!-- start -->"
   end="<!-- end -->"
 %}}''',
@@ -68,7 +66,6 @@ Content to include
     result = on_page_markdown(
         f'''{{%
   {directive} "{page_to_include_file}"
-  comments=false
   start='<!-- start -->'
   end="<!-- end -->"
   encoding="utf-8"

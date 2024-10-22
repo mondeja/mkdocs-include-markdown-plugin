@@ -25,7 +25,6 @@ def test_start_end_arguments_not_found(
 
 {{%
   {directive} "{included_file}"
-  comments=false
   start="<!--start-->"
   end="<!--end-->"
 %}}

@@ -168,10 +168,10 @@ content to include.
   are rewritten to work correctly in their new location. Possible values are
   `true` and `false`.
 - <a name="include-markdown_comments" href="#include-markdown_comments">#</a>
-  **comments** (_true_): When this option is enabled (default), the content to
-  include is wrapped by `<!-- BEGIN INCLUDE -->` and `<!-- END INCLUDE -->`
-  comments which help to identify that the content has been included. Possible
-  values are `true` and `false`.
+  **comments** (_false_): When this option is enabled, the content to include
+  is wrapped by `<!-- BEGIN INCLUDE -->` and `<!-- END INCLUDE -->` comments
+  which help to identify that the content has been included. Possible values
+  are `true` and `false`.
 - <a name="include-markdown_heading-offset" href="#include-markdown_heading-offset">#</a>
   **heading-offset** (0): Increases or decreases the Markdown headings depth
   by this number. Only supports number sign (`#`) heading syntax. Accepts
@@ -193,7 +193,7 @@ content to include.
     start='<!--\n\ttable-start\n-->'
     end='<!--\n\ttable-end\n-->'
     rewrite-relative-urls=false
-    comments=false
+    comments=true
 %}
 ```
 

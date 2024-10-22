@@ -19,9 +19,7 @@ from mkdocs_include_markdown_plugin.event import on_page_markdown
             'This must be included.',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} -->
 This must be included.
-<!-- END INCLUDE -->
 ''',
             [],
             id='simple case',
@@ -41,10 +39,8 @@ This must be included.
 This must be included.''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} '&lt;!--start-here--&gt;' '' -->
 
 This must be included.
-<!-- END INCLUDE -->
 ''',
             [],
             id='start',
@@ -64,10 +60,8 @@ This must be included.
 This must be ignored.''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} '' '&lt;!--end-here--&gt;' -->
 This must be included.
 
-<!-- END INCLUDE -->
 ''',
             [],
             id='end',
@@ -81,6 +75,7 @@ This must be included.
   include-markdown "{filepath}"
   start="<!--start-here-->"
   end="<!--end-here-->"
+  comments=true
 %}
 ''',
             '''This must be ignored.
@@ -108,6 +103,7 @@ This must be included.
   include-markdown "{filepath}"
   start="<!--\\tstart -->"
   end="<!--\\tend -->"
+  comments=true
 %}
 ''',
             '''This must be ignored.
@@ -135,6 +131,7 @@ This must be included.
   include-markdown "{filepath}"
   start="<!--\nstart -->"
   end="<!--\nend -->"
+  comments=true
 %}
 ''',
             '''This must be ignored.
@@ -158,14 +155,11 @@ This must be included.
 
         # Exclude start and end comments
         pytest.param(
-            '''{%
-  include-markdown "{filepath}"
-  comments=false
-%}''',
+            '{% include-markdown "{filepath}" %}',
             '''Foo''',
             '''Foo''',
             [],
-            id='comments=false',
+            id='comments=false (default)',
         ),
 
         # Multiples start and end matchs
@@ -174,7 +168,6 @@ This must be included.
   include-markdown "{filepath}"
   start="<!--start-tag-->"
   end="<!--end-tag-->"
-  comments=false
 %}''',
             '''Some text
 
@@ -214,7 +207,6 @@ This should be included even if hasn't defined after end tag.
             '''1. Ordered list item
     {%
       include-markdown "{filepath}"
-      comments=false
       preserve-includer-indent=false
     %}''',
             '''- Unordered sublist item
@@ -232,7 +224,6 @@ This should be included even if hasn't defined after end tag.
 {%
     include-markdown "{filepath}"
     start="<!--start-->"
-    comments=false
 %}''',
             '''Some text
 
@@ -253,7 +244,6 @@ More text
 {%
     include-markdown "{filepath}"
     end='<!--end-->'
-    comments=false
 %}''',
             '''
 Some text
@@ -274,7 +264,6 @@ Some text
 {%
     include-markdown '{filepath}'
     start='<!--start-->'
-    comments=false
 %}''',
             '''Some text
 ''',
@@ -296,7 +285,6 @@ Some text
 {%
     include-markdown "{filepath}"
     end="<!--end-->"
-    comments=false
 %}''',
             '''
 Some text
@@ -318,10 +306,7 @@ Some text
         # Preserve includer indent
         pytest.param(
             '''1. Ordered list item
-    {%
-      include-markdown "{filepath}"
-      comments=false
-    %}''',
+    {% include-markdown "{filepath}" %}''',
             '''- First unordered sublist item
 - Second unordered sublist item
 - Third unordered sublist item''',
@@ -340,7 +325,6 @@ Some text
       include-markdown "{filepath}"
       preserve-includer-indent=true
       end="<!--end-->"
-      comments=false
       start="<!--start-->"
     %}''',
             '''<!--start-->- First unordered sublist item
@@ -360,7 +344,6 @@ Some text
 {%
   include-markdown "{filepath}"
   dedent=true
-  comments=false
 %}
 ''',
             '''    - Foo
@@ -384,7 +367,6 @@ Some text
       include-markdown "{filepath}"
       dedent=true
       preserve-includer-indent=true
-      comments=false
     %}
 ''',
             '''        - Foo
@@ -414,11 +396,9 @@ Some text
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} -->
 ## This should be a second level heading.
 
 Example data
-<!-- END INCLUDE -->
 ''',
             [],
             id='heading-offset=1',
@@ -436,11 +416,9 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} -->
 ### This should be a third level heading.
 
 Example data
-<!-- END INCLUDE -->
 ''',
             [],
             id='heading-offset=2',
@@ -459,11 +437,9 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} -->
 # This should be a first level heading.
 
 Example data
-<!-- END INCLUDE -->
 ''',
             [],
             id='no heading-offset (default)',
@@ -483,11 +459,9 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} -->
 # This should be a first level heading.
 
 Example data
-<!-- END INCLUDE -->
 ''',
             [],
             id='heading-offset=0',
@@ -507,11 +481,9 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} -->
 ## This should be a second level heading.
 
 Example data
-<!-- END INCLUDE -->
 ''',
             [],
             id='heading-offset=-2',
@@ -531,11 +503,9 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} -->
 ''' + '#' * 94 + ''' This should be a 94th level heading.
 
 Example data
-<!-- END INCLUDE -->
 ''',
             [],
             id='heading-offset=90',
@@ -555,11 +525,9 @@ Example data
 Example data''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} -->
 # This should be a first level heading.
 
 Example data
-<!-- END INCLUDE -->
 ''',
             [],
             id='heading-offset=-90',
@@ -571,6 +539,7 @@ Example data
 
 {%
   include-markdown "https://raw.githubusercontent.com/mondeja/mkdocs-include-markdown-plugin/master/examples/basic/docs/included.md"
+  comments=true
 %}
 
 After include.
@@ -593,7 +562,7 @@ After include.
             id='url',
         ),
 
-        # Custom encoding
+        # UTF-8 characters
         pytest.param(
             '''# Header
 
@@ -615,7 +584,6 @@ vɛвѣди
 ''',
             '''# Header
 
-<!-- BEGIN INCLUDE {filepath} -->
 Тест інклуде
 азъ
 два
@@ -630,7 +598,6 @@ vɛвѣди
 ɡɫɐˈɡolʲɡ/ or /gʲЖж	год god
 ДдД д	дэdɐˈbro
 
-<!-- END INCLUDE -->
 ''',
             [],
             id='russian-characters',
@@ -639,7 +606,7 @@ vɛвѣди
         # Right strip unix trailing newlines
         pytest.param(
             '''1. List item number 1
-1. {% include-markdown "{filepath}" comments=false trailing-newlines=false %}
+1. {% include-markdown "{filepath}" trailing-newlines=false %}
 1. List item number 3
 ''',
             'Content to include\n',
@@ -673,7 +640,7 @@ vɛвѣди
         # Right strip trailing newlines keeping comments
         pytest.param(
             '''1. List item number 1
-1. {% include-markdown "{filepath}" trailing-newlines=false %}
+1. {% include-markdown "{filepath}" trailing-newlines=false comments=true %}
 1. List item number 3
 ''',
             'Content to include\n',
@@ -690,6 +657,7 @@ vɛвѣди
 1. {%
   include-markdown "{filepath}"
   trailing-newlines=false
+  comments=true
 %}
 1. List item number 3
 ''',
@@ -705,7 +673,9 @@ vɛвѣди
         pytest.param(
             (
                 "{% include-markdown \"{filepath}\""
-                " start='<!--start-\\'including-->' %}"
+                " start='<!--start-\\'including-->'"
+                " comments=true"
+                " %}"
             ),
             '''Ignored content
 
@@ -726,6 +696,7 @@ Content to include
 
 1.  {%
        include-markdown "{filepath}"
+       comments=true
     %}
 
 1.  If everything works as expected this should be number 3
@@ -836,6 +807,7 @@ def test_include_markdown_relative_rewrite(
     include-markdown "./docs/page.md"
     start="<!--start-->"
     end="<!--end-->"
+    comments=true
     {option_value}
 %}}
 ''',
@@ -902,14 +874,12 @@ def test_multiple_includes(page, tmp_path, plugin):
 
 {{%
   include-markdown "{snippet_filepath}"
-  comments=false
 %}}
 
 # Heading 2
 
 {{%
   include-markdown "{another_filepath}"
-  comments=false
 %}}
 
 # Heading 3
