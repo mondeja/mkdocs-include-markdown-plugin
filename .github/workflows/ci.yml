@@ -52,7 +52,7 @@ jobs:
         run: |
           import codecs, os, sys
           env = f"py=py3{sys.version_info[1]}\n"
-          print(f"Picked {env.split('=')[1].strip()} for {sys.version}")
+          sys.stdout.write(f"Picked {env.split('=')[1].strip()} for {sys.version}\n")
           with codecs.open(os.environ["GITHUB_OUTPUT"], "a", "utf-8") as file_handler:
               file_handler.write(env)
       - name: Install dependencies

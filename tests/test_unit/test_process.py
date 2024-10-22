@@ -14,14 +14,10 @@ from mkdocs_include_markdown_plugin.process import (
     ('markdown', 'source_path', 'destination_path', 'expected_result'),
     (
         pytest.param(
-            '''
-        Here's a [link](CHANGELOG.md) to the changelog.
-''',
+            "Here's a [link](CHANGELOG.md) to the changelog.",
             'README',
             'docs/nav.md',
-            '''
-        Here's a [link](../CHANGELOG.md) to the changelog.
-''',
+            "Here's a [link](../CHANGELOG.md) to the changelog.",
             id='relative-link',
         ),
         pytest.param(
@@ -69,17 +65,17 @@ Check [this link](includes/feature_a/foobar.md) for more information
             id='link-reference',
         ),
         pytest.param(
-            '''Here's a diagram: ![diagram](assets/diagram.png)''',
+            "Here's a diagram: ![diagram](assets/diagram.png)",
             'README',
             'docs/home.md',
-            '''Here's a diagram: ![diagram](../assets/diagram.png)''',
+            "Here's a diagram: ![diagram](../assets/diagram.png)",
             id='image',
         ),
         pytest.param(
-            '''Build status: [![Build Status](badge.png)](build/)''',
+            'Build status: [![Build Status](badge.png)](build/)',
             'README',
             'docs/home.md',
-            '''Build status: [![Build Status](../badge.png)](../build/)''',
+            'Build status: [![Build Status](../badge.png)](../build/)',
             id='image-inside-link',
         ),
         pytest.param(
@@ -92,10 +88,10 @@ Check [this link](includes/feature_a/foobar.md) for more information
             id='absolute-urls',
         ),
         pytest.param(
-            '''[contact us](mailto:hello@example.com)''',
+            '[contact us](mailto:hello@example.com)',
             'README',
             'docs/nav.md',
-            '''[contact us](mailto:hello@example.com)''',
+            '[contact us](mailto:hello@example.com)',
             id='mailto-urls',
         ),
         pytest.param(
@@ -120,35 +116,33 @@ const auto lambda = []() { .... };
             id='cpp-likelink-fenced-codeblock',
         ),
         pytest.param(
-            '''Some text before
-\t
-\tconst auto lambda = []() { .... };
-
-Some text after
-''',
+            (
+                'Text before\n'
+                '    \n    '
+                'const auto lambda = []() { .... };\n    \nText after\n'
+            ),
             'README',
             'examples/lambda.md',
-            '''Some text before
-\t
-\tconst auto lambda = []() { .... };
-
-Some text after
-''',
+            (
+                'Text before\n'
+                '    \n    '
+                'const auto lambda = []() { .... };\n    \nText after\n'
+            ),
             id='cpp-likelink-indented-codeblock',
         ),
         pytest.param(
-            '''Some text before
-\t
-\tconst auto lambda = []() { .... };\r\n
-Some text after
-''',
+            (
+                'Text before\r\n'
+                '    \r\n    '
+                'const auto lambda = []() { .... };\r\n    \r\nText after\r\n'
+            ),
             'README',
             'examples/lambda.md',
-            '''Some text before
-\t
-\tconst auto lambda = []() { .... };\r\n
-Some text after
-''',
+            (
+                'Text before\r\n'
+                '    \r\n    '
+                'const auto lambda = []() { .... };\r\n    \r\nText after\r\n'
+            ),
             id='cpp-likelink-indented-codeblock-windows-newlines',
         ),
         pytest.param(
@@ -165,15 +159,65 @@ Some text after
             id='exclude-fenced-code-blocks',
         ),
         pytest.param(
-            ' ' * 4 + '''
-    [link](CHANGELOG.md)
-''' + ' ' * 4 + '\n',
+            (
+                '    \n'
+                '    [link](CHANGELOG.md)\n'
+                '    \n'
+            ),
             'README',
             'docs/nav.md',
-            ' ' * 4 + '''
-    [link](CHANGELOG.md)
-''' + ' ' * 4 + '\n',
+            (
+                '    \n'
+                '    [link](CHANGELOG.md)\n'
+                '    \n'
+            ),
             id='exclude-indented-code-blocks',
+        ),
+        pytest.param(
+            (
+                '    \n'
+                '    [link](CHANGELOG.md)\n'
+            ),
+            'README',
+            'docs/nav.md',
+            # is rewritten because not newline at end of code block
+            (
+                '    \n'
+                '    [link](../CHANGELOG.md)\n'
+            ),
+            id='exclude-indented-code-blocks-eof',
+        ),
+        pytest.param(
+            (
+                '    [link](CHANGELOG.md)\n'
+                '    \n'
+            ),
+            'README',
+            'docs/nav.md',
+            (
+                '    [link](../CHANGELOG.md)\n'
+                '    \n'
+            ),
+            # No newline before, is not an indented code block, see:
+            # https://spec.commonmark.org/0.28/#indented-code-blocks
+            id='no-exclude-indented-code-blocks-missing-newline-before',
+        ),
+        pytest.param(
+            (
+                '    \n'
+                '    [link](CHANGELOG.md)\n'
+                'Foo\n'
+            ),
+            'README',
+            'docs/nav.md',
+            (
+                '    \n'
+                '    [link](../CHANGELOG.md)\n'
+                'Foo\n'
+            ),
+            # No newline after, is not an indented code block, see:
+            # https://spec.commonmark.org/0.28/#indented-code-blocks
+            id='no-exclude-indented-code-blocks-missing-newline-after',
         ),
     ),
 )

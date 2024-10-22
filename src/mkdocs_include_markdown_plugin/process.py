@@ -114,7 +114,7 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
 )
 
 
-def transform_p_by_p_skipping_codeblocks(
+def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
         markdown: str,
         func: Callable[[str], str],
 ) -> str:
@@ -128,45 +128,80 @@ def transform_p_by_p_skipping_codeblocks(
     _current_fcodeblock_delimiter = ''
 
     # inside indented codeblock
-    _inside_icodeblock = False
+    _maybe_icodeblock_lines: list[str] = []
+    _previous_line_was_empty = False
 
     lines, current_paragraph = ([], '')
 
     def process_current_paragraph() -> None:
         lines.extend(func(current_paragraph).splitlines(keepends=True))
 
+    # The next implementation takes into account that indented code
+    # blocks must be surrounded by newlines as per the CommonMark
+    # specification. See https://spec.commonmark.org/0.28/#indented-code-blocks
+    #
+    # However, note that ambiguities with list items are not handled.
+
     for line in io.StringIO(markdown):
-        if not _current_fcodeblock_delimiter and not _inside_icodeblock:
+        if not _current_fcodeblock_delimiter:
             lstripped_line = line.lstrip()
             if (
                 lstripped_line.startswith('```')
                 or lstripped_line.startswith('~~~')
             ):
                 _current_fcodeblock_delimiter = lstripped_line[:3]
-                if current_paragraph:
+                process_current_paragraph()
+                current_paragraph = ''
+                lines.append(line)
+            elif line.startswith('    '):
+                if not lstripped_line or _maybe_icodeblock_lines:
+                    # maybe enter indented codeblock
+                    _maybe_icodeblock_lines.append(line)
+                else:
+                    current_paragraph += line
+            elif _maybe_icodeblock_lines:
+                process_current_paragraph()
+                current_paragraph = ''
+                if not _previous_line_was_empty:
+                    # wasn't an indented code block
+                    for line_ in _maybe_icodeblock_lines:
+                        current_paragraph += line_
+                    _maybe_icodeblock_lines = []
+                    current_paragraph += line
                     process_current_paragraph()
                     current_paragraph = ''
-                lines.append(line)
-            elif (
-                line.replace('\t', '    ').replace('\r\n', '\n')
-                == '    \n'
-            ):
-                _inside_icodeblock = True
-                if current_paragraph:
-                    process_current_paragraph()
-                    current_paragraph = ''
-                lines.append(line)
+                else:
+                    # exit indented codeblock
+                    for line_ in _maybe_icodeblock_lines:
+                        lines.append(line_)
+                    _maybe_icodeblock_lines = []
+                    lines.append(line)
             else:
                 current_paragraph += line
+            _previous_line_was_empty = not lstripped_line
         else:
             lines.append(line)
-            if _current_fcodeblock_delimiter:
-                if line.lstrip().startswith(_current_fcodeblock_delimiter):
-                    _current_fcodeblock_delimiter = ''
-            elif not line.startswith('    ') and not line.startswith('\t'):
-                _inside_icodeblock = False
+            lstripped_line = line.lstrip()
+            if lstripped_line.startswith(_current_fcodeblock_delimiter):
+                _current_fcodeblock_delimiter = ''
+            _previous_line_was_empty = not lstripped_line
 
-    process_current_paragraph()
+    if _maybe_icodeblock_lines:
+        if not _previous_line_was_empty:
+            # at EOF
+            process_current_paragraph()
+            current_paragraph = ''
+            for line_ in _maybe_icodeblock_lines:
+                current_paragraph += line_
+            process_current_paragraph()
+            current_paragraph = ''
+        else:
+            process_current_paragraph()
+            current_paragraph = ''
+            for line_ in _maybe_icodeblock_lines:
+                lines.append(line_)
+    else:
+        process_current_paragraph()
 
     return ''.join(lines)
 
@@ -180,7 +215,7 @@ def transform_line_by_line_skipping_codeblocks(
     Skip fenced codeblock lines, where the transformation never is applied.
 
     Indented codeblocks are not taken into account because in the practice
-    this function is never used for transformations on indented lines. See
+    this function is only used for transformations of heading prefixes. See
     the PR https://github.com/mondeja/mkdocs-include-markdown-plugin/pull/95
     to recover the implementation handling indented codeblocks.
     """
@@ -269,6 +304,7 @@ def rewrite_relative_urls(
             functools.partial(found_href, url_group_index=2),
             paragraph,
         )
+
     return transform_p_by_p_skipping_codeblocks(
         markdown,
         transform,
