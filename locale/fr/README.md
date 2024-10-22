@@ -159,10 +159,10 @@ Markdown dans le contenu qui sont spécifiés par une URL relative sont réécri
 pour fonctionner correctement dans leur nouvel emplacement. Les valeurs
 possibles sont `true` et `false`.
 - <a name="include-markdown_comments" href="#include-markdown_comments">#</a>
-**comments** (*false*): Lorsque cette option est activée (par défaut), le
-contenu à inclure est entouré de `<!-- BEGIN INCLUDE -->` et
-`<!-- END INCLUDE -->` commentaires qui aident à identifier que le contenu a été
-inclus. Les valeurs possibles sont `true` et `false`.
+**comments** (*false*): Lorsque cette option est activée, le contenu à inclure
+est entouré de `<!-- BEGIN INCLUDE -->` et `<!-- END INCLUDE -->` commentaires
+qui aident à identifier que le contenu a été inclus. Les valeurs possibles sont
+`true` et `false`.
 - <a name="include-markdown_heading-offset"
 href="#include-markdown_heading-offset">#</a> **heading-offset** (0): Augmente
 ou diminue la profondeur des en-têtes Markdown de ce nombre. Ne prend en charge
