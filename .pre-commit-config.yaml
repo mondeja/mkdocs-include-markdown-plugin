@@ -20,7 +20,7 @@ repos:
           - --cache-location=.prettier-cache
           - --ignore-path=.gitignore
   - repo: https://github.com/mondeja/project-config
-    rev: v0.9.5
+    rev: v0.9.7
     hooks:
       - id: project-config
   - repo: meta
@@ -30,7 +30,7 @@ repos:
       - id: check-useless-excludes
         name: check-useless-excludes
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
         name: trailing-whitespace
@@ -44,7 +44,7 @@ repos:
         args:
           - --verbose
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.7
+    rev: v0.7.4
     hooks:
       - id: ruff
         args:
@@ -55,42 +55,42 @@ repos:
     hooks:
       - id: autopep8
   - repo: https://github.com/mondeja/mdpo
-    rev: v2.0.1
+    rev: v2.1.3
     hooks:
       - id: md2po2md
         files: ^README\.md
         args:
+          - --no-location
+          - --no-obsolete
+          - --no-empty-msgstr
           - -l
           - es
           - -l
           - fr
           - -o
           - locale/{lang}
-          - --no-location
   - repo: https://github.com/mondeja/pre-commit-po-hooks
     rev: v1.7.3
     hooks:
-      - id: obsolete-messages
-      - id: untranslated-messages
       - id: remove-metadata
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.35.1
     hooks:
       - id: yamllint
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.13.0
+    rev: v0.15.0
     hooks:
       - id: markdownlint-cli2
         name: markdownlint-readme
         files: ^README.md
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: 2.7.3
+    rev: 3.0.3
     hooks:
       - id: editorconfig-checker
         name: editorconfig-checker
         alias: ec
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.1
+    rev: v1.13.0
     hooks:
       - id: mypy
         name: mypy-mkdocs-1.5.0
@@ -100,7 +100,7 @@ repos:
           - platformdirs
           - wcmatch
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.1
+    rev: v1.13.0
     hooks:
       - id: mypy
         name: mypy-mkdocs-1.6.0
