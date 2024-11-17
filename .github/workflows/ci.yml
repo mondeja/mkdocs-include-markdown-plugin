@@ -23,6 +23,8 @@ jobs:
         run: pip install -U hatch
       - name: Lint
         run: hatch run style:lint
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test:
     name: Test
