@@ -11,7 +11,7 @@ from mkdocs.livereload import LiveReloadServer
 from mkdocs.plugins import BasePlugin, event_priority
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     import re
 
     from mkdocs.config.defaults import MkDocsConfig
