@@ -46,14 +46,12 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
 
         return config
 
-    @cached_property
     def _include_tag(self) -> re.Pattern[str]:
         return create_include_tag(
             self.config.opening_tag,
             self.config.closing_tag,
         )
 
-    @cached_property
     def _include_markdown_tag(self) -> re.Pattern[str]:
         return create_include_tag(
             self.config.opening_tag,

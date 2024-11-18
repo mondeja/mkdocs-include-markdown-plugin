@@ -51,9 +51,9 @@ MARKDOWN_LINK_REGEX = re.compile(  # noqa: DUO138
             )
           \]
           \(             # literal paren
-            [ \t]*
+            \s*
             <?(.*?)>?    # href = $3
-            [ \t]*
+            \s*
             (            # $4
               (['"])     # quote char = $5
               (.*?)      # Title = $6
@@ -145,10 +145,7 @@ def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
     for line in io.StringIO(markdown):
         if not _current_fcodeblock_delimiter:
             lstripped_line = line.lstrip()
-            if (
-                lstripped_line.startswith('```')
-                or lstripped_line.startswith('~~~')
-            ):
+            if lstripped_line.startswith(('```', '~~~')):
                 _current_fcodeblock_delimiter = lstripped_line[:3]
                 process_current_paragraph()
                 current_paragraph = ''
@@ -226,10 +223,7 @@ def transform_line_by_line_skipping_codeblocks(
     for line in io.StringIO(markdown):
         if not _current_fcodeblock_delimiter:
             lstripped_line = line.lstrip()
-            if (
-                lstripped_line.startswith('```')
-                or lstripped_line.startswith('~~~')
-            ):
+            if lstripped_line.startswith(('```', '~~~')):
                 _current_fcodeblock_delimiter = lstripped_line[:3]
             else:
                 line = func(line)  # noqa: PLW2901
@@ -255,25 +249,23 @@ def rewrite_relative_urls(
         scheme, netloc, path, params, query, fragment = urlparse(url)
 
         # absolute or mail
-        if path.startswith('/') or scheme == 'mailto':
+        if is_relative_path(url) or path.startswith('/') or scheme == 'mailto':
             return url
 
-        trailing_slash = path.endswith('/')
-
-        path = os.path.relpath(
+        new_path = os.path.relpath(
             os.path.join(os.path.dirname(source_path), path),
             os.path.dirname(destination_path),
         )
 
         # ensure forward slashes are used, on Windows
-        path = path.replace('\\', '/').replace('//', '/')
+        new_path = new_path.replace('\\', '/').replace('//', '/')
 
-        if trailing_slash:
+        if path.endswith('/'):
             # the above operation removes a trailing slash. Add it back if it
             # was present in the input
-            path = path + '/'
+            new_path = new_path + '/'
 
-        return urlunparse((scheme, netloc, path, params, query, fragment))
+        return urlunparse((scheme, netloc, new_path, params, query, fragment))
 
     def found_href(m: re.Match[str], url_group_index: int = -1) -> str:
         match_start, match_end = m.span(0)
@@ -444,7 +436,9 @@ def filter_paths(
             continue
 
         # ignore by dirpath (relative or absolute)
-        if (os.sep).join(filepath.split(os.sep)[:-1]) in ignore_paths:
+        fp_split = filepath.split(os.sep)
+        fp_split.pop()
+        if (os.sep).join(fp_split) in ignore_paths:
             continue
 
         # ignore if is a directory
@@ -456,6 +450,8 @@ def filter_paths(
 
 def is_url(string: str) -> bool:
     """Determine if a string is an URL."""
+    if ':' not in string:  # fast path
+        return False
     try:
         result = urlparse(string)
         return all([result.scheme, result.netloc])
@@ -470,7 +466,7 @@ def is_relative_path(string: str) -> bool:
 
 def is_absolute_path(string: str) -> bool:
     """Check if a string looks like an absolute path."""
-    return os.path.isabs(string) or string.startswith((os.sep, '/'))
+    return string.startswith((os.sep, '/'))
 
 
 def read_file(file_path: str, encoding: str) -> str:

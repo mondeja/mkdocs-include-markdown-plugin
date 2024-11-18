@@ -112,6 +112,10 @@ INCLUDE_DIRECTIVE_ARGS = {
 
 INCLUDE_MARKDOWN_DIRECTIVE_ARGS = set(ARGUMENT_REGEXES)
 
+WARN_INVALID_DIRECTIVE_ARGS_REGEX = re.compile(
+    rf'[\w-]*=[{RE_ESCAPED_PUNCTUATION}\w]*',
+)
+
 
 def warn_invalid_directive_arguments(
     arguments_string: str,
@@ -121,12 +125,14 @@ def warn_invalid_directive_arguments(
     docs_dir: str,
 ) -> None:
     """Warns about the invalid arguments passed to a directive."""
-    arg_re = re.compile(rf'[\w-]*=[{RE_ESCAPED_PUNCTUATION}\w]*')
     valid_args = (
         INCLUDE_DIRECTIVE_ARGS if directive == 'include'
         else INCLUDE_MARKDOWN_DIRECTIVE_ARGS
     )
-    for arg_value in re.findall(arg_re, arguments_string):
+    for arg_value in re.findall(
+        WARN_INVALID_DIRECTIVE_ARGS_REGEX,
+        arguments_string,
+    ):
         if arg_value.split('=', 1)[0] not in valid_args:
             location = process.file_lineno_message(
                 page_src_path, docs_dir, directive_lineno,
@@ -174,9 +180,9 @@ def create_include_tag(
     INCLUDE_TAG_RE by the effective tag.
     """
     return re.compile(
-        INCLUDE_TAG_RE.replace(' include', f' {tag}').replace(
-            '$OPENING_TAG', re.escape(opening_tag),
-        ).replace('$CLOSING_TAG', re.escape(closing_tag)),
+        INCLUDE_TAG_RE.replace(' include', f' {tag}', 1).replace(
+            '$OPENING_TAG', re.escape(opening_tag), 1,
+        ).replace('$CLOSING_TAG', re.escape(closing_tag), 1),
         flags=re.VERBOSE | re.DOTALL,
     )
 
@@ -209,7 +215,7 @@ def parse_bool_options(
     return bool_options, invalid_args
 
 
-def resolve_file_paths_to_include(
+def resolve_file_paths_to_include(  # noqa: PLR0912
     include_string: str,
     includer_page_src_path: str | None,
     docs_dir: str,
@@ -229,13 +235,11 @@ def resolve_file_paths_to_include(
             return process.filter_paths(
                 [fpath], ignore_paths,
             ), False
+
         return process.filter_paths(
-            glob.iglob(
-                os.path.normpath(include_string),
-                flags=GLOB_FLAGS,
-            ),
-            ignore_paths,
-        ), False
+            [include_string] if os.path.isfile(include_string)
+            else glob.iglob(include_string, flags=GLOB_FLAGS),
+            ignore_paths), False
 
     if process.is_relative_path(include_string):
         if includer_page_src_path is None:  # pragma: no cover
@@ -247,29 +251,33 @@ def resolve_file_paths_to_include(
         root_dir = os.path.abspath(
             os.path.dirname(includer_page_src_path),
         )
-        return process.filter_paths(
-            (
-                os.path.normpath(os.path.join(root_dir, fp))
-                for fp in glob.iglob(
-                    include_string,
-                    flags=GLOB_FLAGS,
-                    root_dir=root_dir,
-                )
-            ), ignore_paths,
-        ), False
-
-    # relative to docs_dir
-    return process.filter_paths(
-        (
-            os.path.normpath(os.path.join(docs_dir, fp))
+        paths = []
+        include_path = os.path.join(root_dir, include_string)
+        if os.path.isfile(include_path):
+            paths.append(include_path)
+        else:
             for fp in glob.iglob(
                 include_string,
                 flags=GLOB_FLAGS,
-                root_dir=docs_dir,
-            )
-        ),
-        ignore_paths,
-    ), False
+                root_dir=root_dir,
+            ):
+                paths.append(os.path.join(root_dir, fp))
+        return process.filter_paths(paths, ignore_paths), False
+
+    # relative to docs_dir
+    paths = []
+    root_dir = docs_dir
+    include_path = os.path.join(root_dir, include_string)
+    if os.path.isfile(include_path):
+        paths.append(include_path)
+    else:
+        for fp in glob.iglob(
+            include_string,
+            flags=GLOB_FLAGS,
+            root_dir=root_dir,
+        ):
+            paths.append(os.path.join(root_dir, fp))
+    return process.filter_paths(paths, ignore_paths), False
 
 
 def resolve_file_paths_to_exclude(

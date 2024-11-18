@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 import hashlib
 import os
 import time
@@ -29,15 +28,13 @@ class Cache:
 
     def get_creation_time_from_fpath(self, fpath: str) -> int:
         """Get creation time of an entry in the cache given its path."""
-        with open(fpath, encoding='utf-8') as f:
+        with open(fpath, 'rb') as f:
             return int(f.readline())
 
     @classmethod
     def generate_unique_key_from_url(cls, url: str) -> str:
         """Generate a unique key from an URL."""
-        return base64.urlsafe_b64encode(
-            hashlib.sha3_512(url.encode()).digest(),
-        ).decode('utf-8')
+        return hashlib.blake2b(url.encode(), digest_size=16).digest().hex()
 
     def read_file(self, fpath: str, encoding: str = 'utf-8') -> str:  # noqa: D102
         with open(fpath, encoding=encoding) as f:
@@ -56,9 +53,10 @@ class Cache:
     def set_(self, url: str, value: str, encoding: str = 'utf-8') -> None:  # noqa: D102
         key = self.generate_unique_key_from_url(url)
         fpath = os.path.join(self.cache_dir, key)
-        with open(fpath, 'w', encoding=encoding) as f:
-            f.write(f'{int(time.time())}\n')
-            f.write(value)
+        with open(fpath, 'wb') as fp:
+            now = f'{int(time.time())}\n'
+            fp.write(now.encode(encoding))
+            fp.write(value.encode(encoding))
 
     def clean(self) -> None:
         """Clean expired entries from the cache."""

@@ -630,8 +630,8 @@ def on_page_markdown(
         page.file.abs_src_path,
         docs_dir,
         {
-            'include': plugin._include_tag,
-            'include-markdown': plugin._include_markdown_tag,
+            'include': plugin._include_tag(),
+            'include-markdown': plugin._include_markdown_tag(),
         },
         {
             'encoding': config.encoding,
