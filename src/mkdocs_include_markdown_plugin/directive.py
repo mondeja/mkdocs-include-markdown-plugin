@@ -112,6 +112,10 @@ INCLUDE_DIRECTIVE_ARGS = {
 
 INCLUDE_MARKDOWN_DIRECTIVE_ARGS = set(ARGUMENT_REGEXES)
 
+WARN_INVALID_DIRECTIVE_ARGS_REGEX = re.compile(
+    rf'[\w-]*=[{RE_ESCAPED_PUNCTUATION}\w]*',
+)
+
 
 def warn_invalid_directive_arguments(
     arguments_string: str,
@@ -121,12 +125,14 @@ def warn_invalid_directive_arguments(
     docs_dir: str,
 ) -> None:
     """Warns about the invalid arguments passed to a directive."""
-    arg_re = re.compile(rf'[\w-]*=[{RE_ESCAPED_PUNCTUATION}\w]*')
     valid_args = (
         INCLUDE_DIRECTIVE_ARGS if directive == 'include'
         else INCLUDE_MARKDOWN_DIRECTIVE_ARGS
     )
-    for arg_value in re.findall(arg_re, arguments_string):
+    for arg_value in re.findall(
+        WARN_INVALID_DIRECTIVE_ARGS_REGEX,
+        arguments_string,
+    ):
         if arg_value.split('=', 1)[0] not in valid_args:
             location = process.file_lineno_message(
                 page_src_path, docs_dir, directive_lineno,

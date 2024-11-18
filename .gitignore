@@ -17,5 +17,6 @@ venv*/
 .mypy_cache/
 *.so
 .prettier-cache
+/*.html
 
 site/
