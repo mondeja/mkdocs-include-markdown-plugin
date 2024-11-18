@@ -28,7 +28,7 @@ from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
 from mkdocs_include_markdown_plugin.logger import logger
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing import Literal, TypedDict
 
     from mkdocs.structure.pages import Page

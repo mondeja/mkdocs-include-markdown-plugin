@@ -12,7 +12,7 @@ from urllib.parse import urlparse, urlunparse
 from urllib.request import Request, urlopen
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing import Any
 
     from mkdocs_include_markdown_plugin.cache import Cache
@@ -392,7 +392,7 @@ def _transform_positive_offset_func_factory(
 
 def increase_headings_offset(markdown: str, offset: int = 0) -> str:
     """Increases the headings depth of a snippet of Makdown content."""
-    if not offset:
+    if not offset:  # pragma: no cover
         return markdown
     return transform_line_by_line_skipping_codeblocks(
         markdown,

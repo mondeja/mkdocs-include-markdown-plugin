@@ -21,7 +21,7 @@ class DirectiveBoolArgument:  # noqa: D101
     regex: re.Pattern[str]
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing import Literal, TypedDict
 
     DirectiveBoolArgumentsDict = dict[str, DirectiveBoolArgument]
