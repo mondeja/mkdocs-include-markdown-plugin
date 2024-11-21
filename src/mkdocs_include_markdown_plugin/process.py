@@ -403,7 +403,7 @@ def _transform_positive_offset_func_factory(
     def transform(line: str) -> str:
         try:
             prefix = line[0]
-        except IndexError:
+        except IndexError:  # pragma: no cover
             return line
         else:
             return heading_prefix + line if prefix == '#' else line
