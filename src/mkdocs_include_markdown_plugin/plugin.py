@@ -45,8 +45,9 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
         for directive in self.config.directives:
             if directive not in ['include', 'include-markdown']:
                 raise PluginError(
-                    f'Invalid directive name "{directive}" at global settings.'
-                    ' Valid values are "include" and "include-markdown".',
+                    f"Invalid directive name '{directive}' at 'directives'"
+                    ' global setting. Valid values are "include" and'
+                    ' "include-markdown".',
                 )
 
         return config
