@@ -5,10 +5,11 @@ from __future__ import annotations
 import hashlib
 import os
 import time
+from importlib.util import find_spec
 
 
 try:
-    from platformdirs import user_data_dir
+    platformdirs_spec = find_spec('platformdirs')
 except ImportError:  # pragma: no cover
     CACHE_AVAILABLE = False
 else:
@@ -37,13 +38,15 @@ class Cache:
         return hashlib.blake2b(url.encode(), digest_size=16).digest().hex()
 
     def read_file(self, fpath: str, encoding: str = 'utf-8') -> str:  # noqa: D102
-        with open(fpath, encoding=encoding) as f:
-            return f.read().split('\n', 1)[1]
+        f = open(fpath, encoding=encoding)  # noqa: SIM115
+        content = f.read().split('\n', 1)[1]
+        f.close()
+        return content
 
     def get_(self, url: str, encoding: str = 'utf-8') -> str | None:  # noqa: D102
         key = self.generate_unique_key_from_url(url)
         fpath = os.path.join(self.cache_dir, key)
-        if os.path.isfile(fpath):
+        if os.path.exists(fpath):
             creation_time = self.get_creation_time_from_fpath(fpath)
             if time.time() < creation_time + self.expiration_seconds:
                 return self.read_file(fpath, encoding=encoding)
@@ -72,6 +75,7 @@ def get_cache_directory() -> str | None:
     if not CACHE_AVAILABLE:
         return None
 
+    from platformdirs import user_data_dir
     cache_dir = user_data_dir('mkdocs-include-markdown-plugin')
     if not os.path.isdir(cache_dir):
         os.makedirs(cache_dir)

@@ -129,10 +129,10 @@ def warn_invalid_directive_arguments(
         INCLUDE_DIRECTIVE_ARGS if directive == 'include'
         else INCLUDE_MARKDOWN_DIRECTIVE_ARGS
     )
-    for arg_value in re.findall(
-        WARN_INVALID_DIRECTIVE_ARGS_REGEX,
+    for arg_match in WARN_INVALID_DIRECTIVE_ARGS_REGEX.finditer(
         arguments_string,
     ):
+        arg_value = arg_match.group()
         if arg_value.split('=', 1)[0] not in valid_args:
             location = process.file_lineno_message(
                 page_src_path, docs_dir, directive_lineno,
@@ -229,7 +229,7 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
         if os.name == 'nt':  # pragma: nt cover
             # Windows
             fpath = os.path.normpath(include_string)
-            if not os.path.isfile(fpath):
+            if not os.path.exists(fpath):
                 return [], False
 
             return process.filter_paths(
@@ -237,7 +237,7 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
             ), False
 
         return process.filter_paths(
-            [include_string] if os.path.isfile(include_string)
+            [include_string] if os.path.exists(include_string)
             else glob.iglob(include_string, flags=GLOB_FLAGS),
             ignore_paths), False
 
@@ -253,7 +253,7 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
         )
         paths = []
         include_path = os.path.join(root_dir, include_string)
-        if os.path.isfile(include_path):
+        if os.path.exists(include_path):
             paths.append(include_path)
         else:
             for fp in glob.iglob(
@@ -268,7 +268,7 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
     paths = []
     root_dir = docs_dir
     include_path = os.path.join(root_dir, include_string)
-    if os.path.isfile(include_path):
+    if os.path.exists(include_path):
         paths.append(include_path)
     else:
         for fp in glob.iglob(
