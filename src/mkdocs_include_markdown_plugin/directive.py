@@ -23,7 +23,7 @@ class DirectiveBoolArgument:  # noqa: D101
 
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Literal, TypedDict
+    from typing import Callable, Literal, TypedDict
 
     DirectiveBoolArgumentsDict = dict[str, DirectiveBoolArgument]
 
@@ -120,7 +120,7 @@ WARN_INVALID_DIRECTIVE_ARGS_REGEX = re.compile(
 
 def warn_invalid_directive_arguments(
     arguments_string: str,
-    directive_lineno: int,
+    directive_lineno: Callable[[], int],
     directive: Literal['include', 'include-markdown'],
     page_src_path: str | None,
     docs_dir: str,
@@ -136,7 +136,7 @@ def warn_invalid_directive_arguments(
         arg_value = arg_match.group()
         if arg_value.split('=', 1)[0] not in valid_args:
             location = process.file_lineno_message(
-                page_src_path, docs_dir, directive_lineno,
+                page_src_path, docs_dir, directive_lineno(),
             )
             logger.warning(
                 f"Invalid argument '{arg_value}' in"
