@@ -451,3 +451,6 @@ msgid ""
 "[downloads-link]: https://pepy.tech/project/mkdocs-include-markdown-plugin"
 msgstr ""
 "[downloads-link]: https://pepy.tech/project/mkdocs-include-markdown-plugin"
+
+msgid "Customize the names of the directives."
+msgstr "Personaliza los nombres de las directivas."

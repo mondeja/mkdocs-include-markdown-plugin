@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 import os
 import re
 import stat
@@ -74,11 +75,13 @@ TRUE_FALSE_BOOL_STR = {
 }
 
 
+@functools.lru_cache
 def arg(arg: str) -> re.Pattern[str]:
     """Return a compiled regexp to match a boolean argument."""
     return re.compile(rf'{arg}=([{RE_ESCAPED_PUNCTUATION}\w]*)')
 
 
+@functools.lru_cache
 def str_arg(arg: str) -> re.Pattern[str]:
     """Return a compiled regexp to match a string argument."""
     return re.compile(
@@ -88,21 +91,23 @@ def str_arg(arg: str) -> re.Pattern[str]:
 
 
 ARGUMENT_REGEXES = {
-    'start': str_arg('start'),
-    'end': str_arg('end'),
-    'exclude': str_arg('exclude'),
-    'encoding': str_arg('encoding'),
+    'start': functools.partial(str_arg, 'start'),
+    'end': functools.partial(str_arg, 'end'),
+    'exclude': functools.partial(str_arg, 'exclude'),
+    'encoding': functools.partial(str_arg, 'encoding'),
 
     # bool
-    'comments': arg('comments'),
-    'preserve-includer-indent': arg('preserve-includer-indent'),
-    'dedent': arg('dedent'),
-    'trailing-newlines': arg('trailing-newlines'),
-    'rewrite-relative-urls': arg('rewrite-relative-urls'),
-    'recursive': arg('recursive'),
+    'comments': functools.partial(arg, 'comments'),
+    'preserve-includer-indent': functools.partial(
+        arg, 'preserve-includer-indent',
+    ),
+    'dedent': functools.partial(arg, 'dedent'),
+    'trailing-newlines': functools.partial(arg, 'trailing-newlines'),
+    'rewrite-relative-urls': functools.partial(arg, 'rewrite-relative-urls'),
+    'recursive': functools.partial(arg, 'recursive'),
 
     # int
-    'heading-offset': arg('heading-offset'),
+    'heading-offset': functools.partial(arg, 'heading-offset'),
 }
 
 INCLUDE_DIRECTIVE_ARGS = {
@@ -110,8 +115,6 @@ INCLUDE_DIRECTIVE_ARGS = {
         'rewrite-relative-urls', 'heading-offset', 'comments',
     )
 }
-
-INCLUDE_MARKDOWN_DIRECTIVE_ARGS = set(ARGUMENT_REGEXES)
 
 WARN_INVALID_DIRECTIVE_ARGS_REGEX = re.compile(
     rf'[\w-]*=[{RE_ESCAPED_PUNCTUATION}\w]*',
@@ -128,12 +131,11 @@ def warn_invalid_directive_arguments(
     """Warns about the invalid arguments passed to a directive."""
     valid_args = (
         INCLUDE_DIRECTIVE_ARGS if directive == 'include'
-        else INCLUDE_MARKDOWN_DIRECTIVE_ARGS
+        else set(ARGUMENT_REGEXES)
     )
-    for arg_match in WARN_INVALID_DIRECTIVE_ARGS_REGEX.finditer(
+    for arg_value in WARN_INVALID_DIRECTIVE_ARGS_REGEX.findall(
         arguments_string,
     ):
-        arg_value = arg_match.group()
         if arg_value.split('=', 1)[0] not in valid_args:
             location = process.file_lineno_message(
                 page_src_path, docs_dir, directive_lineno(),
@@ -173,7 +175,7 @@ def parse_string_argument(match: re.Match[str]) -> str | None:
 
 
 def create_include_tag(
-        opening_tag: str, closing_tag: str, tag: str = 'include',
+        opening_tag: str, closing_tag: str, tag: str,
 ) -> re.Pattern[str]:
     """Create a regex pattern to match an inclusion tag directive.
 
@@ -200,7 +202,7 @@ def parse_bool_options(
     for option_name in option_names:
         bool_options[option_name] = DirectiveBoolArgument(
             value=defaults[option_name],  # type: ignore
-            regex=ARGUMENT_REGEXES[option_name],
+            regex=ARGUMENT_REGEXES[option_name](),
         )
 
     for arg_name, arg in bool_options.items():

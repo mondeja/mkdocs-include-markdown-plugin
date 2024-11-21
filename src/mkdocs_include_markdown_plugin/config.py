@@ -25,3 +25,11 @@ class PluginConfig(Config):  # noqa: D101
     exclude = ListOfItems(MkType(str), default=[])
     cache = MkType(int, default=0)
     recursive = MkType(bool, default=True)
+    directives = MkType(
+        dict,
+        default={
+            '__default': '',
+            'include': 'include',
+            'include-markdown': 'include-markdown',
+        },
+    )

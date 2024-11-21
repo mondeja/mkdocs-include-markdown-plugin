@@ -96,6 +96,18 @@ supplément `cache`:
 mkdocs-include-markdown-plugin[cache]
 ```
 
+#### `directives`
+
+Personnaliser les noms des directives.
+
+```yaml
+plugins:
+  - include-markdown:
+      directives:
+        include-markdown: include-md
+        include: replace
+```
+
 ### Référence
 
 Ce plugin fournit deux directives, une pour inclure des fichiers Markdown et une

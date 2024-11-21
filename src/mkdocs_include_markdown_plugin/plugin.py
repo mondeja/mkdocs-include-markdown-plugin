@@ -11,7 +11,6 @@ from mkdocs.plugins import BasePlugin, event_priority
 
 
 if TYPE_CHECKING:  # pragma: no cover
-    import re
 
     from mkdocs.config.defaults import MkDocsConfig
     from mkdocs.livereload import LiveReloadServer
@@ -20,7 +19,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
 from mkdocs_include_markdown_plugin.cache import Cache, initialize_cache
 from mkdocs_include_markdown_plugin.config import PluginConfig
-from mkdocs_include_markdown_plugin.directive import create_include_tag
 from mkdocs_include_markdown_plugin.event import (
     on_page_markdown as _on_page_markdown,
 )
@@ -44,20 +42,18 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
             cache.clean()
             self._cache = cache
 
+        if '__default' not in self.config.directives:  # pragma: no cover
+            for directive in self.config.directives:
+                if directive not in {
+                    'include', 'include-markdown',
+                }:
+                    raise PluginError(
+                        f"Invalid directive name '{directive}' at 'directives'"
+                        ' global setting. Valid values are "include" and'
+                        ' "include-markdown".',
+                    )
+
         return config
-
-    def _include_tag(self) -> re.Pattern[str]:
-        return create_include_tag(
-            self.config.opening_tag,
-            self.config.closing_tag,
-        )
-
-    def _include_markdown_tag(self) -> re.Pattern[str]:
-        return create_include_tag(
-            self.config.opening_tag,
-            self.config.closing_tag,
-            tag='include-markdown',
-        )
 
     @cached_property
     def _files_watcher(self) -> FilesWatcher:

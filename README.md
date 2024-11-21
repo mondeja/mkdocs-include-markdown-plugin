@@ -109,6 +109,20 @@ You can include it in the installation of the plugin adding the `cache` extra:
 mkdocs-include-markdown-plugin[cache]
 ```
 
+<!-- mdpo-disable-next-line -->
+
+#### `directives`
+
+Customize the names of the directives.
+
+```yaml
+plugins:
+  - include-markdown:
+      directives:
+        include-markdown: include-md
+        include: replace
+```
+
 ### Reference
 
 This plugin provides two directives, one to include Markdown files and another

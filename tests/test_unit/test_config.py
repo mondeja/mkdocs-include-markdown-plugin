@@ -152,6 +152,36 @@ def _run_test(
             {},
             id='custom-comments',
         ),
+
+        # directives
+        pytest.param(
+            '{% foo "{filepath}" %}bar\n',
+            'baz\n',
+            'baz\nbar\n',
+            {'comments': False, 'directives': {'include-markdown': 'foo'}},
+            id='custom-include-markdown-directive',
+        ),
+        pytest.param(
+            '{% my-include "{filepath}" %}bar\n',
+            'baz\n',
+            'baz\nbar\n',
+            {'comments': False, 'directives': {'include': 'my-include'}},
+            id='custom-include-directive',
+        ),
+        pytest.param(
+            '{% foo "{filepath}" %}bar\n{% include-markdown "{filepath}" %}',
+            'baz\n',
+            '{% foo "{filepath}" %}bar\nbaz\n',
+            {'comments': False, 'directives': {'non-existent': 'foo'}},
+            id='default-include-markdown-directive',
+        ),
+        pytest.param(
+            '{% foo "{filepath}" %}bar\n{% include "{filepath}" %}',
+            'baz\n',
+            '{% foo "{filepath}" %}bar\nbaz\n',
+            {'comments': False, 'directives': {'non-existent': 'foo'}},
+            id='default-include-directive',
+        ),
     ),
     indirect=['plugin'],
 )
