@@ -268,7 +268,7 @@ def rewrite_relative_urls(
             if path[-1] == '/':
                 # the above operation removes a trailing slash,
                 # so add it back if it was present in the input
-                new_path = new_path + '/'
+                new_path += '/'
         except IndexError:  # pragma: no cover
             pass
 
