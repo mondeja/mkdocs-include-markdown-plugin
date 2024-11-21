@@ -268,7 +268,7 @@ def rewrite_relative_urls(
                 # the above operation removes a trailing slash,
                 # so add it back if it was present in the input
                 new_path = new_path + '/'
-        except IndexError:
+        except IndexError:  # pragma: no cover
             pass
 
         return urlunparse((scheme, netloc, new_path, params, query, fragment))
@@ -386,7 +386,7 @@ def _transform_negative_offset_func_factory(
         try:
             if line[0] != '#':
                 return line
-        except IndexError:
+        except IndexError:  # pragma: no cover
             return line
         if line.startswith(heading_prefix):
             return heading_prefix + line.lstrip('#')
