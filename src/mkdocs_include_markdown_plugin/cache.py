@@ -49,7 +49,7 @@ class Cache:
         fpath = os.path.join(self.cache_dir, key)
         try:
             is_file = stat.S_ISREG(os.stat(fpath).st_mode)
-        except FileNotFoundError:
+        except (FileNotFoundError, OSError):  # pragma: no cover
             return None
         if is_file:
             creation_time = self.get_creation_time_from_fpath(fpath)

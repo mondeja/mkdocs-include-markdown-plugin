@@ -232,7 +232,7 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
             fpath = os.path.normpath(include_string)
             try:
                 is_file = stat.S_ISREG(os.stat(fpath).st_mode)
-            except FileNotFoundError:
+            except (FileNotFoundError, OSError):  # pragma: no cover
                 is_file = False
             if not is_file:
                 return [], False
@@ -243,7 +243,7 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
 
         try:
             is_file = stat.S_ISREG(os.stat(include_string).st_mode)
-        except FileNotFoundError:
+        except (FileNotFoundError, OSError):
             is_file = False
         return process.filter_paths(
             [include_string] if is_file else glob.iglob(
@@ -265,7 +265,7 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
         include_path = os.path.join(root_dir, include_string)
         try:
             is_file = stat.S_ISREG(os.stat(include_path).st_mode)
-        except FileNotFoundError:
+        except (FileNotFoundError, OSError):
             is_file = False
         if is_file:
             paths.append(include_path)
@@ -284,7 +284,7 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
     include_path = os.path.join(root_dir, include_string)
     try:
         is_file = stat.S_ISREG(os.stat(include_path).st_mode)
-    except FileNotFoundError:
+    except (FileNotFoundError, OSError):
         is_file = False
     if is_file:
         paths.append(include_path)

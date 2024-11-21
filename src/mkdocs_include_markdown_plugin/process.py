@@ -466,7 +466,7 @@ def filter_paths(
         try:
             if not stat.S_ISDIR(os.stat(filepath).st_mode):
                 response.append(filepath)
-        except FileNotFoundError:  # pragma: no cover
+        except (FileNotFoundError, OSError):  # pragma: no cover
             continue
     response.sort()
     return response
