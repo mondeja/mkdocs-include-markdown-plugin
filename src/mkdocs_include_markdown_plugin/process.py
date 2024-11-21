@@ -8,7 +8,7 @@ import os
 import re
 import stat
 from collections.abc import Callable, Iterator
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:  # pragma: no cover
