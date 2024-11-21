@@ -134,7 +134,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             docs_dir,
         )
 
-        exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
+        exclude_match = ARGUMENT_REGEXES['exclude']().search(arguments_string)
         ignore_paths = [*settings_ignore_paths]
         if exclude_match is not None:
             exclude_string = parse_string_argument(exclude_match)
@@ -187,7 +187,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 f' Possible values are true or false.',
             )
 
-        start_match = ARGUMENT_REGEXES['start'].search(arguments_string)
+        start_match = ARGUMENT_REGEXES['start']().search(arguments_string)
         if start_match:
             start = parse_string_argument(start_match)
             if start is None:
@@ -201,7 +201,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         else:
             start = defaults['start']
 
-        end_match = ARGUMENT_REGEXES['end'].search(arguments_string)
+        end_match = ARGUMENT_REGEXES['end']().search(arguments_string)
         if end_match:
             end = parse_string_argument(end_match)
             if end is None:
@@ -215,7 +215,8 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         else:
             end = defaults['end']
 
-        encoding_match = ARGUMENT_REGEXES['encoding'].search(arguments_string)
+        encoding_match = ARGUMENT_REGEXES['encoding']().search(
+            arguments_string)
         if encoding_match:
             encoding = parse_string_argument(encoding_match)
             if encoding is None:
@@ -345,7 +346,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             docs_dir,
         )
 
-        exclude_match = ARGUMENT_REGEXES['exclude'].search(arguments_string)
+        exclude_match = ARGUMENT_REGEXES['exclude']().search(arguments_string)
         ignore_paths = [*settings_ignore_paths]
         if exclude_match is not None:
             exclude_string = parse_string_argument(exclude_match)
@@ -401,7 +402,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             )
 
         # start and end arguments
-        start_match = ARGUMENT_REGEXES['start'].search(arguments_string)
+        start_match = ARGUMENT_REGEXES['start']().search(arguments_string)
         if start_match:
             start = parse_string_argument(start_match)
             if start is None:
@@ -415,7 +416,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         else:
             start = defaults['start']
 
-        end_match = ARGUMENT_REGEXES['end'].search(arguments_string)
+        end_match = ARGUMENT_REGEXES['end']().search(arguments_string)
         if end_match:
             end = parse_string_argument(end_match)
             if end is None:
@@ -429,7 +430,8 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         else:
             end = defaults['end']
 
-        encoding_match = ARGUMENT_REGEXES['encoding'].search(arguments_string)
+        encoding_match = ARGUMENT_REGEXES['encoding']().search(
+            arguments_string)
         if encoding_match:
             encoding = parse_string_argument(encoding_match)
             if encoding is None:
@@ -444,7 +446,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             encoding = defaults['encoding']
 
         # heading offset
-        offset_match = ARGUMENT_REGEXES['heading-offset'].search(
+        offset_match = ARGUMENT_REGEXES['heading-offset']().search(
             arguments_string,
         )
         if offset_match:
