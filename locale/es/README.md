@@ -50,9 +50,6 @@ plugins:
       start: <!--start-->
       end: <!--end-->
       recursive: true
-      directives:
-        include-markdown: include-md
-        include: replace-by
 ```
 
 #### `opening_tag` y `closing_tag`
