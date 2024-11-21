@@ -42,9 +42,9 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
             cache.clean()
             self._cache = cache
 
-        if '__default' not in self.config.directives:
+        if '__default' not in self.config.directives:  # pragma: no cover
             for directive in self.config.directives:
-                if directive not in {  # pragma: no cover
+                if directive not in {
                     'include', 'include-markdown',
                 }:
                     raise PluginError(
