@@ -28,6 +28,7 @@ class PluginConfig(Config):  # noqa: D101
     directives = MkType(
         dict,
         default={
+            '__default': '',
             'include': 'include',
             'include-markdown': 'include-markdown',
         },
