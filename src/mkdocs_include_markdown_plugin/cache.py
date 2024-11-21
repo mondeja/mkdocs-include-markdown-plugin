@@ -9,12 +9,7 @@ import time
 from importlib.util import find_spec
 
 
-try:
-    platformdirs_spec = find_spec('platformdirs')
-except ImportError:  # pragma: no cover
-    CACHE_AVAILABLE = False
-else:
-    CACHE_AVAILABLE = True
+CACHE_AVAILABLE = find_spec('platformdirs') is not None
 
 
 class Cache:
@@ -80,7 +75,11 @@ def get_cache_directory() -> str | None:
     if not CACHE_AVAILABLE:
         return None
 
-    from platformdirs import user_data_dir
+    try:
+        from platformdirs import user_data_dir
+    except ImportError:
+        return None
+
     cache_dir = user_data_dir('mkdocs-include-markdown-plugin')
     os.makedirs(cache_dir, exist_ok=True)
 
