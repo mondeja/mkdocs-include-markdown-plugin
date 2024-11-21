@@ -173,7 +173,7 @@ def parse_string_argument(match: re.Match[str]) -> str | None:
 
 
 def create_include_tag(
-        opening_tag: str, closing_tag: str, tag: str = 'include',
+        opening_tag: str, closing_tag: str, tag: str,
 ) -> re.Pattern[str]:
     """Create a regex pattern to match an inclusion tag directive.
 

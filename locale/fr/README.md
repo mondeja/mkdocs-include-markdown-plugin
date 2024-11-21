@@ -108,7 +108,7 @@ plugins:
   - include-markdown:
       directives:
         include-markdown: include-md
-        include: replace-by
+        include: replace
 ```
 
 ### Référence
