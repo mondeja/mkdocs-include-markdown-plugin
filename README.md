@@ -61,6 +61,9 @@ plugins:
       start: <!--start-->
       end: <!--end-->
       recursive: true
+      directives:
+        include-markdown: include-md
+        include: replace-by
 ```
 
 #### `opening_tag` and `closing_tag`
@@ -107,6 +110,20 @@ You can include it in the installation of the plugin adding the `cache` extra:
 ```txt
 # requirements.txt
 mkdocs-include-markdown-plugin[cache]
+```
+
+<!-- mdpo-disable-next-line -->
+
+#### `directives`
+
+Customize the names of the directives.
+
+```yaml
+plugins:
+  - include-markdown:
+      directives:
+        include-markdown: include-md
+        include: replace-by
 ```
 
 ### Reference

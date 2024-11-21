@@ -18,6 +18,7 @@ from mkdocs_include_markdown_plugin.cache import Cache
 from mkdocs_include_markdown_plugin.directive import (
     ARGUMENT_REGEXES,
     GLOB_FLAGS,
+    create_include_tag,
     parse_bool_options,
     parse_filename_argument,
     parse_string_argument,
@@ -633,8 +634,16 @@ def on_page_markdown(
         page.file.abs_src_path,
         docs_dir,
         {
-            'include': plugin._include_tag(),
-            'include-markdown': plugin._include_markdown_tag(),
+            'include': create_include_tag(
+                config.opening_tag,
+                config.closing_tag,
+                config.directives.get('include', 'include'),
+            ),
+            'include-markdown': create_include_tag(
+                config.opening_tag,
+                config.closing_tag,
+                config.directives.get('include-markdown', 'include-markdown'),
+            ),
         },
         {
             'encoding': config.encoding,

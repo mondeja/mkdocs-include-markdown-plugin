@@ -50,6 +50,9 @@ plugins:
       start: <!--start-->
       end: <!--end-->
       recursive: true
+      directives:
+        include-markdown: include-md
+        include: replace-by
 ```
 
 #### `opening_tag` y `closing_tag`
@@ -94,6 +97,18 @@ Puedes incluirla en la instalación del plugin añadiendo el extra `cache`:
 ```txt
 # requirements.txt
 mkdocs-include-markdown-plugin[cache]
+```
+
+#### `directives`
+
+Personaliza los nombres de las directivas.
+
+```yaml
+plugins:
+  - include-markdown:
+      directives:
+        include-markdown: include-md
+        include: replace-by
 ```
 
 ### Referencia

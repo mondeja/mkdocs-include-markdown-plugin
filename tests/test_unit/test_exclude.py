@@ -1,4 +1,4 @@
-"""Tests for mkdocs-include-markdown-plugin `exclude` directives argument."""
+"""Tests for mkdocs-include-markdown-plugin `exclude` setting."""
 
 import functools
 import os
