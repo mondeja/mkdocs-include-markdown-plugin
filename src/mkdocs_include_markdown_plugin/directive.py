@@ -227,12 +227,12 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
         return [include_string], True
 
     if process.is_absolute_path(include_string):
-        if os.name == 'nt':  # pragma: nt cover
+        if os.name == 'nt':  # pragma: no cover
             # Windows
             fpath = os.path.normpath(include_string)
             try:
                 is_file = stat.S_ISREG(os.stat(fpath).st_mode)
-            except (FileNotFoundError, OSError):  # pragma: no cover
+            except (FileNotFoundError, OSError):
                 is_file = False
             if not is_file:
                 return [], False
