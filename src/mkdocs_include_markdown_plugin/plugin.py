@@ -7,7 +7,6 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from mkdocs.exceptions import PluginError
-from mkdocs.livereload import LiveReloadServer
 from mkdocs.plugins import BasePlugin, event_priority
 
 
@@ -15,6 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover
     import re
 
     from mkdocs.config.defaults import MkDocsConfig
+    from mkdocs.livereload import LiveReloadServer
     from mkdocs.structure.files import Files
     from mkdocs.structure.pages import Page
 

@@ -6,10 +6,9 @@ import functools
 import io
 import os
 import re
+import stat
 from collections.abc import Callable, Iterator
-from typing import TYPE_CHECKING, Any
-from urllib.parse import urlparse, urlunparse
-from urllib.request import Request, urlopen
+from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -246,10 +245,15 @@ def rewrite_relative_urls(
     ``destination_path``.
     """
     def rewrite_url(url: str) -> str:
+        from urllib.parse import urlparse, urlunparse
+
+        if is_relative_path(url):
+            return url
+
         scheme, netloc, path, params, query, fragment = urlparse(url)
 
         # absolute or mail
-        if is_relative_path(url) or path.startswith('/') or scheme == 'mailto':
+        if path.startswith('/') or scheme == 'mailto':
             return url
 
         new_path = os.path.relpath(
@@ -260,10 +264,13 @@ def rewrite_relative_urls(
         # ensure forward slashes are used, on Windows
         new_path = new_path.replace('\\', '/').replace('//', '/')
 
-        if path.endswith('/'):
-            # the above operation removes a trailing slash. Add it back if it
-            # was present in the input
-            new_path = new_path + '/'
+        try:
+            if path[-1] == '/':
+                # the above operation removes a trailing slash,
+                # so add it back if it was present in the input
+                new_path += '/'
+        except IndexError:  # pragma: no cover
+            pass
 
         return urlunparse((scheme, netloc, new_path, params, query, fragment))
 
@@ -351,9 +358,10 @@ def filter_inclusions(  # noqa: PLR0912
         if end not in text_to_include:
             expected_end_not_found = True
 
+        start_split = text_to_include.split(start)
         text_parts = (
-            text_to_include.split(start)[1:]
-            if start in text_to_include else [text_to_include]
+            start_split[1:]
+            if len(start_split) > 1 else [text_to_include]
         )
 
         for start_text in text_parts:
@@ -374,20 +382,34 @@ def _transform_negative_offset_func_factory(
         offset: int,
 ) -> Callable[[str], str]:
     heading_prefix = '#' * abs(offset)
-    return lambda line: line if not line.startswith('#') else (
-        heading_prefix + line.lstrip('#')
-        if line.startswith(heading_prefix)
-        else '#' + line.lstrip('#')
-    )
+
+    def transform(line: str) -> str:
+        try:
+            if line[0] != '#':
+                return line
+        except IndexError:  # pragma: no cover
+            return line
+        if line.startswith(heading_prefix):
+            return heading_prefix + line.lstrip('#')
+        return '#' + line.lstrip('#')
+
+    return transform
 
 
 def _transform_positive_offset_func_factory(
         offset: int,
 ) -> Callable[[str], str]:
     heading_prefix = '#' * offset
-    return lambda line: (
-        heading_prefix + line if line.startswith('#') else line
-    )
+
+    def transform(line: str) -> str:
+        try:
+            prefix = line[0]
+        except IndexError:  # pragma: no cover
+            return line
+        else:
+            return heading_prefix + line if prefix == '#' else line
+
+    return transform
 
 
 def increase_headings_offset(markdown: str, offset: int = 0) -> str:
@@ -442,8 +464,11 @@ def filter_paths(
             continue
 
         # ignore if is a directory
-        if not os.path.isdir(filepath):
-            response.append(filepath)
+        try:
+            if not stat.S_ISDIR(os.stat(filepath).st_mode):
+                response.append(filepath)
+        except (FileNotFoundError, OSError):  # pragma: no cover
+            continue
     response.sort()
     return response
 
@@ -452,6 +477,8 @@ def is_url(string: str) -> bool:
     """Determine if a string is an URL."""
     if ':' not in string:  # fast path
         return False
+    from urllib.parse import urlparse
+
     try:
         result = urlparse(string)
         return all([result.scheme, result.netloc])
@@ -471,8 +498,10 @@ def is_absolute_path(string: str) -> bool:
 
 def read_file(file_path: str, encoding: str) -> str:
     """Read a file and return its content."""
-    with open(file_path, encoding=encoding) as f:
-        return f.read()
+    f = open(file_path, encoding=encoding)  # noqa: SIM115
+    content = f.read()
+    f.close()
+    return content
 
 
 def read_url(
@@ -481,6 +510,8 @@ def read_url(
         encoding: str = 'utf-8',
 ) -> Any:
     """Read an HTTP location and return its content."""
+    from urllib.request import Request, urlopen
+
     if http_cache is not None:
         cached_content = http_cache.get_(url, encoding)
         if cached_content is not None:

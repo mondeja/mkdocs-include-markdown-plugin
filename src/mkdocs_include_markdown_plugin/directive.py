@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+import stat
 import string
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -22,7 +23,7 @@ class DirectiveBoolArgument:  # noqa: D101
 
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Literal, TypedDict
+    from typing import Callable, Literal, TypedDict
 
     DirectiveBoolArgumentsDict = dict[str, DirectiveBoolArgument]
 
@@ -119,7 +120,7 @@ WARN_INVALID_DIRECTIVE_ARGS_REGEX = re.compile(
 
 def warn_invalid_directive_arguments(
     arguments_string: str,
-    directive_lineno: int,
+    directive_lineno: Callable[[], int],
     directive: Literal['include', 'include-markdown'],
     page_src_path: str | None,
     docs_dir: str,
@@ -129,13 +130,13 @@ def warn_invalid_directive_arguments(
         INCLUDE_DIRECTIVE_ARGS if directive == 'include'
         else INCLUDE_MARKDOWN_DIRECTIVE_ARGS
     )
-    for arg_value in re.findall(
-        WARN_INVALID_DIRECTIVE_ARGS_REGEX,
+    for arg_match in WARN_INVALID_DIRECTIVE_ARGS_REGEX.finditer(
         arguments_string,
     ):
+        arg_value = arg_match.group()
         if arg_value.split('=', 1)[0] not in valid_args:
             location = process.file_lineno_message(
-                page_src_path, docs_dir, directive_lineno,
+                page_src_path, docs_dir, directive_lineno(),
             )
             logger.warning(
                 f"Invalid argument '{arg_value}' in"
@@ -226,19 +227,28 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
         return [include_string], True
 
     if process.is_absolute_path(include_string):
-        if os.name == 'nt':  # pragma: nt cover
+        if os.name == 'nt':  # pragma: no cover
             # Windows
             fpath = os.path.normpath(include_string)
-            if not os.path.isfile(fpath):
+            try:
+                is_file = stat.S_ISREG(os.stat(fpath).st_mode)
+            except (FileNotFoundError, OSError):
+                is_file = False
+            if not is_file:
                 return [], False
 
             return process.filter_paths(
                 [fpath], ignore_paths,
             ), False
 
+        try:
+            is_file = stat.S_ISREG(os.stat(include_string).st_mode)
+        except (FileNotFoundError, OSError):
+            is_file = False
         return process.filter_paths(
-            [include_string] if os.path.isfile(include_string)
-            else glob.iglob(include_string, flags=GLOB_FLAGS),
+            [include_string] if is_file else glob.iglob(
+                include_string, flags=GLOB_FLAGS,
+            ),
             ignore_paths), False
 
     if process.is_relative_path(include_string):
@@ -253,7 +263,11 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
         )
         paths = []
         include_path = os.path.join(root_dir, include_string)
-        if os.path.isfile(include_path):
+        try:
+            is_file = stat.S_ISREG(os.stat(include_path).st_mode)
+        except (FileNotFoundError, OSError):
+            is_file = False
+        if is_file:
             paths.append(include_path)
         else:
             for fp in glob.iglob(
@@ -268,7 +282,11 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
     paths = []
     root_dir = docs_dir
     include_path = os.path.join(root_dir, include_string)
-    if os.path.isfile(include_path):
+    try:
+        is_file = stat.S_ISREG(os.stat(include_path).st_mode)
+    except (FileNotFoundError, OSError):
+        is_file = False
+    if is_file:
         paths.append(include_path)
     else:
         for fp in glob.iglob(
