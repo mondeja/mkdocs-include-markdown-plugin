@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+import stat
 import string
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -229,16 +230,25 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
         if os.name == 'nt':  # pragma: nt cover
             # Windows
             fpath = os.path.normpath(include_string)
-            if not os.path.exists(fpath):
+            try:
+                is_file = stat.S_ISREG(os.stat(fpath).st_mode)
+            except FileNotFoundError:
+                is_file = False
+            if not is_file:
                 return [], False
 
             return process.filter_paths(
                 [fpath], ignore_paths,
             ), False
 
+        try:
+            is_file = stat.S_ISREG(os.stat(include_string).st_mode)
+        except FileNotFoundError:
+            is_file = False
         return process.filter_paths(
-            [include_string] if os.path.exists(include_string)
-            else glob.iglob(include_string, flags=GLOB_FLAGS),
+            [include_string] if is_file else glob.iglob(
+                include_string, flags=GLOB_FLAGS,
+            ),
             ignore_paths), False
 
     if process.is_relative_path(include_string):
@@ -253,7 +263,11 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
         )
         paths = []
         include_path = os.path.join(root_dir, include_string)
-        if os.path.exists(include_path):
+        try:
+            is_file = stat.S_ISREG(os.stat(include_path).st_mode)
+        except FileNotFoundError:
+            is_file = False
+        if is_file:
             paths.append(include_path)
         else:
             for fp in glob.iglob(
@@ -268,7 +282,11 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
     paths = []
     root_dir = docs_dir
     include_path = os.path.join(root_dir, include_string)
-    if os.path.exists(include_path):
+    try:
+        is_file = stat.S_ISREG(os.stat(include_path).st_mode)
+    except FileNotFoundError:
+        is_file = False
+    if is_file:
         paths.append(include_path)
     else:
         for fp in glob.iglob(

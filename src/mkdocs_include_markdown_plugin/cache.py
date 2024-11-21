@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import stat
 import time
 from importlib.util import find_spec
 
@@ -46,7 +47,11 @@ class Cache:
     def get_(self, url: str, encoding: str = 'utf-8') -> str | None:  # noqa: D102
         key = self.generate_unique_key_from_url(url)
         fpath = os.path.join(self.cache_dir, key)
-        if os.path.exists(fpath):
+        try:
+            is_file = stat.S_ISREG(os.stat(fpath).st_mode)
+        except FileNotFoundError:
+            return None
+        if is_file:
             creation_time = self.get_creation_time_from_fpath(fpath)
             if time.time() < creation_time + self.expiration_seconds:
                 return self.read_file(fpath, encoding=encoding)
@@ -77,8 +82,7 @@ def get_cache_directory() -> str | None:
 
     from platformdirs import user_data_dir
     cache_dir = user_data_dir('mkdocs-include-markdown-plugin')
-    if not os.path.isdir(cache_dir):
-        os.makedirs(cache_dir)
+    os.makedirs(cache_dir, exist_ok=True)
 
     return cache_dir
 

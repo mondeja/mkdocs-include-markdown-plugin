@@ -6,10 +6,9 @@ import functools
 import io
 import os
 import re
+import stat
 from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING, Any
-from urllib.parse import urlparse, urlunparse
-from urllib.request import Request, urlopen
 
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -246,6 +245,8 @@ def rewrite_relative_urls(
     ``destination_path``.
     """
     def rewrite_url(url: str) -> str:
+        from urllib.parse import urlparse, urlunparse
+
         if is_relative_path(url):
             return url
 
@@ -462,8 +463,11 @@ def filter_paths(
             continue
 
         # ignore if is a directory
-        if not os.path.isdir(filepath):
-            response.append(filepath)
+        try:
+            if not stat.S_ISDIR(os.stat(filepath).st_mode):
+                response.append(filepath)
+        except FileNotFoundError:  # pragma: no cover
+            continue
     response.sort()
     return response
 
@@ -472,6 +476,8 @@ def is_url(string: str) -> bool:
     """Determine if a string is an URL."""
     if ':' not in string:  # fast path
         return False
+    from urllib.parse import urlparse
+
     try:
         result = urlparse(string)
         return all([result.scheme, result.netloc])
@@ -503,6 +509,8 @@ def read_url(
         encoding: str = 'utf-8',
 ) -> Any:
     """Read an HTTP location and return its content."""
+    from urllib.request import Request, urlopen
+
     if http_cache is not None:
         cached_content = http_cache.get_(url, encoding)
         if cached_content is not None:
