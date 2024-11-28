@@ -1,4 +1,4 @@
-<!-- Only include 'included.md' if exists, otherwise include 'empty.md'. -->
+<!-- Only include 'included.md' if exists. Always include 'empty.md'. -->
 
 {% include-markdown '?(empty.md)?(included.md)' %}
 
