@@ -24,6 +24,7 @@ class PluginConfig(Config):  # noqa: D101
     end = Optional(MkType(str))
     exclude = ListOfItems(MkType(str), default=[])
     cache = MkType(int, default=0)
+    cache_dir = MkType(str, default='')
     recursive = MkType(bool, default=True)
     directives = MkType(
         dict,

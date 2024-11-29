@@ -244,12 +244,9 @@ def rewrite_relative_urls(
     ``source_path`` will still work when inserted into a file at
     ``destination_path``.
     """
+    from urllib.parse import urlparse, urlunparse
+
     def rewrite_url(url: str) -> str:
-        from urllib.parse import urlparse, urlunparse
-
-        if is_relative_path(url):
-            return url
-
         scheme, netloc, path, params, query, fragment = urlparse(url)
 
         # absolute or mail
@@ -425,7 +422,7 @@ def increase_headings_offset(markdown: str, offset: int = 0) -> str:
 
 def rstrip_trailing_newlines(content: str) -> str:
     """Removes trailing newlines from a string."""
-    while content.endswith('\n') or content.endswith('\r'):
+    while content.endswith(('\n', '\r')):
         content = content.rstrip('\r\n')
     return content
 

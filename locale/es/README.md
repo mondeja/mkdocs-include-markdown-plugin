@@ -88,13 +88,29 @@ plugins:
       cache: 600
 ```
 
-Para usar esta funcionalidad, la dependencia [platformdirs] debe ser instalada.
-Puedes incluirla en la instalación del plugin añadiendo el extra `cache`:
+Para poder utilizar esta función, se debe instalar la dependencia [platformdirs]
+o definir la configuración [`cache_dir`](#cache_dir). Puedes incluir
+[platformdirs] en la instalación del plugin agregando el extra `cache`:
 
 ```txt
 # requirements.txt
 mkdocs-include-markdown-plugin[cache]
 ```
+
+#### `cache_dir`
+
+Directorio donde se almacenarán las solicitudes HTTP en caché. Si se configura,
+no es necesario instalar [platformdirs] para usar [`cache`](#cache).
+
+```yaml
+plugins:
+  - include-markdown:
+      cache: 600
+      cache_dir: ./mkdocs-include-markdown-cache
+```
+
+Se agregará un archivo *.gitignore* al directorio de caché si no existe para
+evitar confirmar los archivos de caché.
 
 #### `directives`
 

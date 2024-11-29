@@ -1,0 +1,5 @@
+site_name: Foo
+plugins:
+  - include-markdown:
+      cache: 600
+      cache_dir: .mkdocs-include-markdown-cache

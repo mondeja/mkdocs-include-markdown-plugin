@@ -101,13 +101,31 @@ plugins:
       cache: 600
 ```
 
-In order to use this feature, the dependency [platformdirs] must be installed.
-You can include it in the installation of the plugin adding the `cache` extra:
+In order to use this feature, the dependency [platformdirs] must be installed
+or the setting [`cache_dir`](#cache_dir) must be defined. You can include
+[platformdirs] in the installation of the plugin adding the `cache` extra:
 
 ```txt
 # requirements.txt
 mkdocs-include-markdown-plugin[cache]
 ```
+
+<!-- mdpo-disable-next-line -->
+
+#### `cache_dir`
+
+Directory where cached HTTP requests will be stored. If set, [platformdirs] is not
+needed to be installed to use [`cache`](#cache).
+
+```yaml
+plugins:
+  - include-markdown:
+      cache: 600
+      cache_dir: ./mkdocs-include-markdown-cache
+```
+
+A _.gitignore_ file will be added to the cache directory if not exists to avoid
+committing the cache files.
 
 <!-- mdpo-disable-next-line -->
 

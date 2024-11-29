@@ -7,7 +7,7 @@ from mkdocs import config
 from mkdocs.commands.build import build
 from mkdocs.exceptions import Abort
 
-from mkdocs_include_markdown_plugin.cache import CACHE_AVAILABLE
+from mkdocs_include_markdown_plugin.cache import is_platformdirs_installed
 from testing_helpers import rootdir
 
 
@@ -25,7 +25,7 @@ def test_examples_subprocess(dirname):
     config_file = os.path.join(example_dir, 'mkdocs.yml')
     expected_returncode = 1 if config_is_using_cache_setting(
         config_file,
-    ) and not CACHE_AVAILABLE else 0
+    ) and not is_platformdirs_installed() else 0
 
     proc = subprocess.Popen(
         [sys.executable, '-mmkdocs', 'build'],
@@ -45,7 +45,8 @@ def test_examples_api(dirname):
     example_dir = os.path.join(EXAMPLES_DIR, dirname)
     config_file = os.path.join(example_dir, 'mkdocs.yml')
     expected_to_raise_exc = (
-        config_is_using_cache_setting(config_file) and not CACHE_AVAILABLE
+        config_is_using_cache_setting(config_file) and
+        not is_platformdirs_installed()
     )
 
     def run():
