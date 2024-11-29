@@ -31,22 +31,19 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
 
     def on_config(self, config: MkDocsConfig) -> MkDocsConfig:
         if self.config.cache > 0:
-            cache = initialize_cache(self.config.cache)
+            cache = initialize_cache(self.config.cache, self.config.cache_dir)
             if cache is None:
                 raise PluginError(
-                    'The "platformdirs" package is required to use the'
-                    ' "cache" option. Install'
-                    ' mkdocs-include-markdown-plugin with the "cache"'
-                    ' extra to install it.',
+                    'Either `cache_dir` global setting must be configured or'
+                    ' `platformdirs` package is required to use the'
+                    ' `cache` option. Install mkdocs-include-markdown-plugin'
+                    " with the 'cache' extra to install `platformdirs`.",
                 )
-            cache.clean()
             self._cache = cache
 
         if '__default' not in self.config.directives:  # pragma: no cover
             for directive in self.config.directives:
-                if directive not in {
-                    'include', 'include-markdown',
-                }:
+                if directive not in ('include', 'include-markdown'):
                     raise PluginError(
                         f"Invalid directive name '{directive}' at 'directives'"
                         ' global setting. Valid values are "include" and'

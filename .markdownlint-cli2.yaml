@@ -1,3 +1,5 @@
 config:
   no-duplicate-heading: false
   no-inline-html: false
+  emphasis-style:
+    style: underscore

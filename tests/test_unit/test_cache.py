@@ -2,10 +2,10 @@ import os
 import time
 
 from mkdocs_include_markdown_plugin.cache import (
-    CACHE_AVAILABLE,
     Cache,
     get_cache_directory,
     initialize_cache,
+    is_platformdirs_installed,
 )
 
 
@@ -38,15 +38,23 @@ def test_cache_clean(tmp_path):
     assert len(os.listdir(tmp_path)) == 0
 
 
-def test_get_cache_directory():
-    if not CACHE_AVAILABLE:
-        assert get_cache_directory() is None
+def test_get_cache_directory_empty():
+    if not is_platformdirs_installed():
+        assert get_cache_directory('') is None
     else:
-        assert isinstance(get_cache_directory(), str)
+        assert isinstance(get_cache_directory(''), str)
 
 
-def test_initialize_cache_instance():
-    if not CACHE_AVAILABLE:
-        assert initialize_cache(300) is None
+def test_get_cache_directory_custom():
+    assert get_cache_directory('foo') == 'foo'
+
+
+def test_initialize_cache_not_cache_dir():
+    if not is_platformdirs_installed():
+        assert initialize_cache(300, '') is None
     else:
-        assert isinstance(initialize_cache(300), Cache)
+        assert isinstance(initialize_cache(300, ''), Cache)
+
+
+def test_initialize_cache_cache_dir():
+    assert isinstance(initialize_cache(300, 'foo'), Cache)

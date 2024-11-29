@@ -7,10 +7,10 @@ from mkdocs.exceptions import PluginError
 import mkdocs_include_markdown_plugin.cache
 from mkdocs_include_markdown_plugin import IncludeMarkdownPlugin
 from mkdocs_include_markdown_plugin.cache import (
-    CACHE_AVAILABLE,
     Cache,
     get_cache_directory,
     initialize_cache,
+    is_platformdirs_installed,
 )
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 from testing_helpers import parametrize_directives
@@ -46,11 +46,12 @@ def test_page_included_by_url_is_cached(
     tmp_path,
     plugin,
 ):
-    cache_dir = get_cache_directory()
-    if not CACHE_AVAILABLE:
-        assert cache_dir is None
-        assert initialize_cache(600) is None
+    if not is_platformdirs_installed():
+        assert initialize_cache(600, '') is None
         return
+
+    cache_dir = get_cache_directory('')
+    os.makedirs(cache_dir, exist_ok=True)
 
     file_path = os.path.join(
         cache_dir, Cache.generate_unique_key_from_url(url),
@@ -84,14 +85,40 @@ def test_cache_setting_when_not_available_raises_error(monkeypatch):
     @dataclass
     class FakeConfig:
         cache: int
+        cache_dir: str
+        directives: dict[str, str]
 
     monkeypatch.setattr(
         mkdocs_include_markdown_plugin.cache,
-        'CACHE_AVAILABLE',
-        False,
+        'is_platformdirs_installed',
+        lambda: False,
     )
     plugin = IncludeMarkdownPlugin()
-    plugin.config = FakeConfig(cache=600)
+    plugin.config = FakeConfig(
+        cache=600, cache_dir='', directives={'__default': ''},
+    )
     with pytest.raises(PluginError) as exc:
         plugin.on_config({})
-    assert 'The "platformdirs" package is required' in str(exc.value)
+    assert (
+        'Either `cache_dir` global setting must be configured or'
+        ' `platformdirs` package is required'
+    ) in str(exc.value)
+
+
+def test_cache_setting_available_with_cache_dir(monkeypatch):
+    @dataclass
+    class FakeConfig:
+        cache: int
+        cache_dir: str
+        directives: dict[str, str]
+
+    monkeypatch.setattr(
+        mkdocs_include_markdown_plugin.cache,
+        'is_platformdirs_installed',
+        lambda: False,
+    )
+    plugin = IncludeMarkdownPlugin()
+    plugin.config = FakeConfig(
+        cache=600, cache_dir='foo', directives={'__default': ''},
+    )
+    plugin.on_config({})
