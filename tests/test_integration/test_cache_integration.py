@@ -46,11 +46,13 @@ def test_page_included_by_url_is_cached(
     tmp_path,
     plugin,
 ):
-    cache_dir = get_cache_directory('')
     if not is_platformdirs_installed():
-        assert cache_dir is None
-        assert initialize_cache(600) is None
+        assert initialize_cache(600, '') is None
         return
+
+    cache_dir = get_cache_directory('')
+    if not os.path.isdir(cache_dir):
+        os.makedirs(cache_dir, exist_ok=True)
 
     file_path = os.path.join(
         cache_dir, Cache.generate_unique_key_from_url(url),
