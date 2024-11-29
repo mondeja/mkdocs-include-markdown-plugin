@@ -51,8 +51,7 @@ def test_page_included_by_url_is_cached(
         return
 
     cache_dir = get_cache_directory('')
-    if not os.path.isdir(cache_dir):
-        os.makedirs(cache_dir, exist_ok=True)
+    os.makedirs(cache_dir, exist_ok=True)
 
     file_path = os.path.join(
         cache_dir, Cache.generate_unique_key_from_url(url),
