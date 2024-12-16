@@ -330,7 +330,7 @@ def resolve_file_paths_to_exclude(
             )
         ]
 
-    return glob.glob(
+    return glob.glob(  # pragma: no cover
         exclude_string,
         flags=GLOB_FLAGS,
         root_dir=docs_dir,
