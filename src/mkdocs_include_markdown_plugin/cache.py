@@ -79,7 +79,7 @@ def get_cache_directory(cache_dir: str) -> str | None:
 
     try:
         from platformdirs import user_data_dir
-    except ImportError:
+    except ImportError:  # pragma: no cover
         return None
     else:
         return user_data_dir('mkdocs-include-markdown-plugin')
