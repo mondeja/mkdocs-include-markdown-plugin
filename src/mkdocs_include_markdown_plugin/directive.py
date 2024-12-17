@@ -306,7 +306,6 @@ def resolve_file_paths_to_exclude(
     docs_dir: str,
 ) -> list[str]:
     """Resolve the file paths to exclude for a directive."""
-    root_dir = None
     if process.is_absolute_path(exclude_string):
         return glob.glob(exclude_string, flags=GLOB_FLAGS)
 
@@ -330,7 +329,7 @@ def resolve_file_paths_to_exclude(
             )
         ]
 
-    return glob.glob(
+    return glob.glob(  # pragma: no cover
         exclude_string,
         flags=GLOB_FLAGS,
         root_dir=docs_dir,

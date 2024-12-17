@@ -43,7 +43,7 @@ class Cache:
             is_file = stat.S_ISREG(os.stat(fpath).st_mode)
         except (FileNotFoundError, OSError):  # pragma: no cover
             return None
-        if is_file:
+        if is_file:  # pragma: no branch
             creation_time = self.get_creation_time_from_fpath(fpath)
             if time.time() < creation_time + self.expiration_seconds:
                 return self.read_file(fpath, encoding=encoding)
@@ -79,7 +79,7 @@ def get_cache_directory(cache_dir: str) -> str | None:
 
     try:
         from platformdirs import user_data_dir
-    except ImportError:
+    except ImportError:  # pragma: no cover
         return None
     else:
         return user_data_dir('mkdocs-include-markdown-plugin')

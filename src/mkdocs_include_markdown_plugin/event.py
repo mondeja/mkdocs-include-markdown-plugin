@@ -83,21 +83,20 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         http_cache: Cache | None = None,
 ) -> str:
     """Return the content of the file to include."""
-    settings_ignore_paths = []
-    if settings.exclude is not None:
-        for path in glob.glob(
-                [
-                    os.path.join(docs_dir, fp)
-                    if not os.path.isabs(fp)
-                    else fp for fp in settings.exclude
-                ],
-                flags=GLOB_FLAGS,
-                root_dir=docs_dir,
-        ):
-            if path not in settings_ignore_paths:
-                settings_ignore_paths.append(path)
+    if settings.exclude:
+        settings_ignore_paths = list(glob.glob(
+            [
+                os.path.join(docs_dir, fp)
+                if not os.path.isabs(fp)
+                else fp for fp in settings.exclude
+            ],
+            flags=GLOB_FLAGS,
+            root_dir=docs_dir,
+        ))
         if page_src_path in settings_ignore_paths:
             return markdown
+    else:
+        settings_ignore_paths = []
 
     new_found_include_contents: list[tuple[str, str]] = []
     new_found_include_markdown_contents: list[tuple[str, str]] = []
@@ -150,8 +149,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             for path in resolve_file_paths_to_exclude(
                 exclude_string, page_src_path, docs_dir,
             ):
-                if path not in ignore_paths:
-                    ignore_paths.append(path)
+                ignore_paths.append(path)
 
         file_paths_to_include, is_url = resolve_file_paths_to_include(
             filename,
@@ -361,8 +359,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             for path in resolve_file_paths_to_exclude(
                 exclude_string, page_src_path, docs_dir,
             ):
-                if path not in ignore_paths:
-                    ignore_paths.append(path)
+                ignore_paths.append(path)
 
         file_paths_to_include, is_url = resolve_file_paths_to_include(
             filename,

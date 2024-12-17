@@ -9,7 +9,8 @@ from testing_helpers import parametrize_directives, unix_only
 
 
 @unix_only
-def test_glob_include_absolute(page, tmp_path, plugin):
+@parametrize_directives
+def test_glob_include_absolute(directive, page, tmp_path, plugin):
     includer_file = tmp_path / 'includer.txt'
     included_01_file = tmp_path / 'included_01.txt'
     included_02_file = tmp_path / 'included_02.txt'
@@ -17,12 +18,12 @@ def test_glob_include_absolute(page, tmp_path, plugin):
     includer_file_content = f'''foo
 
 {{%
-  include "./included*.txt"
+  {directive} "./included*.txt"
 %}}
 
 <!-- with absolute path -->
 {{%
-  include "{tmp_path}{os.sep}included*.txt"
+  {directive} "{tmp_path}{os.sep}included*.txt"
 %}}
 '''
 
@@ -38,6 +39,39 @@ def test_glob_include_absolute(page, tmp_path, plugin):
 barbaz
 
 <!-- with absolute path -->
+barbaz
+'''
+
+    assert on_page_markdown(
+        includer_file_content, page(includer_file), tmp_path, plugin,
+    ) == expected_result
+
+
+@unix_only
+@parametrize_directives
+def test_glob_include_fallback(directive, page, tmp_path, plugin):
+    includer_file = tmp_path / 'includer.txt'
+    includes_dir = tmp_path / 'includes'
+    includes_dir.mkdir()
+    included_01_file = includes_dir / 'included_01.txt'
+    included_02_file = includes_dir / 'included_02.txt'
+
+    includer_file_content = f'''foo
+
+{{%
+  {directive} "includes/*.txt"
+%}}
+'''
+
+    included_01_content = 'bar'
+    included_02_content = 'baz'
+
+    includer_file.write_text(includer_file_content)
+    included_01_file.write_text(included_01_content)
+    included_02_file.write_text(included_02_content)
+
+    expected_result = '''foo
+
 barbaz
 '''
 
