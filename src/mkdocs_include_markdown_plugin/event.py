@@ -83,20 +83,20 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         http_cache: Cache | None = None,
 ) -> str:
     """Return the content of the file to include."""
-    settings_ignore_paths = []
     if settings.exclude:
-        for path in glob.glob(
-                [
-                    os.path.join(docs_dir, fp)
-                    if not os.path.isabs(fp)
-                    else fp for fp in settings.exclude
-                ],
-                flags=GLOB_FLAGS,
-                root_dir=docs_dir,
-        ):
-            settings_ignore_paths.append(path)
+        settings_ignore_paths = list(glob.glob(
+            [
+                os.path.join(docs_dir, fp)
+                if not os.path.isabs(fp)
+                else fp for fp in settings.exclude
+            ],
+            flags=GLOB_FLAGS,
+            root_dir=docs_dir,
+        ))
         if page_src_path in settings_ignore_paths:
             return markdown
+    else:
+        settings_ignore_paths = []
 
     new_found_include_contents: list[tuple[str, str]] = []
     new_found_include_markdown_contents: list[tuple[str, str]] = []
