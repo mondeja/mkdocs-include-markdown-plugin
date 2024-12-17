@@ -149,8 +149,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             for path in resolve_file_paths_to_exclude(
                 exclude_string, page_src_path, docs_dir,
             ):
-                if path not in ignore_paths:
-                    ignore_paths.append(path)
+                ignore_paths.append(path)
 
         file_paths_to_include, is_url = resolve_file_paths_to_include(
             filename,
@@ -360,8 +359,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             for path in resolve_file_paths_to_exclude(
                 exclude_string, page_src_path, docs_dir,
             ):
-                if path not in ignore_paths:
-                    ignore_paths.append(path)
+                ignore_paths.append(path)
 
         file_paths_to_include, is_url = resolve_file_paths_to_include(
             filename,
