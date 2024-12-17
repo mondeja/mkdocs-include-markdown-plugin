@@ -94,8 +94,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 flags=GLOB_FLAGS,
                 root_dir=docs_dir,
         ):
-            if path not in settings_ignore_paths:
-                settings_ignore_paths.append(path)
+            settings_ignore_paths.append(path)
         if page_src_path in settings_ignore_paths:
             return markdown
 
