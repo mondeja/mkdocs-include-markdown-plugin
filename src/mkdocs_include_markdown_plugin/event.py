@@ -84,7 +84,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
 ) -> str:
     """Return the content of the file to include."""
     settings_ignore_paths = []
-    if settings.exclude is not None:
+    if settings.exclude:
         for path in glob.glob(
                 [
                     os.path.join(docs_dir, fp)
