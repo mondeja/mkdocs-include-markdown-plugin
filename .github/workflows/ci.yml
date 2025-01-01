@@ -68,7 +68,7 @@ jobs:
           coverage combine
           coverage xml
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5.1.2
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -89,7 +89,7 @@ jobs:
         run: pip install -U hatch
       - name: Build package
         run: hatch build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4.5.0
         with:
           path: dist/*
           name: distribution
