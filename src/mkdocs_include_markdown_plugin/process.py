@@ -123,6 +123,17 @@ MARKDOWN_HTML_IMAGE_REGEX = re.compile(
     flags=re.VERBOSE | re.MULTILINE,
 )
 
+# Matched html anchor definition.
+# e.g. <a href="https://example.com">example</a>
+MARKDOWN_HTML_ANCHOR_DEFINITION_REGEX = re.compile(
+    r'''
+        <a
+        \s+
+        href="(\S+?)"    # href = $1
+    ''',
+    flags=re.VERBOSE | re.MULTILINE,
+)
+
 
 def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
         markdown: str,
@@ -312,6 +323,10 @@ def rewrite_relative_urls(
             paragraph,
         )
         paragraph = MARKDOWN_HTML_IMAGE_REGEX.sub(
+            functools.partial(found_href, url_group_index=1),
+            paragraph,
+        )
+        paragraph = MARKDOWN_HTML_ANCHOR_DEFINITION_REGEX.sub(
             functools.partial(found_href, url_group_index=1),
             paragraph,
         )

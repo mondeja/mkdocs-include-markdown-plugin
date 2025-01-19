@@ -86,6 +86,13 @@ Check [this link](includes/feature_a/foobar.md) for more information
             id='html-image',
         ),
         pytest.param(
+            'Here\'s a diagram: <a href="badge.png">example</a>',
+            'README',
+            'docs/home.md',
+            'Here\'s a diagram: <a href="../badge.png">example</a>',
+            id='html-anchor',
+        ),
+        pytest.param(
             '''[Homepage](/) [Github](https://github.com/user/repo)
 [Privacy policy](/privacy)''',
             'README',
@@ -164,6 +171,21 @@ const auto lambda = []() { .... };
 ```
 ''',
             id='exclude-fenced-code-blocks',
+        ),
+        pytest.param(
+            '''```
+<img src="assets/diagram.png" alt="diagram">
+<a href="badge.png">example</a>
+```
+''',
+            'README',
+            'docs/nav.md',
+            '''```
+<img src="assets/diagram.png" alt="diagram">
+<a href="badge.png">example</a>
+```
+''',
+            id='exclude-fenced-code-blocks-html',
         ),
         pytest.param(
             (
