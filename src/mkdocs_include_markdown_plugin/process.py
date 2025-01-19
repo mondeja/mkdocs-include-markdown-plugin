@@ -112,6 +112,17 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
     flags=re.VERBOSE | re.MULTILINE,
 )
 
+# Matched html image definition.
+# e.g. <img src="path/to/image.png" alt="alt-text">
+MARKDOWN_HTML_IMAGE_REGEX = re.compile(
+    r'''
+        <img
+        \s+
+        src="(\S+?)"    # src = $1
+    ''',
+    flags=re.VERBOSE | re.MULTILINE,
+)
+
 
 def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
         markdown: str,
@@ -296,10 +307,15 @@ def rewrite_relative_urls(
             found_href_url_group_index_3,
             paragraph,
         )
-        return MARKDOWN_LINK_DEFINITION_REGEX.sub(
+        paragraph = MARKDOWN_LINK_DEFINITION_REGEX.sub(
             functools.partial(found_href, url_group_index=2),
             paragraph,
         )
+        paragraph = MARKDOWN_HTML_IMAGE_REGEX.sub(
+            functools.partial(found_href, url_group_index=1),
+            paragraph,
+        )
+        return paragraph
 
     return transform_p_by_p_skipping_codeblocks(
         markdown,

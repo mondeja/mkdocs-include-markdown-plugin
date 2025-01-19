@@ -79,6 +79,13 @@ Check [this link](includes/feature_a/foobar.md) for more information
             id='image-inside-link',
         ),
         pytest.param(
+            'Here\'s a diagram: <img src="assets/diagram.png" alt="diagram">',
+            'README',
+            'docs/home.md',
+            'Here\'s a diagram: <img src="../assets/diagram.png" alt="diagram">',
+            id='html-image',
+        ),
+        pytest.param(
             '''[Homepage](/) [Github](https://github.com/user/repo)
 [Privacy policy](/privacy)''',
             'README',
