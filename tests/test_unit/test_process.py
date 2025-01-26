@@ -79,17 +79,24 @@ Check [this link](includes/feature_a/foobar.md) for more information
             id='image-inside-link',
         ),
         pytest.param(
-            'Here\'s a diagram: <img src="assets/diagram.png" alt="diagram">',
+            'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar">',
             'README',
             'docs/home.md',
-            'Here\'s a diagram: <img src="../assets/diagram.png" alt="diagram">',
+            'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar">',
             id='html-image',
         ),
         pytest.param(
-            'Here\'s a diagram: <a href="badge.png">example</a>',
+            'Here\'s a diagram: <source id="foo" src="assets/diagram.png" class="bar">',
             'README',
             'docs/home.md',
-            'Here\'s a diagram: <a href="../badge.png">example</a>',
+            'Here\'s a diagram: <source id="foo" src="../assets/diagram.png" class="bar">',
+            id='html-source',
+        ),
+        pytest.param(
+            'Here\'s a diagram: <a id="foo" href="badge.png" class="bar">example</a>',
+            'README',
+            'docs/home.md',
+            'Here\'s a diagram: <a id="foo" href="../badge.png" class="bar">example</a>',
             id='html-anchor',
         ),
         pytest.param(

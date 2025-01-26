@@ -117,7 +117,18 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
 MARKDOWN_HTML_IMAGE_REGEX = re.compile(
     r'''
         <img
-        \s+
+        [^>]*
+        src="(\S+?)"    # src = $1
+    ''',
+    flags=re.VERBOSE | re.MULTILINE,
+)
+
+# Match html source definition.
+# e.g. <img src="assets/diagram.png" alt="diagram" class="bar">
+MARKDOWN_HTML_SOURCE_REGEX = re.compile(
+    r'''
+        <source
+        [^>]*
         src="(\S+?)"    # src = $1
     ''',
     flags=re.VERBOSE | re.MULTILINE,
@@ -128,7 +139,7 @@ MARKDOWN_HTML_IMAGE_REGEX = re.compile(
 MARKDOWN_HTML_ANCHOR_DEFINITION_REGEX = re.compile(
     r'''
         <a
-        \s+
+        [^>]*
         href="(\S+?)"    # href = $1
     ''',
     flags=re.VERBOSE | re.MULTILINE,
@@ -323,6 +334,10 @@ def rewrite_relative_urls(
             paragraph,
         )
         paragraph = MARKDOWN_HTML_IMAGE_REGEX.sub(
+            functools.partial(found_href, url_group_index=1),
+            paragraph,
+        )
+        paragraph = MARKDOWN_HTML_SOURCE_REGEX.sub(
             functools.partial(found_href, url_group_index=1),
             paragraph,
         )
