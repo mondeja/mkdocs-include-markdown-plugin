@@ -21,6 +21,27 @@ from mkdocs_include_markdown_plugin.process import (
             id='relative-link',
         ),
         pytest.param(
+            "Here's a [link](/CHANGELOG.md) to the changelog.",
+            'README',
+            'docs/nav.md',
+            "Here's a [link](/CHANGELOG.md) to the changelog.",
+            id='absolute-link',
+        ),
+        pytest.param(
+            "Here's a [link](https://example.com/index.html) to the changelog.",
+            'README',
+            'docs/nav.md',
+            "Here's a [link](https://example.com/index.html) to the changelog.",
+            id='external-link',
+        ),
+        pytest.param(
+            "Here's a [link](https://example.com) to the changelog.",
+            'README',
+            'docs/nav.md',
+            "Here's a [link](https://example.com) to the changelog.",
+            id='external-top-level-link',
+        ),
+        pytest.param(
             '''Here's a [link whose text is really long and so is broken across
 multiple lines](CHANGELOG.md) to the changelog.
 ''',
@@ -79,17 +100,17 @@ Check [this link](includes/feature_a/foobar.md) for more information
             id='image-inside-link',
         ),
         pytest.param(
-            'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar">',
+            'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar" />',
             'README',
             'docs/home.md',
-            'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar">',
+            'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar" />',
             id='html-image',
         ),
         pytest.param(
-            'Here\'s a diagram: <source id="foo" src="assets/diagram.png" class="bar">',
+            'Here\'s a diagram: <source id="foo" src="assets/diagram.png" class="bar" />',
             'README',
             'docs/home.md',
-            'Here\'s a diagram: <source id="foo" src="../assets/diagram.png" class="bar">',
+            'Here\'s a diagram: <source id="foo" src="../assets/diagram.png" class="bar" />',
             id='html-source',
         ),
         pytest.param(
@@ -98,6 +119,51 @@ Check [this link](includes/feature_a/foobar.md) for more information
             'docs/home.md',
             'Here\'s a diagram: <a id="foo" href="../badge.png" class="bar">example</a>',
             id='html-anchor',
+        ),
+        # Adverarial tests: contains >, multiple tag in line.
+        pytest.param(
+            '<img id="foo" attr="3>2" src="assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="assets/diagram.png" alt="diagram" class="bar" />',
+            'README',
+            'docs/home.md',
+            '<img id="foo" attr="3>2" src="../assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="../assets/diagram.png" alt="diagram" class="bar" />',
+            id='html-image-adverarial-test',
+        ),
+        pytest.param(
+            '<a id="foo" attr="3>2" href="badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="badge.png" class="bar">bar</a>',
+            'README',
+            'docs/home.md',
+            '<a id="foo" attr="3>2" href="../badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="../badge.png" class="bar">bar</a>',
+            id='html-anchor-adverarial-test',
+        ),
+        # Adversarial test: img no end slash
+        pytest.param(
+            'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar">',
+            'README',
+            'docs/home.md',
+            'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar">',
+            id='html-image-no-end-slash',
+        ),
+        # external link
+        pytest.param(
+            '<img id="foo" attr="3>2" src="https://example.com/image.png" class="bar" />',
+            'README',
+            'docs/home.md',
+            '<img id="foo" attr="3>2" src="https://example.com/image.png" class="bar" />',
+            id='html-image-external-link',
+        ),
+        pytest.param(
+            '<a id="foo" attr="3>2" href="https://example.com/index.html" class="bar" />',
+            'README',
+            'docs/home.md',
+            '<a id="foo" attr="3>2" href="https://example.com/index.html" class="bar" />',
+            id='html-anchor-external-link',
+        ),
+        pytest.param(
+            '<a id="foo" attr="3>2" href="https://example.com" class="bar" />',
+            'README',
+            'docs/home.md',
+            '<a id="foo" attr="3>2" href="https://example.com" class="bar" />',
+            id='html-anchor-external-top-level-link',
         ),
         pytest.param(
             '''[Homepage](/) [Github](https://github.com/user/repo)

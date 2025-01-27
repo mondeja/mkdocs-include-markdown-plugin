@@ -117,7 +117,17 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
 MARKDOWN_HTML_IMAGE_REGEX = re.compile(
     r'''
         <img
-        [^>]*
+        (?:\s+             # More than one whitespace
+            (?!src=)       # Not src=
+            [\w-]+         # attribute name
+            \s*=\s*        # arbitrary whitespace
+            (?:
+                "[^"]*"    # Quoted value
+                |
+                '[^']*'    # Quoted value
+            )
+        )*                 # Other attributes are repeated 0 or more times
+        \s+                # More than one whitespace
         src="(\S+?)"    # src = $1
     ''',
     flags=re.VERBOSE | re.MULTILINE,
@@ -128,7 +138,17 @@ MARKDOWN_HTML_IMAGE_REGEX = re.compile(
 MARKDOWN_HTML_SOURCE_REGEX = re.compile(
     r'''
         <source
-        [^>]*
+        (?:\s+             # More than one whitespace
+            (?!src=)       # Not src=
+            [\w-]+         # attribute name
+            \s*=\s*        # arbitrary whitespace
+            (?:
+                "[^"]*"    # Quoted value
+                |
+                '[^']*'    # Quoted value
+            )
+        )*                 # Other attributes are repeated 0 or more times
+        \s+                # More than one whitespace
         src="(\S+?)"    # src = $1
     ''',
     flags=re.VERBOSE | re.MULTILINE,
@@ -139,7 +159,17 @@ MARKDOWN_HTML_SOURCE_REGEX = re.compile(
 MARKDOWN_HTML_ANCHOR_DEFINITION_REGEX = re.compile(
     r'''
         <a
-        [^>]*
+        (?:\s+             # More than one whitespace
+            (?!src=)       # Not src=
+            [\w-]+         # attribute name
+            \s*=\s*        # arbitrary whitespace
+            (?:
+                "[^"]*"    # Quoted value
+                |
+                '[^']*'    # Quoted value
+            )
+        )*                 # Other attributes are repeated 0 or more times
+        \s+                # More than one whitespace
         href="(\S+?)"    # href = $1
     ''',
     flags=re.VERBOSE | re.MULTILINE,
@@ -282,8 +312,8 @@ def rewrite_relative_urls(
     def rewrite_url(url: str) -> str:
         scheme, netloc, path, params, query, fragment = urlparse(url)
 
-        # absolute or mail
-        if path.startswith('/') or scheme == 'mailto':
+        # external or absolute or mail
+        if (is_url(url) or path.startswith('/') or scheme == 'mailto'):
             return url
 
         new_path = os.path.relpath(
