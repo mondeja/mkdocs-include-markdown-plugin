@@ -40,6 +40,7 @@ if TYPE_CHECKING:  # pragma: no cover
             'recursive': bool,
             'start': str | None,
             'end': str | None,
+            'replace': list | None,
         },
     )
 
@@ -95,6 +96,7 @@ ARGUMENT_REGEXES = {
     'end': functools.partial(str_arg, 'end'),
     'exclude': functools.partial(str_arg, 'exclude'),
     'encoding': functools.partial(str_arg, 'encoding'),
+    'replace': functools.partial(str_arg, 'replace'),
 
     # bool
     'comments': functools.partial(arg, 'comments'),

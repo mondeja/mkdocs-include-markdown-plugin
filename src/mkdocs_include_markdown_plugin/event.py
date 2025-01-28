@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import functools
 import html
+import json
 import os
 import re
 import textwrap
 from dataclasses import dataclass
+from json import JSONDecodeError
 from typing import TYPE_CHECKING
 
 from mkdocs.exceptions import PluginError
@@ -213,6 +215,33 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         else:
             end = defaults['end']
 
+        replace_match = ARGUMENT_REGEXES['replace']().search(arguments_string)
+        if replace_match:
+            replace = parse_string_argument(replace_match)
+            if replace is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'replace' argument in 'include-markdown'"
+                    f' directive at  {location}',
+                )
+            replace = replace.replace("'", '"')
+            try:
+                replace = json.loads(replace)
+                if not isinstance(replace[0], list):
+                    replace = [replace]
+            except JSONDecodeError as e:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid 'replace' argument in 'include-markdown'"
+                    f' directive at  {location}: {e}',
+                )
+        else:
+            replace = defaults['replace']
+
         encoding_match = ARGUMENT_REGEXES['encoding']().search(
             arguments_string)
         if encoding_match:
@@ -250,6 +279,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     if expected_but_any_found[i] and not expected_not_found[i]:
                         expected_but_any_found[i] = False
 
+            if replace:
+                new_text_to_include = process.replace(new_text_to_include, replace)
+            
             # nested includes
             if bool_options['recursive'].value:
                 new_text_to_include = get_file_content(
@@ -427,6 +459,33 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         else:
             end = defaults['end']
 
+        replace_match = ARGUMENT_REGEXES['replace']().search(arguments_string)
+        if replace_match:
+            replace = parse_string_argument(replace_match)
+            if replace is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'replace' argument in 'include-markdown'"
+                    f' directive at  {location}',
+                )
+            replace = replace.replace("'", '"')
+            try:
+                replace = json.loads(replace)
+                if not isinstance(replace[0], list):
+                    replace = [replace]
+            except JSONDecodeError as e:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid 'replace' argument in 'include-markdown'"
+                    f' directive at  {location}: {e}',
+                )
+        else:
+            replace = defaults['replace']
+
         encoding_match = ARGUMENT_REGEXES['encoding']().search(
             arguments_string)
         if encoding_match:
@@ -504,6 +563,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     if expected_but_any_found[i] and not expected_not_found[i]:
                         expected_but_any_found[i] = False
 
+            if replace:
+                new_text_to_include = process.replace_text(new_text_to_include, replace)
+                
             # nested includes
             if bool_options['recursive'].value:
                 new_text_to_include = get_file_content(
@@ -655,6 +717,7 @@ def on_page_markdown(
             'recursive': config.recursive,
             'start': config.start,
             'end': config.end,
+            'replace': config.replace,
         },
         Settings(
             exclude=config.exclude,

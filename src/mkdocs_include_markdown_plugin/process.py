@@ -427,6 +427,12 @@ def rstrip_trailing_newlines(content: str) -> str:
     return content
 
 
+def replace_text(content: str, replace_list: list):
+    for replacement in replace_list:
+        content = content.replace(replacement[0], replacement[1])
+    return content
+
+
 def filter_paths(
         filepaths: Iterator[str] | list[str],
         ignore_paths: list[str],

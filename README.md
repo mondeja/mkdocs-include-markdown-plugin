@@ -208,6 +208,10 @@ content to include.
   **heading-offset** (0): Increases or decreases the Markdown headings depth
   by this number. Only supports number sign (`#`) heading syntax. Accepts
   negative values to drop leading `#` characters.
+- <a name="replace" href="#replace">#</a>
+  **replace**: Replaces text in the Markdown. This translates a json string 
+  to a List where the first element is replaced by the second element. 
+  A List of Lists can be given for multiple replacements. 
 
 ##### Examples
 
@@ -233,6 +237,20 @@ content to include.
 {%
     include-markdown "includes/header.md"
     heading-offset=1
+%}
+```
+
+```jinja
+{%
+    include-markdown "includes/header.md"
+    replace='["Replace This Text", "With This Text"]'
+%}
+```
+
+```jinja
+{%
+    include-markdown "includes/header.md"
+    replace='[["Replace This Text", "With This Text"], ["Also This Text", "With Also This Text"]]'
 %}
 ```
 
@@ -285,6 +303,10 @@ Includes the content of a file or a group of files.
 - <a name="include_encoding" href="#include_encoding">#</a>
   **encoding** (_'utf-8'_): Specify the encoding of the included file.
   If not defined `'utf-8'` will be used.
+- <a name="include_replace" href="#include_replace">#</a>
+  **replace**: Replaces text in the include content. This translates a json string 
+  to a List where the first element is replaced by the second element. 
+  A List of Lists can be given for multiple replacements. 
 
 ##### Examples
 
@@ -300,6 +322,20 @@ Includes the content of a file or a group of files.
         start="~~~yaml"
         end="~~~\n"
     %}
+```
+
+```jinja
+{%
+    include "includes/header.md"
+    replace='["Replace This Text", "With This Text"]'
+%}
+```
+
+```jinja
+{%
+    include "includes/header.md"
+    replace='[["Replace This Text", "With This Text"], ["Also This Text", "With Also This Text"]]'
+%}
 ```
 
 ```jinja
