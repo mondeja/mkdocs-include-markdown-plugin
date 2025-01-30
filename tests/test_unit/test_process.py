@@ -13,33 +13,13 @@ from mkdocs_include_markdown_plugin.process import (
 @pytest.mark.parametrize(
     ('markdown', 'source_path', 'destination_path', 'expected_result'),
     (
+        # Markdown Relative Links
         pytest.param(
             "Here's a [link](CHANGELOG.md) to the changelog.",
             'README',
             'docs/nav.md',
             "Here's a [link](../CHANGELOG.md) to the changelog.",
             id='relative-link',
-        ),
-        pytest.param(
-            "Here's a [link](/CHANGELOG.md) to the changelog.",
-            'README',
-            'docs/nav.md',
-            "Here's a [link](/CHANGELOG.md) to the changelog.",
-            id='absolute-link',
-        ),
-        pytest.param(
-            "Here's a [link](https://example.com/index.html) to the changelog.",
-            'README',
-            'docs/nav.md',
-            "Here's a [link](https://example.com/index.html) to the changelog.",
-            id='external-link',
-        ),
-        pytest.param(
-            "Here's a [link](https://example.com) to the changelog.",
-            'README',
-            'docs/nav.md',
-            "Here's a [link](https://example.com) to the changelog.",
-            id='external-top-level-link',
         ),
         pytest.param(
             '''Here's a [link whose text is really long and so is broken across
@@ -99,6 +79,7 @@ Check [this link](includes/feature_a/foobar.md) for more information
             'Build status: [![Build Status](../badge.png)](../build/)',
             id='image-inside-link',
         ),
+        # HTML Relative Links
         pytest.param(
             'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar" />',
             'README',
@@ -120,22 +101,36 @@ Check [this link](includes/feature_a/foobar.md) for more information
             'Here\'s a diagram: <a id="foo" href="../badge.png" class="bar">example</a>',
             id='html-anchor',
         ),
-        # Adverarial tests: contains >, multiple tag in line.
         pytest.param(
-            '<img id="foo" attr="3>2" src="assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="assets/diagram.png" alt="diagram" class="bar" />',
+            "Here's a diagram: <img id='foo' src='assets/diagram.png' alt='diagram' class='bar' />",
             'README',
             'docs/home.md',
-            '<img id="foo" attr="3>2" src="../assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="../assets/diagram.png" alt="diagram" class="bar" />',
+            "Here's a diagram: <img id='foo' src='../assets/diagram.png' alt='diagram' class='bar' />",
+            id='html-image-single-quote',
+        ),
+        pytest.param(
+            "Here's a diagram: <a id='foo' href='assets/diagram.png' class='bar'>example</a>",
+            'README',
+            'docs/home.md',
+            "Here's a diagram: <a id='foo' href='../assets/diagram.png' class='bar'>example</a>",
+            id='html-anchor-single-quote',
+        ),
+        # HTML Relative Links Adverarial tests: attribute contains >, attribute without value, multiple tag in line.
+        pytest.param(
+            '<img id="foo" attr="3>2" attr2 src="assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="assets/diagram.png" alt="diagram" class="bar" />',
+            'README',
+            'docs/home.md',
+            '<img id="foo" attr="3>2" attr2 src="../assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="../assets/diagram.png" alt="diagram" class="bar" />',
             id='html-image-adverarial-test',
         ),
         pytest.param(
-            '<a id="foo" attr="3>2" href="badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="badge.png" class="bar">bar</a>',
+            '<a id="foo" attr="3>2" attr2 href="badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="badge.png" class="bar">bar</a>',
             'README',
             'docs/home.md',
-            '<a id="foo" attr="3>2" href="../badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="../badge.png" class="bar">bar</a>',
+            '<a id="foo" attr="3>2" attr2 href="../badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="../badge.png" class="bar">bar</a>',
             id='html-anchor-adverarial-test',
         ),
-        # Adversarial test: img no end slash
+        # HTML Relative Links Adversarial test: img no end slash
         pytest.param(
             'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar">',
             'README',
@@ -143,7 +138,28 @@ Check [this link](includes/feature_a/foobar.md) for more information
             'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar">',
             id='html-image-no-end-slash',
         ),
-        # external link
+        # Non-relative links
+        pytest.param(
+            "Here's a [link](/CHANGELOG.md) to the changelog.",
+            'README',
+            'docs/nav.md',
+            "Here's a [link](/CHANGELOG.md) to the changelog.",
+            id='absolute-link',
+        ),
+        pytest.param(
+            "Here's a [link](https://example.com/index.html) to the changelog.",
+            'README',
+            'docs/nav.md',
+            "Here's a [link](https://example.com/index.html) to the changelog.",
+            id='external-link',
+        ),
+        pytest.param(
+            "Here's a [link](https://example.com) to the changelog.",
+            'README',
+            'docs/nav.md',
+            "Here's a [link](https://example.com) to the changelog.",
+            id='external-top-level-link',
+        ),
         pytest.param(
             '<img id="foo" attr="3>2" src="https://example.com/image.png" class="bar" />',
             'README',
