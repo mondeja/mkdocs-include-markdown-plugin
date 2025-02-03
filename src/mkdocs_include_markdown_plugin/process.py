@@ -347,11 +347,10 @@ def rewrite_relative_urls(
             functools.partial(found_href, url_group_index=1),
             paragraph,
         )
-        paragraph = MARKDOWN_HTML_ANCHOR_DEFINITION_REGEX.sub(
+        return MARKDOWN_HTML_ANCHOR_DEFINITION_REGEX.sub(
             functools.partial(found_href, url_group_index=1),
             paragraph,
         )
-        return paragraph
 
     return transform_p_by_p_skipping_codeblocks(
         markdown,

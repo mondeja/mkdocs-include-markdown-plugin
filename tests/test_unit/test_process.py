@@ -81,61 +81,62 @@ Check [this link](includes/feature_a/foobar.md) for more information
         ),
         # HTML Relative Links
         pytest.param(
-            'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar" />',
+            'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar" />',  # noqa: E501
             'README',
             'docs/home.md',
-            'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar" />',
+            'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar" />',  # noqa: E501
             id='html-image',
         ),
         pytest.param(
-            'Here\'s a diagram: <source id="foo" src="assets/diagram.png" class="bar" />',
+            'Here\'s a diagram: <source id="foo" src="assets/diagram.png" class="bar" />',  # noqa: E501
             'README',
             'docs/home.md',
-            'Here\'s a diagram: <source id="foo" src="../assets/diagram.png" class="bar" />',
+            'Here\'s a diagram: <source id="foo" src="../assets/diagram.png" class="bar" />',  # noqa: E501
             id='html-source',
         ),
         pytest.param(
-            'Here\'s a diagram: <a id="foo" href="badge.png" class="bar">example</a>',
+            'Here\'s a diagram: <a id="foo" href="badge.png" class="bar">example</a>',  # noqa: E501
             'README',
             'docs/home.md',
-            'Here\'s a diagram: <a id="foo" href="../badge.png" class="bar">example</a>',
+            'Here\'s a diagram: <a id="foo" href="../badge.png" class="bar">example</a>',  # noqa: E501
             id='html-anchor',
         ),
         pytest.param(
-            "Here's a diagram: <img id='foo' src='assets/diagram.png' alt='diagram' class='bar' />",
+            "Here's a diagram: <img id='foo' src='assets/diagram.png' alt='diagram' class='bar' />",  # noqa: E501
             'README',
             'docs/home.md',
-            "Here's a diagram: <img id='foo' src='../assets/diagram.png' alt='diagram' class='bar' />",
+            "Here's a diagram: <img id='foo' src='../assets/diagram.png' alt='diagram' class='bar' />",  # noqa: E501
             id='html-image-single-quote',
         ),
         pytest.param(
-            "Here's a diagram: <a id='foo' href='assets/diagram.png' class='bar'>example</a>",
+            "Here's a diagram: <a id='foo' href='assets/diagram.png' class='bar'>example</a>",  # noqa: E501
             'README',
             'docs/home.md',
-            "Here's a diagram: <a id='foo' href='../assets/diagram.png' class='bar'>example</a>",
+            "Here's a diagram: <a id='foo' href='../assets/diagram.png' class='bar'>example</a>",  # noqa: E501
             id='html-anchor-single-quote',
         ),
-        # HTML Relative Links Adverarial tests: attribute contains >, attribute without value, multiple tag in line.
+        # HTML Relative Links Adverarial tests:
+        # (attribute contains >, attribute without value, multiple tag in line)
         pytest.param(
-            '<img id="foo" attr="3>2" attr2 src="assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="assets/diagram.png" alt="diagram" class="bar" />',
+            '<img id="foo" attr="3>2" attr2 src="assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="assets/diagram.png" alt="diagram" class="bar" />',  # noqa: E501
             'README',
             'docs/home.md',
-            '<img id="foo" attr="3>2" attr2 src="../assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="../assets/diagram.png" alt="diagram" class="bar" />',
+            '<img id="foo" attr="3>2" attr2 src="../assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="../assets/diagram.png" alt="diagram" class="bar" />',  # noqa: E501
             id='html-image-adverarial-test',
         ),
         pytest.param(
-            '<a id="foo" attr="3>2" attr2 href="badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="badge.png" class="bar">bar</a>',
+            '<a id="foo" attr="3>2" attr2 href="badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="badge.png" class="bar">bar</a>',  # noqa: E501
             'README',
             'docs/home.md',
-            '<a id="foo" attr="3>2" attr2 href="../badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="../badge.png" class="bar">bar</a>',
+            '<a id="foo" attr="3>2" attr2 href="../badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="../badge.png" class="bar">bar</a>',  # noqa: E501
             id='html-anchor-adverarial-test',
         ),
         # HTML Relative Links Adversarial test: img no end slash
         pytest.param(
-            'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar">',
+            'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar">',  # noqa: E501
             'README',
             'docs/home.md',
-            'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar">',
+            'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar">',  # noqa: E501
             id='html-image-no-end-slash',
         ),
         # Non-relative links
@@ -147,10 +148,10 @@ Check [this link](includes/feature_a/foobar.md) for more information
             id='absolute-link',
         ),
         pytest.param(
-            "Here's a [link](https://example.com/index.html) to the changelog.",
+            "Here's a [link](https://example.com/index.html) to the changelog.",  # noqa: E501
             'README',
             'docs/nav.md',
-            "Here's a [link](https://example.com/index.html) to the changelog.",
+            "Here's a [link](https://example.com/index.html) to the changelog.",  # noqa: E501
             id='external-link',
         ),
         pytest.param(
@@ -161,24 +162,24 @@ Check [this link](includes/feature_a/foobar.md) for more information
             id='external-top-level-link',
         ),
         pytest.param(
-            '<img id="foo" attr="3>2" src="https://example.com/image.png" class="bar" />',
+            '<img id="foo" attr="3>2" src="https://example.com/image.png" class="bar" />',  # noqa: E501
             'README',
             'docs/home.md',
-            '<img id="foo" attr="3>2" src="https://example.com/image.png" class="bar" />',
+            '<img id="foo" attr="3>2" src="https://example.com/image.png" class="bar" />',  # noqa: E501
             id='html-image-external-link',
         ),
         pytest.param(
-            '<a id="foo" attr="3>2" href="https://example.com/index.html" class="bar" />',
+            '<a id="foo" attr="3>2" href="https://example.com/index.html" class="bar" />',  # noqa: E501
             'README',
             'docs/home.md',
-            '<a id="foo" attr="3>2" href="https://example.com/index.html" class="bar" />',
+            '<a id="foo" attr="3>2" href="https://example.com/index.html" class="bar" />',  # noqa: E501
             id='html-anchor-external-link',
         ),
         pytest.param(
-            '<a id="foo" attr="3>2" href="https://example.com" class="bar" />',
+            '<a id="foo" attr="3>2" href="https://example.com" class="bar" />',  # noqa: E501
             'README',
             'docs/home.md',
-            '<a id="foo" attr="3>2" href="https://example.com" class="bar" />',
+            '<a id="foo" attr="3>2" href="https://example.com" class="bar" />',  # noqa: E501
             id='html-anchor-external-top-level-link',
         ),
         pytest.param(
