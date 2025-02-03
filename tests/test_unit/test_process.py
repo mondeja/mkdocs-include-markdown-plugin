@@ -13,6 +13,7 @@ from mkdocs_include_markdown_plugin.process import (
 @pytest.mark.parametrize(
     ('markdown', 'source_path', 'destination_path', 'expected_result'),
     (
+        # Markdown Relative Links
         pytest.param(
             "Here's a [link](CHANGELOG.md) to the changelog.",
             'README',
@@ -77,6 +78,109 @@ Check [this link](includes/feature_a/foobar.md) for more information
             'docs/home.md',
             'Build status: [![Build Status](../badge.png)](../build/)',
             id='image-inside-link',
+        ),
+        # HTML Relative Links
+        pytest.param(
+            'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar" />',  # noqa: E501
+            'README',
+            'docs/home.md',
+            'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar" />',  # noqa: E501
+            id='html-image',
+        ),
+        pytest.param(
+            'Here\'s a diagram: <source id="foo" src="assets/diagram.png" class="bar" />',  # noqa: E501
+            'README',
+            'docs/home.md',
+            'Here\'s a diagram: <source id="foo" src="../assets/diagram.png" class="bar" />',  # noqa: E501
+            id='html-source',
+        ),
+        pytest.param(
+            'Here\'s a diagram: <a id="foo" href="badge.png" class="bar">example</a>',  # noqa: E501
+            'README',
+            'docs/home.md',
+            'Here\'s a diagram: <a id="foo" href="../badge.png" class="bar">example</a>',  # noqa: E501
+            id='html-anchor',
+        ),
+        pytest.param(
+            "Here's a diagram: <img id='foo' src='assets/diagram.png' alt='diagram' class='bar' />",  # noqa: E501
+            'README',
+            'docs/home.md',
+            "Here's a diagram: <img id='foo' src='../assets/diagram.png' alt='diagram' class='bar' />",  # noqa: E501
+            id='html-image-single-quote',
+        ),
+        pytest.param(
+            "Here's a diagram: <a id='foo' href='assets/diagram.png' class='bar'>example</a>",  # noqa: E501
+            'README',
+            'docs/home.md',
+            "Here's a diagram: <a id='foo' href='../assets/diagram.png' class='bar'>example</a>",  # noqa: E501
+            id='html-anchor-single-quote',
+        ),
+        # HTML Relative Links Adverarial tests:
+        # (attribute contains >, attribute without value, multiple tag in line)
+        pytest.param(
+            '<img id="foo" attr="3>2" attr2 src="assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="assets/diagram.png" alt="diagram" class="bar" />',  # noqa: E501
+            'README',
+            'docs/home.md',
+            '<img id="foo" attr="3>2" attr2 src="../assets/diagram.png" alt="diagram" class="bar" /><img id="foo" attr="3>2" src="../assets/diagram.png" alt="diagram" class="bar" />',  # noqa: E501
+            id='html-image-adverarial-test',
+        ),
+        pytest.param(
+            '<a id="foo" attr="3>2" attr2 href="badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="badge.png" class="bar">bar</a>',  # noqa: E501
+            'README',
+            'docs/home.md',
+            '<a id="foo" attr="3>2" attr2 href="../badge.png" class="bar">foo</a><a id="foo" attr="3>2" href="../badge.png" class="bar">bar</a>',  # noqa: E501
+            id='html-anchor-adverarial-test',
+        ),
+        # HTML Relative Links Adversarial test: img no end slash
+        pytest.param(
+            'Here\'s a diagram: <img id="foo" src="assets/diagram.png" alt="diagram" class="bar">',  # noqa: E501
+            'README',
+            'docs/home.md',
+            'Here\'s a diagram: <img id="foo" src="../assets/diagram.png" alt="diagram" class="bar">',  # noqa: E501
+            id='html-image-no-end-slash',
+        ),
+        # Non-relative links
+        pytest.param(
+            "Here's a [link](/CHANGELOG.md) to the changelog.",
+            'README',
+            'docs/nav.md',
+            "Here's a [link](/CHANGELOG.md) to the changelog.",
+            id='absolute-link',
+        ),
+        pytest.param(
+            "Here's a [link](https://example.com/index.html) to the changelog.",  # noqa: E501
+            'README',
+            'docs/nav.md',
+            "Here's a [link](https://example.com/index.html) to the changelog.",  # noqa: E501
+            id='external-link',
+        ),
+        pytest.param(
+            "Here's a [link](https://example.com) to the changelog.",
+            'README',
+            'docs/nav.md',
+            "Here's a [link](https://example.com) to the changelog.",
+            id='external-top-level-link',
+        ),
+        pytest.param(
+            '<img id="foo" attr="3>2" src="https://example.com/image.png" class="bar" />',  # noqa: E501
+            'README',
+            'docs/home.md',
+            '<img id="foo" attr="3>2" src="https://example.com/image.png" class="bar" />',  # noqa: E501
+            id='html-image-external-link',
+        ),
+        pytest.param(
+            '<a id="foo" attr="3>2" href="https://example.com/index.html" class="bar" />',  # noqa: E501
+            'README',
+            'docs/home.md',
+            '<a id="foo" attr="3>2" href="https://example.com/index.html" class="bar" />',  # noqa: E501
+            id='html-anchor-external-link',
+        ),
+        pytest.param(
+            '<a id="foo" attr="3>2" href="https://example.com" class="bar" />',  # noqa: E501
+            'README',
+            'docs/home.md',
+            '<a id="foo" attr="3>2" href="https://example.com" class="bar" />',  # noqa: E501
+            id='html-anchor-external-top-level-link',
         ),
         pytest.param(
             '''[Homepage](/) [Github](https://github.com/user/repo)
@@ -157,6 +261,21 @@ const auto lambda = []() { .... };
 ```
 ''',
             id='exclude-fenced-code-blocks',
+        ),
+        pytest.param(
+            '''```
+<img src="assets/diagram.png" alt="diagram">
+<a href="badge.png">example</a>
+```
+''',
+            'README',
+            'docs/nav.md',
+            '''```
+<img src="assets/diagram.png" alt="diagram">
+<a href="badge.png">example</a>
+```
+''',
+            id='exclude-fenced-code-blocks-html',
         ),
         pytest.param(
             (
