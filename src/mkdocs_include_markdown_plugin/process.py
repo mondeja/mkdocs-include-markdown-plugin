@@ -290,10 +290,13 @@ def rewrite_relative_urls(
     from urllib.parse import urlparse, urlunparse
 
     def rewrite_url(url: str) -> str:
+        if is_url(url):
+            return url
+
         scheme, netloc, path, params, query, fragment = urlparse(url)
 
-        # external or absolute or mail
-        if (is_url(url) or path.startswith('/') or scheme == 'mailto'):
+        # absolute or mail
+        if path.startswith('/') or scheme == 'mailto':
             return url
 
         new_path = os.path.relpath(
