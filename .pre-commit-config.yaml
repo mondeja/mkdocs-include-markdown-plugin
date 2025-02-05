@@ -109,7 +109,3 @@ repos:
           - mkdocs>=1.6.0,<1.7.0
           - platformdirs
           - wcmatch
-  - repo: https://github.com/mondeja/rust-pc-hooks
-    rev: v1.3.0
-    hooks:
-      - id: lychee

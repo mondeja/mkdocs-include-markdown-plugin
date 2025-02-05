@@ -1,6 +1,6 @@
 [project]
 name = "mkdocs-include-markdown-plugin"
-version = "7.1.2"
+version = "7.1.3"
 description = "Mkdocs Markdown includer plugin."
 readme = "README.md"
 license = "Apache-2.0"
@@ -104,9 +104,9 @@ targets = [{ file = "pyproject.toml" }]
 [tool.project-config]
 cache = "2 days"
 style = [
-  "gh://mondeja/project-config-styles@v5.4/base/pre-commit/md2po2md.json5",
-  "gh://mondeja/project-config-styles@v5.4/python/base.json5",
-  "gh://mondeja/project-config-styles@v5.4/python/mypy.json5",
+  "gh://mondeja/project-config-styles@v5.5/base/pre-commit/md2po2md.json5",
+  "gh://mondeja/project-config-styles@v5.5/python/base.json5",
+  "gh://mondeja/project-config-styles@v5.5/python/mypy.json5",
 ]
 
 [tool.coverage.run]
