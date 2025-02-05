@@ -112,6 +112,49 @@ MARKDOWN_LINK_DEFINITION_REGEX = re.compile(
     flags=re.VERBOSE | re.MULTILINE,
 )
 
+# Matched html image and source definition.
+# e.g. <img src="path/to/image.png" alt="alt-text">
+# e.g. <source src="path/to/image.png" alt="alt-text">
+MARKDOWN_HTML_IMAGE_REGEX = re.compile(
+    r'''
+        <(?:img|source)    # img or source
+        (?:\s+             # More than one whitespace
+            (?!src=)       # Not src=
+            [\w-]+         # attribute name
+            (?:\s*=\s*)?   # arbitrary whitespace (optional)
+            (?:
+                "[^"]*"    # Quoted value (double quote)
+                |
+                '[^']*'    # Quoted value (single quote)
+            )?
+        )*                 # Other attributes are repeated 0 or more times
+        \s+                # More than one whitespace
+        src=["'](\S+?)["'] # src = $1 (double quote or single quote)
+    ''',
+    flags=re.VERBOSE | re.MULTILINE,
+)
+
+# Matched html anchor definition.
+# e.g. <a href="https://example.com">example</a>
+MARKDOWN_HTML_ANCHOR_DEFINITION_REGEX = re.compile(
+    r'''
+        <a
+        (?:\s+             # More than one whitespace
+            (?!href=)      # Not href=
+            [\w-]+         # attribute name
+            (?:\s*=\s*)?   # arbitrary whitespace (optional)
+            (?:
+                "[^"]*"    # Quoted value (double quote)
+                |
+                '[^']*'    # Quoted value (single quote)
+            )?
+        )*                 # Other attributes are repeated 0 or more times
+        \s+                # More than one whitespace
+        href=["'](\S+?)["']# href = $1 (double quote or single quote)
+    ''',
+    flags=re.VERBOSE | re.MULTILINE,
+)
+
 
 def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
         markdown: str,
@@ -247,6 +290,9 @@ def rewrite_relative_urls(
     from urllib.parse import urlparse, urlunparse
 
     def rewrite_url(url: str) -> str:
+        if is_url(url):
+            return url
+
         scheme, netloc, path, params, query, fragment = urlparse(url)
 
         # absolute or mail
@@ -296,8 +342,16 @@ def rewrite_relative_urls(
             found_href_url_group_index_3,
             paragraph,
         )
-        return MARKDOWN_LINK_DEFINITION_REGEX.sub(
+        paragraph = MARKDOWN_LINK_DEFINITION_REGEX.sub(
             functools.partial(found_href, url_group_index=2),
+            paragraph,
+        )
+        paragraph = MARKDOWN_HTML_IMAGE_REGEX.sub(
+            functools.partial(found_href, url_group_index=1),
+            paragraph,
+        )
+        return MARKDOWN_HTML_ANCHOR_DEFINITION_REGEX.sub(
+            functools.partial(found_href, url_group_index=1),
             paragraph,
         )
 
