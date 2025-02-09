@@ -353,7 +353,6 @@ Some included content.
             [],
             id='rstrip-windows-trailing-newlines',
         ),
-
     ),
 )
 def test_include(
