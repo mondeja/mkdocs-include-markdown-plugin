@@ -315,6 +315,10 @@ def rewrite_relative_urls(
         except IndexError:  # pragma: no cover
             pass
 
+        # ensure that links to the same file are not rewritten
+        if new_path == '.':
+            new_path = ''
+
         return urlunparse((scheme, netloc, new_path, params, query, fragment))
 
     def found_href(m: re.Match[str], url_group_index: int = -1) -> str:

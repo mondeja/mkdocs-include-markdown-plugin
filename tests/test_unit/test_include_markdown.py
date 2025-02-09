@@ -729,6 +729,33 @@ With some text after it
             [],
             id='include-code-block-to-list-item (#123)',
         ),
+
+        # Internal anchor in included file properly rewritten
+        pytest.param(
+            '''# Header
+
+{% include-markdown "{filepath}" %}''',
+            '''# First level heading
+
+Example data
+
+## Second level heading
+
+Link to [second level heading](#second-level-heading).
+''',
+            '''# Header
+
+# First level heading
+
+Example data
+
+## Second level heading
+
+Link to [second level heading](#second-level-heading).
+''',
+            [],
+            id='internal-anchor',
+        ),
     ),
 )
 def test_include_markdown(
