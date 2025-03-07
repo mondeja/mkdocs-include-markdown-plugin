@@ -147,7 +147,7 @@ def _maybe_arguments_iter(arguments_string: str) -> Iterable[str]:
                 if ch in string.whitespace:
                     current_value = new_current_value[::-1]
                     break
-                new_current_value += c
+                new_current_value += ch
             yield current_value
             current_value = ''
             opening_argument = True
