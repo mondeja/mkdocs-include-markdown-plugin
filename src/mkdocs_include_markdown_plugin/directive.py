@@ -20,7 +20,7 @@ from mkdocs_include_markdown_plugin.logger import logger
 @dataclass
 class DirectiveBoolArgument:  # noqa: D101
     value: bool
-    regex: re.Pattern[str]
+    regex: Callable[[], re.Pattern[str]]
 
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -168,8 +168,9 @@ def warn_invalid_directive_arguments(
     directive: Literal['include', 'include-markdown'],
     page_src_path: str | None,
     docs_dir: str,
-) -> None:
+) -> list[str]:
     """Warns about the invalid arguments passed to a directive."""
+    used_arguments = []
     valid_args = (
         INCLUDE_DIRECTIVE_ARGS
         if directive == 'include'
@@ -184,6 +185,9 @@ def warn_invalid_directive_arguments(
                 f"Invalid argument '{maybe_arg}' in"
                 f" '{directive}' directive at {location}. Ignoring...",
             )
+        else:
+            used_arguments.append(maybe_arg)
+    return used_arguments
 
 
 def parse_filename_argument(
@@ -246,6 +250,7 @@ def parse_bool_options(
         option_names: list[str],
         defaults: DefaultValues,
         arguments_string: str,
+        used_arguments: list[str],
 ) -> tuple[DirectiveBoolArgumentsDict, list[str]]:
     """Parse boolean options from arguments string."""
     invalid_args: list[str] = []
@@ -254,11 +259,13 @@ def parse_bool_options(
     for option_name in option_names:
         bool_options[option_name] = DirectiveBoolArgument(
             value=defaults[option_name],  # type: ignore
-            regex=ARGUMENT_REGEXES[option_name](),
+            regex=ARGUMENT_REGEXES[option_name],
         )
 
     for arg_name, arg in bool_options.items():
-        bool_arg_match = arg.regex.search(arguments_string)
+        if arg_name not in used_arguments:
+            continue
+        bool_arg_match = arg.regex().search(arguments_string)
         if bool_arg_match is None:
             continue
         try:
