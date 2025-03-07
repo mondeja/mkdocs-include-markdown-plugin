@@ -284,7 +284,7 @@ def test_invalid_argument_name(directive, page, tmp_path, plugin, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].msg == (
-        f"Invalid argument 'invalid-argument=true' in '{directive}'"
+        f"Invalid argument 'invalid-argument' in '{directive}'"
         " directive at includer.md:1. Ignoring..."
     )
 

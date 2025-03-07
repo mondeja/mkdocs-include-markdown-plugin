@@ -24,6 +24,7 @@ class DirectiveBoolArgument:  # noqa: D101
 
 
 if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Iterable
     from typing import Callable, Literal, TypedDict
 
     DirectiveBoolArgumentsDict = dict[str, DirectiveBoolArgument]
@@ -50,18 +51,18 @@ RE_ESCAPED_PUNCTUATION = re.escape(string.punctuation)
 DOUBLE_QUOTED_STR_RE = r'([^"]|(?<=\\)")+'
 SINGLE_QUOTED_STR_RE = r"([^']|(?<=\\)')+"
 
-# In the following regular expression, the substrings "$OPENING_TAG"
-# and "$CLOSING_TAG" will be replaced by the effective opening and
-# closing tags in the `on_config` plugin event.
-INCLUDE_TAG_RE = rf'''
-    (?P<_includer_indent>[ \t\w\\.]*?)$OPENING_TAG
+# In the following regular expression, the substrings "\{%", "%\}"
+# will be replaced by custom opening and closing tags in the `on_config`
+# plugin event if required.
+INCLUDE_TAG_RE = r'''
+    (?P<_includer_indent>[ \t\w\\.]*?)\{%
     \s*
     include
     \s+
-    (?:"(?P<double_quoted_filename>{DOUBLE_QUOTED_STR_RE})")?(?:'(?P<single_quoted_filename>{SINGLE_QUOTED_STR_RE})')?
+    (?:"(?P<double_quoted_filename>''' + DOUBLE_QUOTED_STR_RE + r''')")?(?:'(?P<single_quoted_filename>''' + SINGLE_QUOTED_STR_RE + r''')')?
     (?P<arguments>.*?)
     \s*
-    $CLOSING_TAG
+    %\}
 '''  # noqa: E501
 
 TRUE_FALSE_STR_BOOL = {
@@ -110,6 +111,7 @@ ARGUMENT_REGEXES = {
     'heading-offset': functools.partial(arg, 'heading-offset'),
 }
 
+INCLUDE_MARKDOWN_DIRECTIVE_ARGS = set(ARGUMENT_REGEXES)
 INCLUDE_DIRECTIVE_ARGS = {
     key for key in ARGUMENT_REGEXES if key not in (
         'rewrite-relative-urls', 'heading-offset', 'comments',
@@ -121,6 +123,45 @@ WARN_INVALID_DIRECTIVE_ARGS_REGEX = re.compile(
 )
 
 
+def _maybe_arguments_iter(arguments_string: str) -> Iterable[str]:
+    """Iterate over parts of the string that look like arguments."""
+    current_string_opening = ''  # can be either `'` or `"`
+    inside_string = False
+    escaping = False
+    opening_argument = False  # whether we are at the beginning of an argument
+    current_value = ''
+
+    for c in arguments_string:
+        if inside_string:
+            if c == '\\':
+                escaping = not escaping
+                continue
+            elif c == current_string_opening and not escaping:
+                inside_string = False
+                current_string_opening = ''
+            else:
+                escaping = False
+        elif c == '=':
+            new_current_value = ''
+            for ch in reversed(current_value):
+                if ch in string.whitespace:
+                    current_value = new_current_value[::-1]
+                    break
+                new_current_value += ch
+            yield current_value
+            current_value = ''
+            opening_argument = True
+        elif opening_argument:
+            opening_argument = False
+            if c in ('"', "'"):
+                current_string_opening = c
+                inside_string = True
+                current_value += c
+                current_value += c
+        else:
+            current_value += c
+
+
 def warn_invalid_directive_arguments(
     arguments_string: str,
     directive_lineno: Callable[[], int],
@@ -130,18 +171,17 @@ def warn_invalid_directive_arguments(
 ) -> None:
     """Warns about the invalid arguments passed to a directive."""
     valid_args = (
-        INCLUDE_DIRECTIVE_ARGS if directive == 'include'
-        else set(ARGUMENT_REGEXES)
+        INCLUDE_DIRECTIVE_ARGS
+        if directive == 'include'
+        else INCLUDE_MARKDOWN_DIRECTIVE_ARGS
     )
-    for arg_value in WARN_INVALID_DIRECTIVE_ARGS_REGEX.findall(
-        arguments_string,
-    ):
-        if arg_value.split('=', 1)[0] not in valid_args:
+    for maybe_arg in _maybe_arguments_iter(arguments_string):
+        if maybe_arg not in valid_args:
             location = process.file_lineno_message(
                 page_src_path, docs_dir, directive_lineno(),
             )
             logger.warning(
-                f"Invalid argument '{arg_value}' in"
+                f"Invalid argument '{maybe_arg}' in"
                 f" '{directive}' directive at {location}. Ignoring...",
             )
 
@@ -156,9 +196,9 @@ def parse_filename_argument(
         if raw_filename is None:
             filename = None
         else:
-            filename = raw_filename.replace("\\'", "'")
+            filename = raw_filename.replace(r"\'", "'")
     else:
-        filename = raw_filename.replace('\\"', '"')
+        filename = raw_filename.replace(r'\"', '"')
     return filename, raw_filename
 
 
@@ -168,9 +208,9 @@ def parse_string_argument(match: re.Match[str]) -> str | None:
     if value is None:
         value = match[3]
         if value is not None:
-            value = value.replace("\\'", "'")
+            value = value.replace(r"\'", "'")
     else:
-        value = value.replace('\\"', '"')
+        value = value.replace(r'\"', '"')
     return value
 
 
@@ -182,12 +222,24 @@ def create_include_tag(
     Replaces the substrings '$OPENING_TAG' and '$CLOSING_TAG' from
     INCLUDE_TAG_RE by the effective tag.
     """
-    return re.compile(
-        INCLUDE_TAG_RE.replace(' include', f' {tag}', 1).replace(
-            '$OPENING_TAG', re.escape(opening_tag), 1,
-        ).replace('$CLOSING_TAG', re.escape(closing_tag), 1),
-        flags=re.VERBOSE | re.DOTALL,
-    )
+    pattern = INCLUDE_TAG_RE
+    if tag != 'include':
+        pattern = pattern.replace(
+            ' include',
+            (
+                ' include-markdown' if tag == 'include-markdown'
+                else f' {re.escape(tag)}'
+            ),
+            1,
+        )
+
+    if opening_tag != '{%':
+        pattern = pattern.replace(r'\{%', re.escape(opening_tag), 1)
+
+    if closing_tag != '%}':
+        pattern = pattern.replace(r'%\}', re.escape(closing_tag), 1)
+
+    return re.compile(pattern, flags=re.VERBOSE | re.DOTALL)
 
 
 def parse_bool_options(

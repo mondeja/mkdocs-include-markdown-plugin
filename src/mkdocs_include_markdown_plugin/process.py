@@ -249,9 +249,10 @@ def transform_line_by_line_skipping_codeblocks(
         markdown: str,
         func: Callable[[str], str],
 ) -> str:
-    """Apply a transformation line by line in a Markdown text using a function.
+    """Apply a transformation line by line in a Markdown text using a function,.
 
-    Skip fenced codeblock lines, where the transformation never is applied.
+    Skip fenced codeblock lines and empty lines, where the transformation
+    is never applied.
 
     Indented codeblocks are not taken into account because in the practice
     this function is only used for transformations of heading prefixes. See
@@ -263,13 +264,15 @@ def transform_line_by_line_skipping_codeblocks(
 
     lines = []
     for line in io.StringIO(markdown):
+        lstripped_line = line.lstrip()
         if not _current_fcodeblock_delimiter:
-            lstripped_line = line.lstrip()
-            if lstripped_line.startswith(('```', '~~~')):
-                _current_fcodeblock_delimiter = lstripped_line[:3]
+            if lstripped_line.startswith('```'):
+                _current_fcodeblock_delimiter = '```'
+            elif lstripped_line.startswith('~~~'):
+                _current_fcodeblock_delimiter = '~~~'
             else:
                 line = func(line)  # noqa: PLW2901
-        elif line.lstrip().startswith(_current_fcodeblock_delimiter):
+        elif lstripped_line.startswith(_current_fcodeblock_delimiter):
             _current_fcodeblock_delimiter = ''
         lines.append(line)
 
@@ -287,20 +290,12 @@ def rewrite_relative_urls(
     ``source_path`` will still work when inserted into a file at
     ``destination_path``.
     """
-    from urllib.parse import urlparse, urlunparse
-
     def rewrite_url(url: str) -> str:
-        if is_url(url):
-            return url
-
-        scheme, netloc, path, params, query, fragment = urlparse(url)
-
-        # absolute or mail
-        if path.startswith('/') or scheme == 'mailto':
+        if is_url(url) or is_absolute_path(url):
             return url
 
         new_path = os.path.relpath(
-            os.path.join(os.path.dirname(source_path), path),
+            os.path.join(os.path.dirname(source_path), url),
             os.path.dirname(destination_path),
         )
 
@@ -308,18 +303,14 @@ def rewrite_relative_urls(
         new_path = new_path.replace('\\', '/').replace('//', '/')
 
         try:
-            if path[-1] == '/':
+            if url[-1] == '/':
                 # the above operation removes a trailing slash,
                 # so add it back if it was present in the input
                 new_path += '/'
         except IndexError:  # pragma: no cover
             pass
 
-        # ensure that links to the same file are not rewritten
-        if new_path == '.':
-            new_path = ''
-
-        return urlunparse((scheme, netloc, new_path, params, query, fragment))
+        return new_path
 
     def found_href(m: re.Match[str], url_group_index: int = -1) -> str:
         match_start, match_end = m.span(0)
@@ -528,27 +519,68 @@ def filter_paths(
     return response
 
 
+def _is_valid_url_scheme_char(c: str) -> bool:
+    """Determine is a character is a valid URL scheme character.
+
+    Valid characters are:
+
+    ```
+    abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-.
+    ```
+    """
+    codepoint = ord(c)
+    A = 65
+    Z = 90
+    a = 97
+    z = 122
+    zero = 48
+    nine = 57
+    dot = 46
+    plus = 43
+    minus = 45
+    return (
+        A <= codepoint <= Z
+        or a <= codepoint <= z
+        or zero <= codepoint <= nine
+        or codepoint in (plus, minus, dot)
+    )
+
+
 def is_url(string: str) -> bool:
-    """Determine if a string is an URL."""
-    if ':' not in string:  # fast path
+    """Determine if a string is an URL.
+
+    The implementation has been adapted from `urllib.urlparse`.
+    """
+    i = string.find(':')
+    if i <= 1:  # noqa: PLR2004 -> exclude C: or D: on Windows
         return False
-    from urllib.parse import urlparse
 
     try:
-        result = urlparse(string)
-        return all([result.scheme, result.netloc])
-    except ValueError:  # pragma: no cover
+        return all(_is_valid_url_scheme_char(string[j]) for j in range(i))
+    except (IndexError, ValueError):  # pragma: no cover
         return False
 
 
 def is_relative_path(string: str) -> bool:
     """Check if a string looks like a relative path."""
-    return string.startswith(('./', '../'))
+    try:
+        return (
+            string[0] == '.'
+            and (
+                string[1] == '/'
+                or (string[1] == '.' and string[2] == '/')
+            )
+        )
+    except IndexError:  # pragma: no cover
+        return False
 
 
 def is_absolute_path(string: str) -> bool:
     """Check if a string looks like an absolute path."""
-    return string.startswith((os.sep, '/'))
+    try:
+        return string[0] == '/' or string[0] == os.sep
+    except IndexError:  # pragma: no cover
+        return False
 
 
 def read_file(file_path: str, encoding: str) -> str:
@@ -581,14 +613,12 @@ def read_url(
 def safe_os_path_relpath(path: str, start: str) -> str:
     """Return the relative path of a file from a start directory.
 
-    Safe version of `os.path.relpath` that catches `ValueError` exceptions
-    on Windows and returns the original path in case of error.
+    Safe version of `os.path.relpath` that catches possible `ValueError`
+    exceptions and returns the original path in case of error.
     On Windows, `ValueError` is raised when `path` and `start` are on
     different drives.
     """
-    if os.name != 'nt':  # pragma: nt no cover
-        return os.path.relpath(path, start)
-    try:  # pragma: nt cover
+    try:
         return os.path.relpath(path, start)
     except ValueError:  # pragma: no cover
         return path
