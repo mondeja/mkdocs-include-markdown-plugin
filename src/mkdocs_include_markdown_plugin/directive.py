@@ -206,8 +206,10 @@ def parse_filename_argument(
     return filename, raw_filename
 
 
-def parse_string_argument(match: re.Match[str]) -> str | None:
+def parse_string_argument(match: re.Match[str] | None) -> str | None:
     """Return the string argument matched by ``match``."""
+    if match is None:
+        return None
     value = match[1]
     if value is None:
         value = match[3]
@@ -266,11 +268,10 @@ def parse_bool_options(
         if arg_name not in used_arguments:
             continue
         bool_arg_match = arg.regex().search(arguments_string)
-        if bool_arg_match is None:
-            continue
         try:
             bool_options[arg_name].value = TRUE_FALSE_STR_BOOL[
-                bool_arg_match[1] or TRUE_FALSE_BOOL_STR[arg.value]
+                (bool_arg_match and bool_arg_match[1])
+                or TRUE_FALSE_BOOL_STR[arg.value]
             ]
         except KeyError:
             invalid_args.append(arg_name)

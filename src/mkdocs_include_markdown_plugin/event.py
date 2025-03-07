@@ -136,22 +136,22 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         ignore_paths = [*settings_ignore_paths]
         if 'exclude' in used_arguments:
             exclude_match = ARGUMENT_REGEXES['exclude']().search(
-                arguments_string)
-            if exclude_match is not None:
-                exclude_string = parse_string_argument(exclude_match)
-                if exclude_string is None:
-                    location = process.file_lineno_message(
-                        page_src_path, docs_dir, directive_lineno(),
-                    )
-                    raise PluginError(
-                        "Invalid empty 'exclude' argument in 'include'"
-                        f' directive at {location}',
-                    )
+                arguments_string,
+            )
+            exclude_string = parse_string_argument(exclude_match)
+            if exclude_string is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'exclude' argument in 'include'"
+                    f' directive at {location}',
+                )
 
-                for path in resolve_file_paths_to_exclude(
-                    exclude_string, page_src_path, docs_dir,
-                ):
-                    ignore_paths.append(path)
+            for path in resolve_file_paths_to_exclude(
+                exclude_string, page_src_path, docs_dir,
+            ):
+                ignore_paths.append(path)
 
         file_paths_to_include, is_url = resolve_file_paths_to_include(
             filename,
@@ -174,46 +174,44 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         start = defaults['start']
         if 'start' in used_arguments:
             start_match = ARGUMENT_REGEXES['start']().search(arguments_string)
-            if start_match:
-                start = parse_string_argument(start_match)
-                if start is None:
-                    location = process.file_lineno_message(
-                        page_src_path, docs_dir, directive_lineno(),
-                    )
-                    raise PluginError(
-                        "Invalid empty 'start' argument in 'include' directive"
-                        f' at {location}',
-                    )
+            start = parse_string_argument(start_match)
+            if start is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'start' argument in 'include' directive"
+                    f' at {location}',
+                )
 
         end = defaults['end']
         if 'end' in used_arguments:
             end_match = ARGUMENT_REGEXES['end']().search(arguments_string)
-            if end_match:
-                end = parse_string_argument(end_match)
-                if end is None:
-                    location = process.file_lineno_message(
-                        page_src_path, docs_dir, directive_lineno(),
-                    )
-                    raise PluginError(
-                        "Invalid empty 'end' argument in 'include' directive at"
-                        f' {location}',
-                    )
+            end = parse_string_argument(end_match)
+            if end is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'end' argument in 'include' directive at"
+                    f' {location}',
+                )
 
         encoding = defaults['encoding']
         if 'encoding' in used_arguments:
             encoding_match = ARGUMENT_REGEXES['encoding']().search(
-                arguments_string)
-            if encoding_match:
-                encoding_ = parse_string_argument(encoding_match)
-                if encoding_ is None:
-                    location = process.file_lineno_message(
-                        page_src_path, docs_dir, directive_lineno(),
-                    )
-                    raise PluginError(
-                        "Invalid empty 'encoding' argument in 'include'"
-                        f' directive at {location}',
-                    )
-                encoding = encoding_
+                arguments_string,
+            )
+            encoding_ = parse_string_argument(encoding_match)
+            if encoding_ is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'encoding' argument in 'include'"
+                    f' directive at {location}',
+                )
+            encoding = encoding_
 
         bool_options, invalid_bool_args = parse_bool_options(
             [
@@ -355,21 +353,21 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         ignore_paths = [*settings_ignore_paths]
         if 'exclude' in used_arguments:
             exclude_match = ARGUMENT_REGEXES['exclude']().search(
-                arguments_string)
-            if exclude_match is not None:
-                exclude_string = parse_string_argument(exclude_match)
-                if exclude_string is None:
-                    location = process.file_lineno_message(
-                        page_src_path, docs_dir, directive_lineno(),
-                    )
-                    raise PluginError(
-                        "Invalid empty 'exclude' argument in 'include-markdown'"
-                        f' directive at {location}',
-                    )
-                for path in resolve_file_paths_to_exclude(
-                    exclude_string, page_src_path, docs_dir,
-                ):
-                    ignore_paths.append(path)
+                arguments_string,
+            )
+            exclude_string = parse_string_argument(exclude_match)
+            if exclude_string is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'exclude' argument in 'include-markdown'"
+                    f' directive at {location}',
+                )
+            for path in resolve_file_paths_to_exclude(
+                exclude_string, page_src_path, docs_dir,
+            ):
+                ignore_paths.append(path)
 
         file_paths_to_include, is_url = resolve_file_paths_to_include(
             filename,
@@ -393,47 +391,44 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         start = defaults['start']
         if 'start' in used_arguments:
             start_match = ARGUMENT_REGEXES['start']().search(arguments_string)
-            if start_match:
-                start = parse_string_argument(start_match)
-                if start is None:
-                    location = process.file_lineno_message(
-                        page_src_path, docs_dir, directive_lineno(),
-                    )
-                    raise PluginError(
-                        "Invalid empty 'start' argument in"
-                        f" 'include-markdown' directive at {location}",
-                    )
+            start = parse_string_argument(start_match)
+            if start is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'start' argument in"
+                    f" 'include-markdown' directive at {location}",
+                )
 
         end = defaults['end']
         if 'end' in used_arguments:
             end_match = ARGUMENT_REGEXES['end']().search(arguments_string)
-            if end_match:
-                end = parse_string_argument(end_match)
-                if end is None:
-                    location = process.file_lineno_message(
-                        page_src_path, docs_dir, directive_lineno(),
-                    )
-                    raise PluginError(
-                        "Invalid empty 'end' argument in 'include-markdown'"
-                        f' directive at {location}',
-                    )
+            end = parse_string_argument(end_match)
+            if end is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'end' argument in 'include-markdown'"
+                    f' directive at {location}',
+                )
 
         encoding = defaults['encoding']
         if 'encoding' in used_arguments:
             encoding_match = ARGUMENT_REGEXES['encoding']().search(
                 arguments_string,
             )
-            if encoding_match:
-                encoding_ = parse_string_argument(encoding_match)
-                if encoding_ is None:
-                    location = process.file_lineno_message(
-                        page_src_path, docs_dir, directive_lineno(),
-                    )
-                    raise PluginError(
-                        "Invalid empty 'encoding' argument in"
-                        f" 'include-markdown' directive at {location}",
-                    )
-                encoding = encoding_
+            encoding_ = parse_string_argument(encoding_match)
+            if encoding_ is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'encoding' argument in"
+                    f" 'include-markdown' directive at {location}",
+                )
+            encoding = encoding_
 
         # heading offset
         offset = defaults['heading-offset']
