@@ -6110,7 +6110,7 @@
 {% include-markdown 'included.md' start='<!--start-->' end='<!--end-->' dedent=true heading-offset=2 %}
 {% include 'included.md' start='<!--start-->' end='<!--end-->' trailing-newlines=false %}
 {% include-markdown 'included.md' start='<!--start-->' end='<!--end-->' dedent=true heading-offset=2 %}
-{% include 'included.md' foobar=" foo=bar" start='<!--start-->' end='<!--end-->' trailing-newlines=false %}
+{% include 'included.md' start='<!--start-->' end='<!--end-->' trailing-newlines=false %}
 {% include-markdown 'included.md' start='<!--start-->' end='<!--end-->' dedent=true heading-offset=2 %}
 {% include 'included.md' start='<!--start-->' end='<!--end-->' trailing-newlines=false %}
 {% include-markdown 'included.md' start='<!--start-->' end='<!--end-->' dedent=true heading-offset=2 %}
