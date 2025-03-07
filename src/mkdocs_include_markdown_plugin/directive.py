@@ -51,18 +51,18 @@ RE_ESCAPED_PUNCTUATION = re.escape(string.punctuation)
 DOUBLE_QUOTED_STR_RE = r'([^"]|(?<=\\)")+'
 SINGLE_QUOTED_STR_RE = r"([^']|(?<=\\)')+"
 
-# In the following regular expression, the substrings "$OPENING_TAG"
-# and "$CLOSING_TAG" will be replaced by the effective opening and
-# closing tags in the `on_config` plugin event.
-INCLUDE_TAG_RE = rf'''
-    (?P<_includer_indent>[ \t\w\\.]*?)$OPENING_TAG
+# In the following regular expression, the substrings "\{%", "%\}"
+# will be replaced by custom opening and closing tags in the `on_config`
+# plugin event if required.
+INCLUDE_TAG_RE = r'''
+    (?P<_includer_indent>[ \t\w\\.]*?)\{%
     \s*
     include
     \s+
-    (?:"(?P<double_quoted_filename>{DOUBLE_QUOTED_STR_RE})")?(?:'(?P<single_quoted_filename>{SINGLE_QUOTED_STR_RE})')?
+    (?:"(?P<double_quoted_filename>''' + DOUBLE_QUOTED_STR_RE + r''')")?(?:'(?P<single_quoted_filename>''' + SINGLE_QUOTED_STR_RE + r''')')?
     (?P<arguments>.*?)
     \s*
-    $CLOSING_TAG
+    %\}
 '''  # noqa: E501
 
 TRUE_FALSE_STR_BOOL = {
@@ -196,9 +196,9 @@ def parse_filename_argument(
         if raw_filename is None:
             filename = None
         else:
-            filename = raw_filename.replace("\\'", "'")
+            filename = raw_filename.replace(r"\'", "'")
     else:
-        filename = raw_filename.replace('\\"', '"')
+        filename = raw_filename.replace(r'\"', '"')
     return filename, raw_filename
 
 
@@ -208,9 +208,9 @@ def parse_string_argument(match: re.Match[str]) -> str | None:
     if value is None:
         value = match[3]
         if value is not None:
-            value = value.replace("\\'", "'")
+            value = value.replace(r"\'", "'")
     else:
-        value = value.replace('\\"', '"')
+        value = value.replace(r'\"', '"')
     return value
 
 
@@ -227,16 +227,10 @@ def create_include_tag(
         pattern = pattern.replace(' include', f' {tag}', 1)
 
     if opening_tag != '{%':
-        pattern = pattern.replace('$OPENING_TAG', re.escape(opening_tag), 1)
-    else:
-        # fast path avoiding `re.escape`
-        pattern = pattern.replace('$OPENING_TAG', '\\{%', 1)
+        pattern = pattern.replace(r'\{%', re.escape(opening_tag), 1)
 
     if closing_tag != '%}':
-        pattern = pattern.replace('$CLOSING_TAG', re.escape(closing_tag), 1)
-    else:
-        # fast path avoiding `re.escape`
-        pattern = pattern.replace('$CLOSING_TAG', '%\\}', 1)
+        pattern = pattern.replace(r'%\}', re.escape(closing_tag), 1)
 
     return re.compile(pattern, flags=re.VERBOSE | re.DOTALL)
 
