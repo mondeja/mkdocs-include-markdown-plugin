@@ -226,7 +226,7 @@ def test_empty_encoding_argument(directive, page, tmp_path, plugin, caplog):
     (
         pytest.param(
             'invalidoption', (
-                "Invalid 'heading-offset' argument \"invalidoption\" in"
+                "Invalid 'heading-offset' argument 'invalidoption' in"
                 " 'include-markdown' directive at includer.md:1"
             ),
             id='invalidoption',

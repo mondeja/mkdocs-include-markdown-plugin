@@ -125,7 +125,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
 
         arguments_string = match['arguments']
 
-        warn_invalid_directive_arguments(
+        used_arguments = warn_invalid_directive_arguments(
             arguments_string,
             directive_lineno,
             'include',
@@ -133,9 +133,11 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             docs_dir,
         )
 
-        exclude_match = ARGUMENT_REGEXES['exclude']().search(arguments_string)
         ignore_paths = [*settings_ignore_paths]
-        if exclude_match is not None:
+        if 'exclude' in used_arguments:
+            exclude_match = ARGUMENT_REGEXES['exclude']().search(
+                arguments_string,
+            )
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
                 location = process.file_lineno_message(
@@ -169,11 +171,58 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         if files_watcher is not None and not is_url:
             files_watcher.included_files.extend(file_paths_to_include)
 
+        start = defaults['start']
+        if 'start' in used_arguments:
+            start_match = ARGUMENT_REGEXES['start']().search(arguments_string)
+            start = parse_string_argument(start_match)
+            if start is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'start' argument in 'include' directive"
+                    f' at {location}',
+                )
+
+        end = defaults['end']
+        if 'end' in used_arguments:
+            end_match = ARGUMENT_REGEXES['end']().search(arguments_string)
+            end = parse_string_argument(end_match)
+            if end is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'end' argument in 'include' directive at"
+                    f' {location}',
+                )
+
+        encoding = defaults['encoding']
+        if 'encoding' in used_arguments:
+            encoding_match = ARGUMENT_REGEXES['encoding']().search(
+                arguments_string,
+            )
+            encoding_ = parse_string_argument(encoding_match)
+            if encoding_ is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'encoding' argument in 'include'"
+                    f' directive at {location}',
+                )
+            encoding = encoding_
+
         bool_options, invalid_bool_args = parse_bool_options(
-            ['preserve-includer-indent', 'dedent',
-                'trailing-newlines', 'recursive'],
+            [
+                'preserve-includer-indent',
+                'dedent',
+                'trailing-newlines',
+                'recursive',
+            ],
             defaults,
             arguments_string,
+            used_arguments,
         )
         if invalid_bool_args:
             location = process.file_lineno_message(
@@ -184,49 +233,6 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 f" 'include' directive at {location}."
                 f' Possible values are true or false.',
             )
-
-        start_match = ARGUMENT_REGEXES['start']().search(arguments_string)
-        if start_match:
-            start = parse_string_argument(start_match)
-            if start is None:
-                location = process.file_lineno_message(
-                    page_src_path, docs_dir, directive_lineno(),
-                )
-                raise PluginError(
-                    "Invalid empty 'start' argument in 'include' directive at"
-                    f' {location}',
-                )
-        else:
-            start = defaults['start']
-
-        end_match = ARGUMENT_REGEXES['end']().search(arguments_string)
-        if end_match:
-            end = parse_string_argument(end_match)
-            if end is None:
-                location = process.file_lineno_message(
-                    page_src_path, docs_dir, directive_lineno(),
-                )
-                raise PluginError(
-                    "Invalid empty 'end' argument in 'include' directive at"
-                    f' {location}',
-                )
-        else:
-            end = defaults['end']
-
-        encoding_match = ARGUMENT_REGEXES['encoding']().search(
-            arguments_string)
-        if encoding_match:
-            encoding = parse_string_argument(encoding_match)
-            if encoding is None:
-                location = process.file_lineno_message(
-                    page_src_path, docs_dir, directive_lineno(),
-                )
-                raise PluginError(
-                    "Invalid empty 'encoding' argument in 'include'"
-                    f' directive at {location}',
-                )
-        else:
-            encoding = defaults['encoding']
 
         text_to_include = ''
         expected_but_any_found = [start is not None, end is not None]
@@ -322,7 +328,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         )
 
         includer_indent = match['_includer_indent']
-        empty_includer_indent = ' ' * len(includer_indent)
+        filled_includer_indent = ' ' * len(includer_indent)
 
         filename, raw_filename = parse_filename_argument(match)
         if filename is None:
@@ -336,7 +342,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
 
         arguments_string = match['arguments']
 
-        warn_invalid_directive_arguments(
+        used_arguments = warn_invalid_directive_arguments(
             arguments_string,
             directive_lineno,
             'include-markdown',
@@ -344,9 +350,11 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             docs_dir,
         )
 
-        exclude_match = ARGUMENT_REGEXES['exclude']().search(arguments_string)
         ignore_paths = [*settings_ignore_paths]
-        if exclude_match is not None:
+        if 'exclude' in used_arguments:
+            exclude_match = ARGUMENT_REGEXES['exclude']().search(
+                arguments_string,
+            )
             exclude_string = parse_string_argument(exclude_match)
             if exclude_string is None:
                 location = process.file_lineno_message(
@@ -379,14 +387,89 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         if files_watcher is not None and not is_url:
             files_watcher.included_files.extend(file_paths_to_include)
 
+        # start and end arguments
+        start = defaults['start']
+        if 'start' in used_arguments:
+            start_match = ARGUMENT_REGEXES['start']().search(arguments_string)
+            start = parse_string_argument(start_match)
+            if start is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'start' argument in"
+                    f" 'include-markdown' directive at {location}",
+                )
+
+        end = defaults['end']
+        if 'end' in used_arguments:
+            end_match = ARGUMENT_REGEXES['end']().search(arguments_string)
+            end = parse_string_argument(end_match)
+            if end is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'end' argument in 'include-markdown'"
+                    f' directive at {location}',
+                )
+
+        encoding = defaults['encoding']
+        if 'encoding' in used_arguments:
+            encoding_match = ARGUMENT_REGEXES['encoding']().search(
+                arguments_string,
+            )
+            encoding_ = parse_string_argument(encoding_match)
+            if encoding_ is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'encoding' argument in"
+                    f" 'include-markdown' directive at {location}",
+                )
+            encoding = encoding_
+
+        # heading offset
+        offset = defaults['heading-offset']
+        if 'heading-offset' in used_arguments:
+            offset_match = ARGUMENT_REGEXES['heading-offset']().search(
+                arguments_string,
+            )
+            if offset_match:
+                offset_raw_value = offset_match[1]
+                if offset_raw_value == '':
+                    location = process.file_lineno_message(
+                        page_src_path, docs_dir, directive_lineno(),
+                    )
+                    raise PluginError(
+                        "Invalid empty 'heading-offset' argument in"
+                        f" 'include-markdown' directive at {location}",
+                    )
+                try:
+                    offset = int(offset_raw_value)
+                except ValueError:
+                    location = process.file_lineno_message(
+                        page_src_path, docs_dir, directive_lineno(),
+                    )
+                    raise PluginError(
+                        f"Invalid 'heading-offset' argument"
+                        f" '{offset_raw_value}' in 'include-markdown'"
+                        f" directive at {location}",
+                    ) from None
+
         bool_options, invalid_bool_args = parse_bool_options(
             [
-                'rewrite-relative-urls', 'comments',
-                'preserve-includer-indent', 'dedent',
-                'trailing-newlines', 'recursive',
+                'rewrite-relative-urls',
+                'comments',
+                'preserve-includer-indent',
+                'dedent',
+                'trailing-newlines',
+                'recursive',
             ],
             defaults,
             arguments_string,
+            used_arguments,
         )
         if invalid_bool_args:
             location = process.file_lineno_message(
@@ -397,77 +480,6 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 " 'include-markdown' directive at"
                 f' {location}. Possible values are true or false.',
             )
-
-        # start and end arguments
-        start_match = ARGUMENT_REGEXES['start']().search(arguments_string)
-        if start_match:
-            start = parse_string_argument(start_match)
-            if start is None:
-                location = process.file_lineno_message(
-                    page_src_path, docs_dir, directive_lineno(),
-                )
-                raise PluginError(
-                    "Invalid empty 'start' argument in 'include-markdown'"
-                    f' directive at {location}',
-                )
-        else:
-            start = defaults['start']
-
-        end_match = ARGUMENT_REGEXES['end']().search(arguments_string)
-        if end_match:
-            end = parse_string_argument(end_match)
-            if end is None:
-                location = process.file_lineno_message(
-                    page_src_path, docs_dir, directive_lineno(),
-                )
-                raise PluginError(
-                    "Invalid empty 'end' argument in 'include-markdown'"
-                    f' directive at {location}',
-                )
-        else:
-            end = defaults['end']
-
-        encoding_match = ARGUMENT_REGEXES['encoding']().search(
-            arguments_string)
-        if encoding_match:
-            encoding = parse_string_argument(encoding_match)
-            if encoding is None:
-                location = process.file_lineno_message(
-                    page_src_path, docs_dir, directive_lineno(),
-                )
-                raise PluginError(
-                    "Invalid empty 'encoding' argument in 'include-markdown'"
-                    f' directive at {location}',
-                )
-        else:
-            encoding = defaults['encoding']
-
-        # heading offset
-        offset_match = ARGUMENT_REGEXES['heading-offset']().search(
-            arguments_string,
-        )
-        if offset_match:
-            offset_raw_value = offset_match[1]
-            if offset_raw_value == '':
-                location = process.file_lineno_message(
-                    page_src_path, docs_dir, directive_lineno(),
-                )
-                raise PluginError(
-                    "Invalid empty 'heading-offset' argument in"
-                    f" 'include-markdown' directive at {location}",
-                )
-            try:
-                offset = int(offset_raw_value)
-            except ValueError:
-                location = process.file_lineno_message(
-                    page_src_path, docs_dir, directive_lineno(),
-                )
-                raise PluginError(
-                    f"Invalid 'heading-offset' argument \"{offset_raw_value}\""
-                    f" in 'include-markdown' directive at {location}",
-                ) from None
-        else:
-            offset = defaults['heading-offset']
 
         separator = '\n' if bool_options['trailing-newlines'].value else ''
         if not start and not end:
@@ -555,14 +567,15 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 new_text_to_include = textwrap.dedent(new_text_to_include)
 
             # includer indentation preservation
-            if bool_options['preserve-includer-indent'].value:
-                new_text_to_include = ''.join(
-                    (empty_includer_indent if i > 0 else '') + line
-                    for i, line in enumerate(
-                        new_text_to_include.splitlines(keepends=True)
-                        or [''],
+            if bool_options['preserve-includer-indent'].value and (
+                new_text_to_include
+            ):
+                lines = new_text_to_include.splitlines(keepends=True)
+                new_text_to_include = lines[0]
+                for i in range(1, len(lines)):
+                    new_text_to_include += (
+                        filled_includer_indent + lines[i]
                     )
-                )
 
             if offset:
                 new_text_to_include = process.increase_headings_offset(

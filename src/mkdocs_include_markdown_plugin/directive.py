@@ -20,7 +20,7 @@ from mkdocs_include_markdown_plugin.logger import logger
 @dataclass
 class DirectiveBoolArgument:  # noqa: D101
     value: bool
-    regex: re.Pattern[str]
+    regex: Callable[[], re.Pattern[str]]
 
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -168,8 +168,9 @@ def warn_invalid_directive_arguments(
     directive: Literal['include', 'include-markdown'],
     page_src_path: str | None,
     docs_dir: str,
-) -> None:
+) -> list[str]:
     """Warns about the invalid arguments passed to a directive."""
+    used_arguments = []
     valid_args = (
         INCLUDE_DIRECTIVE_ARGS
         if directive == 'include'
@@ -184,6 +185,9 @@ def warn_invalid_directive_arguments(
                 f"Invalid argument '{maybe_arg}' in"
                 f" '{directive}' directive at {location}. Ignoring...",
             )
+        else:
+            used_arguments.append(maybe_arg)
+    return used_arguments
 
 
 def parse_filename_argument(
@@ -202,8 +206,10 @@ def parse_filename_argument(
     return filename, raw_filename
 
 
-def parse_string_argument(match: re.Match[str]) -> str | None:
+def parse_string_argument(match: re.Match[str] | None) -> str | None:
     """Return the string argument matched by ``match``."""
+    if match is None:
+        return None
     value = match[1]
     if value is None:
         value = match[3]
@@ -246,6 +252,7 @@ def parse_bool_options(
         option_names: list[str],
         defaults: DefaultValues,
         arguments_string: str,
+        used_arguments: list[str],
 ) -> tuple[DirectiveBoolArgumentsDict, list[str]]:
     """Parse boolean options from arguments string."""
     invalid_args: list[str] = []
@@ -254,16 +261,17 @@ def parse_bool_options(
     for option_name in option_names:
         bool_options[option_name] = DirectiveBoolArgument(
             value=defaults[option_name],  # type: ignore
-            regex=ARGUMENT_REGEXES[option_name](),
+            regex=ARGUMENT_REGEXES[option_name],
         )
 
     for arg_name, arg in bool_options.items():
-        bool_arg_match = arg.regex.search(arguments_string)
-        if bool_arg_match is None:
+        if arg_name not in used_arguments:
             continue
+        bool_arg_match = arg.regex().search(arguments_string)
         try:
             bool_options[arg_name].value = TRUE_FALSE_STR_BOOL[
-                bool_arg_match[1] or TRUE_FALSE_BOOL_STR[arg.value]
+                (bool_arg_match and bool_arg_match[1])
+                or TRUE_FALSE_BOOL_STR[arg.value]
             ]
         except KeyError:
             invalid_args.append(arg_name)
