@@ -224,7 +224,14 @@ def create_include_tag(
     """
     pattern = INCLUDE_TAG_RE
     if tag != 'include':
-        pattern = pattern.replace(' include', f' {tag}', 1)
+        pattern = pattern.replace(
+            ' include',
+            (
+                ' include-markdown' if tag == 'include-markdown'
+                else f' {re.escape(tag)}'
+            ),
+            1,
+        )
 
     if opening_tag != '{%':
         pattern = pattern.replace(r'\{%', re.escape(opening_tag), 1)
