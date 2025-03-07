@@ -294,13 +294,13 @@ def rewrite_relative_urls(
         if is_url(url) or is_absolute_path(url):
             return url
 
-        path = os.path.relpath(
+        new_path = os.path.relpath(
             os.path.join(os.path.dirname(source_path), url),
             os.path.dirname(destination_path),
         )
 
         # ensure forward slashes are used, on Windows
-        new_path = path.replace('\\', '/').replace('//', '/')
+        new_path = new_path.replace('\\', '/').replace('//', '/')
 
         try:
             if url[-1] == '/':
