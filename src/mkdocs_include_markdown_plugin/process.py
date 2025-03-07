@@ -556,7 +556,7 @@ def is_url(string: str) -> bool:
     The implementation has been adapted from `urllib.urlparse`.
     """
     i = string.find(':')
-    if i <= 0:
+    if i <= 2:  # noqa: PLR2004 -> exclude C: or D: on Windows
         return False
 
     try:
