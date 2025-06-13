@@ -125,7 +125,7 @@ Check [this link](includes/feature_a/foobar.md) for more information
              " class='bar'>example</a>"),
             id='html-anchor-single-quote',
         ),
-        # HTML Relative Links Adverarial tests:
+        # HTML Relative Links Adversarial tests:
         # (attribute contains >, attribute without value, multiple tag in line)
         pytest.param(
             ('<img id="foo" attr="3>2" attr2 src="assets/diagram.png"'
@@ -136,7 +136,7 @@ Check [this link](includes/feature_a/foobar.md) for more information
             ('<img id="foo" attr="3>2" attr2 src="../assets/diagram.png"'
              ' alt="diagram" class="bar" /><img id="foo" attr="3>2"'
              ' src="../assets/diagram.png" alt="diagram" class="bar" />'),
-            id='html-image-adverarial-test',
+            id='html-image-adversarial-test',
         ),
         pytest.param(
             ('<a id="foo" attr="3>2" attr2 href="badge.png" class="bar">'
@@ -147,7 +147,7 @@ Check [this link](includes/feature_a/foobar.md) for more information
             ('<a id="foo" attr="3>2" attr2 href="../badge.png" class="bar">'
              'foo</a><a id="foo" attr="3>2" href="../badge.png" class="bar">'
              'bar</a>'),
-            id='html-anchor-adverarial-test',
+            id='html-anchor-adversarial-test',
         ),
         # HTML Relative Links Adversarial test: img no end slash
         pytest.param(
@@ -361,6 +361,15 @@ const auto lambda = []() { .... };
             # No newline after, is not an indented code block, see:
             # https://spec.commonmark.org/0.28/#indented-code-blocks
             id='no-exclude-indented-code-blocks-missing-newline-after',
+        ),
+        # Internal anchor in included file
+        # https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/266
+        pytest.param(
+            'This is a link to an [internal anchor](#internal-anchor).',
+            'README',
+            'docs/nav.md',
+            'This is a link to an [internal anchor](#internal-anchor).',
+            id='internal-anchor',
         ),
     ),
 )
