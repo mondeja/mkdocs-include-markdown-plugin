@@ -1,0 +1,5 @@
+site_name: My Docs
+site_url: https://example.com/org-name/repo-name/
+
+plugins:
+  - include-markdown

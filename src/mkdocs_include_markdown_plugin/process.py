@@ -291,7 +291,7 @@ def rewrite_relative_urls(
     ``destination_path``.
     """
     def rewrite_url(url: str) -> str:
-        if is_url(url) or is_absolute_path(url):
+        if is_url(url) or is_absolute_path(url) or is_anchor(url):
             return url
 
         new_path = os.path.relpath(
@@ -579,6 +579,17 @@ def is_absolute_path(string: str) -> bool:
     """Check if a string looks like an absolute path."""
     try:
         return string[0] == '/' or string[0] == os.sep
+    except IndexError:  # pragma: no cover
+        return False
+
+
+def is_anchor(string: str) -> bool:
+    """Check if a string looks like an anchor.
+
+    An anchor is a string that starts with `#` and is not a relative path.
+    """
+    try:
+        return string[0] == '#'
     except IndexError:  # pragma: no cover
         return False
 
