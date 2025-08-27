@@ -78,7 +78,7 @@ def get_cache_directory(cache_dir: str) -> str | None:
         return None
 
     try:
-        from platformdirs import user_data_dir
+        from platformdirs import user_data_dir  # noqa: PLC0415
     except ImportError:  # pragma: no cover
         return None
     else:
