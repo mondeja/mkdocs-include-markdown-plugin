@@ -433,7 +433,9 @@ def _transform_negative_offset_func_factory(
         try:
             if line[0] != '#':
                 return line
-        except IndexError:
+        except IndexError:  # pragma: no cover
+            # Note for pragma: all lines include a newline
+            # so this exception is never raised in tests.
             return line
         stripped_line = line.lstrip('#')
         new_n_headings = max(len(line) - len(stripped_line) - abs_offset, 1)
@@ -451,7 +453,7 @@ def _transform_positive_offset_func_factory(
         try:
             if line[0] != '#':
                 return line
-        except IndexError:
+        except IndexError:  # pragma: no cover
             return line
         return heading_prefix + line
 
