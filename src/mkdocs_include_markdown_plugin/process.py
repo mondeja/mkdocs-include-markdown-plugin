@@ -608,7 +608,7 @@ def read_url(
         encoding: str = 'utf-8',
 ) -> Any:
     """Read an HTTP location and return its content."""
-    from urllib.request import Request, urlopen
+    from urllib.request import Request, urlopen  # noqa: PLC0415
 
     if http_cache is not None:
         cached_content = http_cache.get_(url, encoding)

@@ -30,21 +30,21 @@ repos:
       - id: check-useless-excludes
         name: check-useless-excludes
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         name: trailing-whitespace
       - id: end-of-file-fixer
         name: end-of-file-fixer
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.33.1
+    rev: 0.33.3
     hooks:
       - id: check-github-workflows
         name: check-github-workflows
         args:
           - --verbose
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.1
+    rev: v0.12.10
     hooks:
       - id: ruff
         args:
@@ -84,13 +84,13 @@ repos:
         name: markdownlint-readme
         files: ^README.md
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: 3.2.1
+    rev: 3.4.0
     hooks:
       - id: editorconfig-checker
         name: editorconfig-checker
         alias: ec
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.16.1
+    rev: v1.17.1
     hooks:
       - id: mypy
         name: mypy-mkdocs-1.5.0
@@ -100,7 +100,7 @@ repos:
           - platformdirs
           - wcmatch
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.16.1
+    rev: v1.17.1
     hooks:
       - id: mypy
         name: mypy-mkdocs-1.6.0
