@@ -208,7 +208,7 @@ def parse_filename_argument(
 
 def parse_string_argument(match: re.Match[str] | None) -> str | None:
     """Return the string argument matched by ``match``."""
-    if match is None:
+    if match is None:  # pragma: no cover
         return None
     value = match[1]
     if value is None:

@@ -33,7 +33,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # previous to Python3.11. Also, these nested brackets can be recursive in the
 # Perl implementation but this doesn't seem possible in Python, the current
 # implementation only reaches two levels.
-MARKDOWN_LINK_REGEX = re.compile(  # noqa: DUO138
+MARKDOWN_LINK_REGEX = re.compile(
     r'''
         (                 # wrap whole match in $1
           (?<!!)          # don't match images - negative lookbehind
@@ -427,17 +427,19 @@ def filter_inclusions(  # noqa: PLR0912
 def _transform_negative_offset_func_factory(
         offset: int,
 ) -> Callable[[str], str]:
-    heading_prefix = '#' * abs(offset)
+    abs_offset = abs(offset)
 
     def transform(line: str) -> str:
         try:
             if line[0] != '#':
                 return line
         except IndexError:  # pragma: no cover
+            # Note for pragma: all lines include a newline
+            # so this exception is never raised in tests.
             return line
-        if line.startswith(heading_prefix):
-            return heading_prefix + line.lstrip('#')
-        return '#' + line.lstrip('#')
+        stripped_line = line.lstrip('#')
+        new_n_headings = max(len(line) - len(stripped_line) - abs_offset, 1)
+        return '#' * new_n_headings + stripped_line
 
     return transform
 
@@ -449,11 +451,11 @@ def _transform_positive_offset_func_factory(
 
     def transform(line: str) -> str:
         try:
-            prefix = line[0]
+            if line[0] != '#':
+                return line
         except IndexError:  # pragma: no cover
             return line
-        else:
-            return heading_prefix + line if prefix == '#' else line
+        return heading_prefix + line
 
     return transform
 

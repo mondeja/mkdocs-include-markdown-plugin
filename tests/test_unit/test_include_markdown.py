@@ -488,6 +488,26 @@ Example data
             [],
             id='heading-offset=-2',
         ),
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  heading-offset=-1
+%}
+''',
+            '''#### This should be a third level heading.
+
+Example data''',
+            '''# Header
+
+### This should be a third level heading.
+
+Example data
+''',
+            [],
+            id='heading-offset=-1',
+        ),
 
         # Markdown heading positive offset beyond rational limits
         pytest.param(

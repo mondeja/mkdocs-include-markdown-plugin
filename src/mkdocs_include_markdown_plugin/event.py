@@ -436,27 +436,30 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             offset_match = ARGUMENT_REGEXES['heading-offset']().search(
                 arguments_string,
             )
-            if offset_match:
-                offset_raw_value = offset_match[1]
-                if offset_raw_value == '':
-                    location = process.file_lineno_message(
-                        page_src_path, docs_dir, directive_lineno(),
-                    )
-                    raise PluginError(
-                        "Invalid empty 'heading-offset' argument in"
-                        f" 'include-markdown' directive at {location}",
-                    )
-                try:
-                    offset = int(offset_raw_value)
-                except ValueError:
-                    location = process.file_lineno_message(
-                        page_src_path, docs_dir, directive_lineno(),
-                    )
-                    raise PluginError(
-                        f"Invalid 'heading-offset' argument"
-                        f" '{offset_raw_value}' in 'include-markdown'"
-                        f" directive at {location}",
-                    ) from None
+            try:
+                # Here None[1] would raise a TypeError
+                offset_raw_value = offset_match[1]  # type: ignore
+            except (IndexError, TypeError):  # pragma: no cover
+                offset_raw_value = ''
+            if offset_raw_value == '':
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'heading-offset' argument in"
+                    f" 'include-markdown' directive at {location}",
+                )
+            try:
+                offset = int(offset_raw_value)
+            except ValueError:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    f"Invalid 'heading-offset' argument"
+                    f" '{offset_raw_value}' in 'include-markdown'"
+                    f" directive at {location}",
+                ) from None
 
         bool_options, invalid_bool_args = parse_bool_options(
             [
