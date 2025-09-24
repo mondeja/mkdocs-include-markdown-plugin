@@ -142,14 +142,14 @@ def _run_test(
             '{% include-markdown "{filepath}" %}',
             'foo\n',
             'foo\n',
-            {'comments': False},
+            {},
             id='default-comments',
         ),
         pytest.param(
-            '{% include-markdown "{filepath}" comments=true %}',
+            '{% include-markdown "{filepath}" %}',
             'foo\n',
             '<!-- BEGIN INCLUDE {filepath} -->\nfoo\n\n<!-- END INCLUDE -->',
-            {},
+            {'comments': True},
             id='custom-comments',
         ),
 
