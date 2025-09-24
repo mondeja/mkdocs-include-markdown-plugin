@@ -46,7 +46,7 @@
             "comments": {
               "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include-markdown_comments",
               "type": "boolean",
-              "default": true
+              "default": false
             },
             "rewrite_relative_urls": {
               "markdownDescription": "https://github.com/mondeja/mkdocs-include-markdown-plugin#include-markdown_trailing-newlines",
