@@ -31,7 +31,7 @@ from mkdocs_include_markdown_plugin.logger import logger
 
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Literal, TypedDict
+    from typing import TypedDict
 
     from mkdocs.structure.pages import Page
 
@@ -54,13 +54,20 @@ ETX = '\u0003'
 INLINE_PLACEHOLDER_PREFIX = f'{STX}klzzwxh:'
 
 
-def build_placeholder(
-        num: int,
-        directive: Literal['include', 'include-markdown'],
-) -> str:
+def build_placeholder(num: int) -> str:
     """Return a placeholder."""
-    directive_prefix = 'im' if directive == 'include-markdown' else 'i'
-    return f'{INLINE_PLACEHOLDER_PREFIX}{directive_prefix}{num}{ETX}'
+    return f'{INLINE_PLACEHOLDER_PREFIX}{num}{ETX}'
+
+
+def save_placeholder(
+        placeholders_contents: list[tuple[str, str]],
+        text_to_include: str,
+) -> str:
+    """Save the included text and return the placeholder."""
+    inclusion_index = len(placeholders_contents)
+    placeholder = build_placeholder(inclusion_index)
+    placeholders_contents.append((placeholder, text_to_include))
+    return placeholder
 
 
 @dataclass
@@ -98,8 +105,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
     else:
         settings_ignore_paths = []
 
-    new_found_include_contents: list[tuple[str, str]] = []
-    new_found_include_markdown_contents: list[tuple[str, str]] = []
+    placeholders_contents: list[tuple[str, str]] = []
 
     def found_include_tag(  # noqa: PLR0912, PLR0915
             match: re.Match[str],
@@ -311,11 +317,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     f' {readable_files_to_include}',
                 )
 
-        nonlocal new_found_include_contents
-        include_index = len(new_found_include_contents)
-        placeholder = build_placeholder(include_index, 'include')
-        new_found_include_contents.append((placeholder, text_to_include))
-        return placeholder
+        return save_placeholder(placeholders_contents, text_to_include)
 
     def found_include_markdown_tag(  # noqa: PLR0912, PLR0915
             match: re.Match[str],
@@ -607,15 +609,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     f' {readable_files_to_include}',
                 )
 
-        nonlocal new_found_include_markdown_contents
-        markdown_include_index = len(new_found_include_markdown_contents)
-        placeholder = build_placeholder(
-            markdown_include_index, 'include-markdown',
-        )
-        new_found_include_markdown_contents.append(
-            (placeholder, text_to_include),
-        )
-        return placeholder
+        return save_placeholder(placeholders_contents, text_to_include)
 
     # Replace contents by placeholders
     markdown = tags['include-markdown'].sub(
@@ -628,9 +622,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
     )
 
     # Replace placeholders by contents
-    for placeholder, text in new_found_include_contents:
-        markdown = markdown.replace(placeholder, text, 1)
-    for placeholder, text in new_found_include_markdown_contents:
+    for placeholder, text in placeholders_contents:
         markdown = markdown.replace(placeholder, text, 1)
     return markdown
 
