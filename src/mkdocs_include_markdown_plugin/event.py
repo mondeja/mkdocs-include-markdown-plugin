@@ -115,10 +115,8 @@ def get_file_content(  # noqa: PLR0913, PLR0915
     else:
         settings_ignore_paths = []
 
-    placeholders_contents: list[tuple[str, str]] = []
-
-    # Escape placeholders
     markdown = escape_placeholders(markdown)
+    placeholders_contents: list[tuple[str, str]] = []
 
     def found_include_tag(  # noqa: PLR0912, PLR0915
             match: re.Match[str],
