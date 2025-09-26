@@ -2,10 +2,8 @@
 
 import pytest
 
-from mkdocs_include_markdown_plugin.event import (
-    build_placeholder,
-    on_page_markdown,
-)
+from mkdocs_include_markdown_plugin.event import on_page_markdown
+from mkdocs_include_markdown_plugin.placeholders import build_placeholder
 
 
 @pytest.mark.parametrize(

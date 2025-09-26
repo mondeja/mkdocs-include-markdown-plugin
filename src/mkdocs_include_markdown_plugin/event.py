@@ -28,6 +28,11 @@ from mkdocs_include_markdown_plugin.directive import (
 )
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
 from mkdocs_include_markdown_plugin.logger import logger
+from mkdocs_include_markdown_plugin.placeholders import (
+    escape_placeholders,
+    save_placeholder,
+    unescape_placeholders,
+)
 
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -44,40 +49,6 @@ if TYPE_CHECKING:  # pragma: no cover
             'include-markdown': re.Pattern[str],
         },
     )
-
-
-# Placeholders (taken from Python-Markdown)
-STX = '\u0002'
-''' "Start of Text" marker for placeholder templates. '''
-ETX = '\u0003'
-''' "End of Text" marker for placeholder templates. '''
-INLINE_PLACEHOLDER_PREFIX = f'{STX}klzzwxh:'
-
-
-def build_placeholder(num: int) -> str:
-    """Return a placeholder."""
-    return f'{INLINE_PLACEHOLDER_PREFIX}{num}{ETX}'
-
-
-def escape_placeholders(text: str) -> str:
-    """Escape placeholders in the given text."""
-    return text.replace(STX, f'\\{STX}').replace(ETX, f'\\{ETX}')
-
-
-def unescape_placeholders(text: str) -> str:
-    """Unescape placeholders in the given text."""
-    return text.replace(f'\\{STX}', STX).replace(f'\\{ETX}', ETX)
-
-
-def save_placeholder(
-        placeholders_contents: list[tuple[str, str]],
-        text_to_include: str,
-) -> str:
-    """Save the included text and return the placeholder."""
-    inclusion_index = len(placeholders_contents)
-    placeholder = build_placeholder(inclusion_index)
-    placeholders_contents.append((placeholder, text_to_include))
-    return placeholder
 
 
 @dataclass
