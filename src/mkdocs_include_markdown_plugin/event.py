@@ -59,6 +59,16 @@ def build_placeholder(num: int) -> str:
     return f'{INLINE_PLACEHOLDER_PREFIX}{num}{ETX}'
 
 
+def escape_placeholders(text: str) -> str:
+    """Escape placeholders in the given text."""
+    return text.replace(STX, f'\\{STX}').replace(ETX, f'\\{ETX}')
+
+
+def unescape_placeholders(text: str) -> str:
+    """Unescape placeholders in the given text."""
+    return text.replace(f'\\{STX}', STX).replace(f'\\{ETX}', ETX)
+
+
 def save_placeholder(
         placeholders_contents: list[tuple[str, str]],
         text_to_include: str,
@@ -106,6 +116,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         settings_ignore_paths = []
 
     placeholders_contents: list[tuple[str, str]] = []
+
+    # Escape placeholders
+    markdown = escape_placeholders(markdown)
 
     def found_include_tag(  # noqa: PLR0912, PLR0915
             match: re.Match[str],
@@ -624,7 +637,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
     # Replace placeholders by contents
     for placeholder, text in placeholders_contents:
         markdown = markdown.replace(placeholder, text, 1)
-    return markdown
+    return unescape_placeholders(markdown)
 
 
 def on_page_markdown(

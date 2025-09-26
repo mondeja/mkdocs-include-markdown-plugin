@@ -2,7 +2,10 @@
 
 import pytest
 
-from mkdocs_include_markdown_plugin.event import on_page_markdown
+from mkdocs_include_markdown_plugin.event import (
+    build_placeholder,
+    on_page_markdown,
+)
 
 
 @pytest.mark.parametrize(
@@ -775,6 +778,27 @@ Link to [second level heading](#second-level-heading).
 ''',
             [],
             id='internal-anchor',
+        ),
+
+        # Placeholder collision
+        pytest.param(
+            '''# Header
+
+''' + build_placeholder(0) + '''
+
+{%
+  include-markdown "{filepath}"
+%}
+''',
+            'Content to include',
+            '''# Header
+
+''' + build_placeholder(0) + '''
+
+Content to include
+''',
+            [],
+            id='placeholder-collision',
         ),
     ),
 )
