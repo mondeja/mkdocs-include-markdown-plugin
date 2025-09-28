@@ -83,7 +83,8 @@ order='-natural'
 
 
 @parametrize_directives
-def test_alpha_order(directive, page, tmp_path, plugin):
+@pytest.mark.parametrize('order_value', ('alpha', 'path'))
+def test_alpha_order(directive, order_value, page, tmp_path, plugin):
     f1 = tmp_path / 'a.md'
     f1.write_text('a.md\n')
     f2 = tmp_path / 'c.md'
@@ -94,7 +95,7 @@ def test_alpha_order(directive, page, tmp_path, plugin):
     assert on_page_markdown(
         f'''{{%
 {directive} "*.md"
-order='alpha'
+order='{order_value}'
 %}}''',
         page(tmp_path / 'includer.md'),
         tmp_path,
@@ -304,7 +305,10 @@ order='alpha-path'
 
 
 @parametrize_directives
-def test_alpha_order_by_extension(directive, page, tmp_path, plugin):
+@pytest.mark.parametrize('order_value', ('alpha-extension', 'extension'))
+def test_alpha_order_by_extension(
+    directive, order_value, page, tmp_path, plugin,
+):
     f1 = tmp_path / 'file2.md'
     f1.write_text('file2.md\n')
     f2 = tmp_path / 'file1.txt'
@@ -313,7 +317,7 @@ def test_alpha_order_by_extension(directive, page, tmp_path, plugin):
     assert on_page_markdown(
         f'''{{%
 {directive} "*"
-order='alpha-extension'
+order='{order_value}'
 %}}''',
         page(tmp_path / 'includer.md'),
         tmp_path,
@@ -381,6 +385,27 @@ order='natural-extension'
         tmp_path,
         plugin,
     ) == 'file1.md\nfile2.md\nfile10.txt\n'
+
+
+@parametrize_directives
+@pytest.mark.parametrize('order_value', ('alpha-name', 'name'))
+def test_alpha_order_by_name(directive, order_value, page, tmp_path, plugin):
+    f1 = tmp_path / 'a.md'
+    f1.write_text('a.md\n')
+    f2 = tmp_path / 'c.md'
+    f2.write_text('c.md\n')
+    f3 = tmp_path / 'b.md'
+    f3.write_text('b.md\n')
+
+    assert on_page_markdown(
+        f'''{{%
+{directive} "*.md"
+order='{order_value}'
+%}}''',
+        page(tmp_path / 'includer.md'),
+        tmp_path,
+        plugin,
+    ) == 'a.md\nb.md\nc.md\n'
 
 
 @parametrize_directives

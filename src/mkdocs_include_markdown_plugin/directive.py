@@ -446,7 +446,7 @@ def get_order_option_regex() -> re.Pattern[str]:
     return re.compile(
         r'^-?'
         r'(?:'
-        r'(?:alpha|natural)(?:-(?:path|name|extension))?'
+        r'(?:alpha|natural)?(?:-?(?:path|name|extension))?'
         r'|system|random|size|mtime|ctime|atime'
         r')?$',
     )
