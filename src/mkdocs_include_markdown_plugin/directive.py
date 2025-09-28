@@ -423,6 +423,7 @@ def validate_order_option(
         page_src_path: str | None,
         docs_dir: str,
         directive_lineno: Callable[[], int],
+        directive: str,
 ) -> None:
     """Validate the 'order' option."""
     regex = get_order_option_regex()
@@ -432,9 +433,10 @@ def validate_order_option(
             page_src_path, docs_dir, directive_lineno(),
         )
         raise PluginError(
-            f"Invalid 'order' argument '{order}' in 'include'"
-            f' directive at {location}. Order must be a string'
-            f" that matches the regex '{regex.pattern}'.",
+            f"Invalid value '{order}' for the 'order' argument in"
+            f" '{directive}' directive at {location}. The argument"
+            " 'order' must be a string that matches the regex"
+            f" '{regex.pattern}'.",
         )
 
 

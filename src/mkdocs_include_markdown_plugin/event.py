@@ -156,8 +156,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     "Invalid empty 'order' argument in 'include'"
                     f' directive at {location}',
                 )
-            validate_order_option(order_, page_src_path,
-                                  docs_dir, directive_lineno)
+            validate_order_option(
+                order_, page_src_path, docs_dir, directive_lineno, 'include',
+            )
             order = order_
 
         file_paths_to_include, is_url = resolve_file_paths_to_include(
@@ -396,8 +397,13 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     "Invalid empty 'order' argument in 'include-markdown'"
                     f' directive at {location}',
                 )
-            validate_order_option(order_, page_src_path,
-                                  docs_dir, directive_lineno)
+            validate_order_option(
+                order_,
+                page_src_path,
+                docs_dir,
+                directive_lineno,
+                'include-markdown',
+            )
             order = order_
 
         file_paths_to_include, is_url = resolve_file_paths_to_include(

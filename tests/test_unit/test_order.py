@@ -1,6 +1,10 @@
 import os
 import time
 
+import pytest
+from mkdocs.exceptions import PluginError
+
+from mkdocs_include_markdown_plugin.directive import get_order_option_regex
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 from testing_helpers import parametrize_directives, unix_only, windows_only
 
@@ -536,3 +540,74 @@ order='-ctime'
         tmp_path,
         plugin,
     ) == 'file1.md\nfile2.md\n'
+
+
+@unix_only
+@parametrize_directives
+def test_invalid_empty_order_argument(
+    directive, page, tmp_path, caplog, plugin,
+):
+    directory_to_include = tmp_path / 'empty_order_argument'
+    directory_to_include.mkdir()
+
+    page_to_include_filepath = directory_to_include / 'included.md'
+    page_to_include_filepath.write_text('Content that should be included\n')
+
+    page_to_exclude_filepath = directory_to_include / 'igno"re"d.md'
+    page_to_exclude_filepath.write_text('Content that should be excluded\n')
+
+    includer_glob = os.path.join(str(directory_to_include), '*.md')
+
+    includer_file_content = f'''{{%
+  {directive} "{includer_glob}"
+  order=
+%}}'''
+
+    with pytest.raises(PluginError) as exc:
+        on_page_markdown(
+            includer_file_content,
+            page(tmp_path / 'includer.md'),
+            tmp_path,
+            plugin,
+        )
+
+    assert len(caplog.records) == 0
+    assert str(exc.value) == (
+        f"Invalid empty 'order' argument in '{directive}' directive"
+        ' at includer.md:1'
+    )
+
+
+@parametrize_directives
+def test_invalid_order_argument(directive, page, tmp_path, caplog, plugin):
+    directory_to_include = tmp_path / 'invalid_order_argument'
+    directory_to_include.mkdir()
+
+    page_to_include_filepath = directory_to_include / 'included.md'
+    page_to_include_filepath.write_text('Content that should be included\n')
+
+    page_to_exclude_filepath = directory_to_include / 'igno"re"d.md'
+    page_to_exclude_filepath.write_text('Content that should be excluded\n')
+
+    includer_glob = os.path.join(str(directory_to_include), '*.md')
+
+    includer_file_content = f'''{{%
+  {directive} "{includer_glob}"
+  order='invalid-order'
+%}}'''
+
+    with pytest.raises(PluginError) as exc:
+        on_page_markdown(
+            includer_file_content,
+            page(tmp_path / 'includer.md'),
+            tmp_path,
+            plugin,
+        )
+
+    assert len(caplog.records) == 0
+    regex = get_order_option_regex()
+    assert str(exc.value) == (
+        f"Invalid value 'invalid-order' for the 'order' argument in"
+        f" '{directive}' directive at includer.md:1. The argument"
+        f" 'order' must be a string that matches the regex '{regex.pattern}'."
+    )
