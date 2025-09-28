@@ -173,7 +173,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 page_src_path, docs_dir, directive_lineno(),
             )
             logger.warning(
-                f"Ignoring 'order' argument of 'include-markdown' directive"
+                f"Ignoring 'order' argument of 'include' directive"
                 f" at {location} because the included path is a URL",
             )
 
@@ -393,7 +393,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     page_src_path, docs_dir, directive_lineno(),
                 )
                 raise PluginError(
-                    "Invalid empty 'order' argument in 'include'"
+                    "Invalid empty 'order' argument in 'include-markdown'"
                     f' directive at {location}',
                 )
             validate_order_option(order_, page_src_path,
