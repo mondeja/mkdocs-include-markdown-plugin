@@ -11,7 +11,6 @@ from mkdocs.plugins import BasePlugin, event_priority
 
 
 if TYPE_CHECKING:  # pragma: no cover
-
     from mkdocs.config.defaults import MkDocsConfig
     from mkdocs.livereload import LiveReloadServer
     from mkdocs.structure.files import Files
@@ -19,6 +18,9 @@ if TYPE_CHECKING:  # pragma: no cover
 
 from mkdocs_include_markdown_plugin.cache import Cache, initialize_cache
 from mkdocs_include_markdown_plugin.config import PluginConfig
+from mkdocs_include_markdown_plugin.directive import (
+    get_order_option_regex,
+)
 from mkdocs_include_markdown_plugin.event import (
     on_page_markdown as _on_page_markdown,
 )
@@ -49,6 +51,15 @@ class IncludeMarkdownPlugin(BasePlugin[PluginConfig]):
                         ' global setting. Valid values are "include" and'
                         ' "include-markdown".',
                     )
+
+        if self.config.order != 'alpha-path':
+            regex = get_order_option_regex()
+            if not regex.match(self.config.order):
+                raise PluginError(
+                    f"Invalid value '{self.config.order}' for the 'order'"
+                    ' global setting. Order must be a string'
+                    f" that matches the regex '{regex.pattern}'.",
+                )
 
         return config
 

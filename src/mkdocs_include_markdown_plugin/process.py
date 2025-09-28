@@ -15,6 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any
 
     from mkdocs_include_markdown_plugin.cache import Cache
+    from mkdocs_include_markdown_plugin.directive import OrderOption
 
 
 # Markdown regular expressions. Taken from the original Markdown.pl by John
@@ -494,12 +495,12 @@ def filter_paths(
 
     Args:
         filepaths (list): Set of source paths to filter.
-        ignore_paths (list): Paths that must not be included in the response.
+        ignore_paths (list): Paths that are ignored.
 
     Returns:
         list: Non filtered paths ordered alphabetically.
     """
-    response = []
+    result = []
     for filepath in filepaths:
         # ignore by filepath
         if filepath in ignore_paths:
@@ -514,11 +515,60 @@ def filter_paths(
         # ignore if is a directory
         try:
             if not stat.S_ISDIR(os.stat(filepath).st_mode):
-                response.append(filepath)
+                result.append(filepath)
         except (FileNotFoundError, OSError):  # pragma: no cover
             continue
-    response.sort()
-    return response
+    return result
+
+
+def natural_sort_key(s: str) -> list[Any]:
+    """Key function for natural sorting of strings."""
+    return [int(text) if text.isdigit() else text.lower()
+            for text in re.split(r'(\d+)', s)]
+
+
+def sort_paths(paths: list[str], order: OrderOption) -> list[str]:
+    """Sort a list of paths in-place according to an order option."""
+    ascending, order_type, order_by = order
+
+    if order_type == 'random':
+        import random  # noqa: PLC0415
+
+        random.shuffle(paths)
+        return paths
+
+    key = None
+    if order_type == 'alpha':
+        if order_by == 'name':
+            def key(p: str) -> str:
+                return os.path.basename(p)
+        elif order_by == 'extension':
+            def key(p: str) -> str:
+                return os.path.splitext(p)[1]
+    elif order_type == 'natural':
+        if order_by == 'extension':
+            def key(p: str) -> str:
+                return natural_sort_key(os.path.splitext(p)[1])  # type: ignore
+        elif order_by == 'name':
+            def key(p: str) -> str:
+                return natural_sort_key(os.path.basename(p))  # type: ignore
+        else:
+            key = natural_sort_key  # type: ignore
+    elif order_type == 'size':
+        def key(p: str) -> int:  # type: ignore
+            return os.path.getsize(p)
+        ascending = not ascending  # larger files first
+    elif order_type == 'mtime':
+        def key(p: str) -> float:  # type: ignore
+            return os.path.getmtime(p)
+    elif order_type == 'ctime':
+        def key(p: str) -> float:  # type: ignore
+            return os.path.getctime(p)
+    elif order_type == 'atime':
+        def key(p: str) -> float:  # type: ignore
+            return os.path.getatime(p)
+    paths.sort(key=key, reverse=ascending)
+    return paths
 
 
 def _is_valid_url_scheme_char(c: str) -> bool:

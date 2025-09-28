@@ -20,6 +20,7 @@ class PluginConfig(Config):  # noqa: D101
     comments = MkType(bool, default=False)
     rewrite_relative_urls = MkType(bool, default=True)
     heading_offset = MkType(int, default=0)
+    order = MkType(str, default='alpha-path')
     start = Optional(MkType(str))
     end = Optional(MkType(str))
     exclude = ListOfItems(MkType(str), default=[])

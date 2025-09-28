@@ -13,8 +13,15 @@ from typing import TYPE_CHECKING
 from mkdocs.exceptions import PluginError
 from wcmatch import glob
 
-from mkdocs_include_markdown_plugin import process
 from mkdocs_include_markdown_plugin.logger import logger
+from mkdocs_include_markdown_plugin.process import (
+    file_lineno_message,
+    filter_paths,
+    is_absolute_path,
+    is_relative_path,
+    is_url,
+    sort_paths,
+)
 
 
 @dataclass
@@ -28,6 +35,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Callable, Literal, TypedDict
 
     DirectiveBoolArgumentsDict = dict[str, DirectiveBoolArgument]
+    OrderOption = tuple[bool, str, str]
 
     DefaultValues = TypedDict(
         'DefaultValues', {
@@ -41,6 +49,7 @@ if TYPE_CHECKING:  # pragma: no cover
             'recursive': bool,
             'start': str | None,
             'end': str | None,
+            'order': str,
         },
     )
 
@@ -92,10 +101,12 @@ def str_arg(arg: str) -> re.Pattern[str]:
 
 
 ARGUMENT_REGEXES = {
+    # str
     'start': functools.partial(str_arg, 'start'),
     'end': functools.partial(str_arg, 'end'),
     'exclude': functools.partial(str_arg, 'exclude'),
     'encoding': functools.partial(str_arg, 'encoding'),
+    'order': functools.partial(str_arg, 'order'),
 
     # bool
     'comments': functools.partial(arg, 'comments'),
@@ -178,7 +189,7 @@ def warn_invalid_directive_arguments(
     )
     for maybe_arg in _maybe_arguments_iter(arguments_string):
         if maybe_arg not in valid_args:
-            location = process.file_lineno_message(
+            location = file_lineno_message(
                 page_src_path, docs_dir, directive_lineno(),
             )
             logger.warning(
@@ -283,12 +294,13 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
     includer_page_src_path: str | None,
     docs_dir: str,
     ignore_paths: list[str],
+    order: str,
 ) -> tuple[list[str], bool]:
     """Resolve the file paths to include for a directive."""
-    if process.is_url(include_string):
+    if is_url(include_string):
         return [include_string], True
 
-    if process.is_absolute_path(include_string):
+    if is_absolute_path(include_string):
         if os.name == 'nt':  # pragma: no cover
             # Windows
             fpath = os.path.normpath(include_string)
@@ -299,21 +311,25 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
             if not is_file:
                 return [], False
 
-            return process.filter_paths(
-                [fpath], ignore_paths,
-            ), False
+            paths = filter_paths([fpath], ignore_paths)
+            is_url_ = False
+            return sort_paths(paths, parse_order_option(order)), is_url_
 
         try:
             is_file = stat.S_ISREG(os.stat(include_string).st_mode)
         except (FileNotFoundError, OSError):
             is_file = False
-        return process.filter_paths(
+        paths = filter_paths(
             [include_string] if is_file else glob.iglob(
                 include_string, flags=GLOB_FLAGS,
             ),
-            ignore_paths), False
+            ignore_paths,
+        )
+        is_url_ = False
+        sort_paths(paths, parse_order_option(order))
+        return paths, is_url_
 
-    if process.is_relative_path(include_string):
+    if is_relative_path(include_string):
         if includer_page_src_path is None:  # pragma: no cover
             raise PluginError(
                 'Relative paths are not allowed when the includer page'
@@ -338,7 +354,10 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
                 root_dir=root_dir,
             ):
                 paths.append(os.path.join(root_dir, fp))
-        return process.filter_paths(paths, ignore_paths), False
+        paths = filter_paths(paths, ignore_paths)
+        is_url_ = False
+        sort_paths(paths, parse_order_option(order))
+        return paths, is_url_
 
     # relative to docs_dir
     paths = []
@@ -357,7 +376,10 @@ def resolve_file_paths_to_include(  # noqa: PLR0912
             root_dir=root_dir,
         ):
             paths.append(os.path.join(root_dir, fp))
-    return process.filter_paths(paths, ignore_paths), False
+    paths = filter_paths(paths, ignore_paths)
+    is_url_ = False
+    sort_paths(paths, parse_order_option(order))
+    return paths, is_url_
 
 
 def resolve_file_paths_to_exclude(
@@ -366,10 +388,10 @@ def resolve_file_paths_to_exclude(
     docs_dir: str,
 ) -> list[str]:
     """Resolve the file paths to exclude for a directive."""
-    if process.is_absolute_path(exclude_string):
+    if is_absolute_path(exclude_string):
         return glob.glob(exclude_string, flags=GLOB_FLAGS)
 
-    if process.is_relative_path(exclude_string):
+    if is_relative_path(exclude_string):
         if includer_page_src_path is None:  # pragma: no cover
             raise PluginError(
                 'Relative paths are not allowed when the includer page'
@@ -394,3 +416,58 @@ def resolve_file_paths_to_exclude(
         flags=GLOB_FLAGS,
         root_dir=docs_dir,
     )
+
+
+def validate_order_option(
+        order: str,
+        page_src_path: str | None,
+        docs_dir: str,
+        directive_lineno: Callable[[], int],
+        directive: str,
+) -> None:
+    """Validate the 'order' option."""
+    regex = get_order_option_regex()
+    match = regex.match(order)
+    if not match:
+        location = file_lineno_message(
+            page_src_path, docs_dir, directive_lineno(),
+        )
+        raise PluginError(
+            f"Invalid value '{order}' for the 'order' argument in"
+            f" '{directive}' directive at {location}. The argument"
+            " 'order' must be a string that matches the regex"
+            f" '{regex.pattern}'.",
+        )
+
+
+@functools.cache
+def get_order_option_regex() -> re.Pattern[str]:
+    """Return the compiled regex to validate the 'order' option."""
+    return re.compile(
+        r'^-?'
+        r'(?:'
+        r'(?:alpha|natural)?(?:-?(?:path|name|extension))?'
+        r'|system|random|size|mtime|ctime|atime'
+        r')?$',
+    )
+
+
+def parse_order_option(order: str) -> OrderOption:
+    """Parse the 'order' option into a tuple."""
+    ascending = False
+    order_type = 'alpha'
+    order_by = 'path'
+    if order.startswith('-'):
+        ascending = True
+        order = order[1:]
+    order_split = order.split('-', 1)
+    if len(order_split) == 2:  # noqa: PLR2004
+        order_type, order_by = order_split
+    elif order_split[0] in (
+        'alpha', 'random', 'natural', 'system',
+        'size', 'mtime', 'ctime', 'atime',
+    ):
+        order_type = order_split[0]
+    elif order_split[0] in ('name', 'path', 'extension'):
+        order_by = order_split[0]
+    return ascending, order_type, order_by
