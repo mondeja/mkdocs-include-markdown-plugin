@@ -87,6 +87,7 @@ def test_cache_setting_when_not_available_raises_error(monkeypatch):
         cache: int
         cache_dir: str
         directives: dict[str, str]
+        order: str = 'alpha-path'
 
     monkeypatch.setattr(
         mkdocs_include_markdown_plugin.cache,
@@ -111,6 +112,7 @@ def test_cache_setting_available_with_cache_dir(monkeypatch):
         cache: int
         cache_dir: str
         directives: dict[str, str]
+        order: str = 'alpha-path'
 
     monkeypatch.setattr(
         mkdocs_include_markdown_plugin.cache,
