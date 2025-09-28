@@ -1,7 +1,10 @@
 import os
 import sys
+from dataclasses import dataclass, field
 
 import pytest
+
+from mkdocs_include_markdown_plugin.config import PluginConfig
 
 
 parametrize_directives = pytest.mark.parametrize(
@@ -21,3 +24,13 @@ windows_only = pytest.mark.skipif(
 )
 
 rootdir = os.path.join(os.path.dirname(__file__), '..')
+
+
+@dataclass
+class FakeConfig:
+    cache: int = PluginConfig.cache.default
+    cache_dir: str = PluginConfig.cache_dir.default
+    directives: dict[str, str] = field(
+        default_factory=lambda: PluginConfig.directives.default,
+    )
+    order: str = PluginConfig.order.default

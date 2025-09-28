@@ -1,5 +1,4 @@
 import os
-from dataclasses import dataclass, field
 
 import pytest
 from mkdocs.exceptions import PluginError
@@ -12,20 +11,8 @@ from mkdocs_include_markdown_plugin.cache import (
     initialize_cache,
     is_platformdirs_installed,
 )
-from mkdocs_include_markdown_plugin.config import PluginConfig
-from mkdocs_include_markdown_plugin.directive import get_order_option_regex
 from mkdocs_include_markdown_plugin.event import on_page_markdown
-from testing_helpers import parametrize_directives
-
-
-@dataclass
-class FakeConfig:
-    cache: int = PluginConfig.cache.default
-    cache_dir: str = PluginConfig.cache_dir.default
-    directives: dict[str, str] = field(
-        default_factory=lambda: PluginConfig.directives.default,
-    )
-    order: str = PluginConfig.order.default
+from testing_helpers import FakeConfig, parametrize_directives
 
 
 @pytest.mark.parametrize(
@@ -118,15 +105,3 @@ def test_cache_setting_available_with_cache_dir(monkeypatch):
     plugin = IncludeMarkdownPlugin()
     plugin.config = FakeConfig(cache=600, cache_dir='foo')
     plugin.on_config({})
-
-
-def test_invalid_order_setting():
-    plugin = IncludeMarkdownPlugin()
-    plugin.config = FakeConfig(order='invalid-order')
-    with pytest.raises(PluginError) as exc:
-        plugin.on_config({})
-    regex = get_order_option_regex()
-    assert (
-        "Invalid value 'invalid-order' for the 'order' global setting."
-        f" Order must be a string that matches the regex '{regex.pattern}'."
-    ) in str(exc.value)
