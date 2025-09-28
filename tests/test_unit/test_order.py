@@ -2,7 +2,7 @@ import os
 import time
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
-from testing_helpers import parametrize_directives, unix_only
+from testing_helpers import parametrize_directives, unix_only, windows_only
 
 
 @parametrize_directives
@@ -496,3 +496,43 @@ order='-natural-extension'
         tmp_path,
         plugin,
     ) == 'file10.txt\nfile1.md\nfile2.md\n'
+
+
+@parametrize_directives
+@windows_only
+def test_ctime_order(directive, page, tmp_path, plugin):
+    f1 = tmp_path / 'file2.md'
+    f1.write_text('file2.md\n')
+    time.sleep(1)
+    f2 = tmp_path / 'file1.md'
+    f2.write_text('file1.md\n')
+
+    assert on_page_markdown(
+        f'''{{%
+{directive} "*.md"
+order='ctime'
+%}}''',
+        page(tmp_path / 'includer.md'),
+        tmp_path,
+        plugin,
+    ) == 'file2.md\nfile1.md\n'
+
+
+@windows_only
+@parametrize_directives
+def test_ctime_reverse_order(directive, page, tmp_path, plugin):
+    f1 = tmp_path / 'file2.md'
+    f1.write_text('file2.md\n')
+    time.sleep(1)
+    f2 = tmp_path / 'file1.md'
+    f2.write_text('file1.md\n')
+
+    assert on_page_markdown(
+        f'''{{%
+{directive} "*.md"
+order='-ctime'
+%}}''',
+        page(tmp_path / 'includer.md'),
+        tmp_path,
+        plugin,
+    ) == 'file1.md\nfile2.md\n'
