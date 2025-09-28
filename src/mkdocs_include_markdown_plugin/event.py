@@ -24,6 +24,7 @@ from mkdocs_include_markdown_plugin.directive import (
     parse_string_argument,
     resolve_file_paths_to_exclude,
     resolve_file_paths_to_include,
+    validate_order_option,
     warn_invalid_directive_arguments,
 )
 from mkdocs_include_markdown_plugin.files_watcher import FilesWatcher
@@ -141,12 +142,40 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             ):
                 ignore_paths.append(path)
 
+        order = defaults['order']
+        if 'order' in used_arguments:
+            order_match = ARGUMENT_REGEXES['order']().search(
+                arguments_string,
+            )
+            order_ = parse_string_argument(order_match)
+            if order_ is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'order' argument in 'include'"
+                    f' directive at {location}',
+                )
+            validate_order_option(order_, page_src_path,
+                                  docs_dir, directive_lineno)
+            order = order_
+
         file_paths_to_include, is_url = resolve_file_paths_to_include(
             filename,
             page_src_path,
             docs_dir,
             ignore_paths,
+            order,
         )
+
+        if is_url and 'order' in used_arguments:
+            location = process.file_lineno_message(
+                page_src_path, docs_dir, directive_lineno(),
+            )
+            logger.warning(
+                f"Ignoring 'order' argument of 'include-markdown' directive"
+                f" at {location} because the included path is a URL",
+            )
 
         if not file_paths_to_include:
             location = process.file_lineno_message(
@@ -353,12 +382,40 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             ):
                 ignore_paths.append(path)
 
+        order = defaults['order']
+        if 'order' in used_arguments:
+            order_match = ARGUMENT_REGEXES['order']().search(
+                arguments_string,
+            )
+            order_ = parse_string_argument(order_match)
+            if order_ is None:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    "Invalid empty 'order' argument in 'include'"
+                    f' directive at {location}',
+                )
+            validate_order_option(order_, page_src_path,
+                                  docs_dir, directive_lineno)
+            order = order_
+
         file_paths_to_include, is_url = resolve_file_paths_to_include(
             filename,
             page_src_path,
             docs_dir,
             ignore_paths,
+            order,
         )
+
+        if is_url and 'order' in used_arguments:
+            location = process.file_lineno_message(
+                page_src_path, docs_dir, directive_lineno(),
+            )
+            logger.warning(
+                f"Ignoring 'order' argument of 'include-markdown' directive"
+                f" at {location} because the included path is a URL",
+            )
 
         if not file_paths_to_include:
             location = process.file_lineno_message(
@@ -645,6 +702,7 @@ def on_page_markdown(
             'recursive': config.recursive,
             'start': config.start,
             'end': config.end,
+            'order': config.order,
         },
         Settings(
             exclude=config.exclude,

@@ -227,7 +227,7 @@ def test_config_options(
     ),
     indirect=['plugin'],
 )
-def test_config_encoding_option(
+def test_config_encoding_option_on_unix(
     includer_schema,
     content_to_include,
     expected_result,

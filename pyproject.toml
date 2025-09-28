@@ -1,6 +1,6 @@
 [project]
 name = "mkdocs-include-markdown-plugin"
-version = "7.1.8"
+version = "7.2.0"
 description = "Mkdocs Markdown includer plugin."
 readme = "README.md"
 license = "Apache-2.0"
@@ -151,7 +151,7 @@ select = [
   "COM",
   "SLOT",
 ]
-ignore = ["G004"]
+ignore = ["G004", "E731"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

@@ -178,6 +178,35 @@ trouvées dans le contenu à inclure sont supprimées. Les valeurs possibles son
 **recursive** (*true*): Lorsque cette option est désactivée, les fichiers
 inclus ne sont pas traités pour des inclusions récursives. Les valeurs possibles
 sont `true` et `false`.
+- <a name="include-markdown_order" href="#include-markdown_order">#</a> **order**
+(*'alpha-path'*): Définit l'ordre dans lequel plusieurs fichiers sont inclus
+lors de l'utilisation de globs. Les possibles valeurs sont:
+   - Une combinaison d'un type de commande optionnel et d'un sujet de commande
+optionnel séparés par un trait d'union (`-`), et éventuellement précédés par
+un trait d'union (`-`) pour indiquer l'ordre ascendant. Si un type d'ordre ou un
+sujet d'ordre n'est pas spécifié, les valeurs par défaut sont utilisées. Il suit
+la forme: `[-]<type_d'ordre>-<sujet_d'ordre>` où:
+      - **Type d'ordre**:
+         - `'alpha'` (par défaut): Ordre alphabétique.
+         - `'natural'`: Ordre naturel, de sorte que par exemple `file2.md` vient avant
+`file10.md`.
+      - **Sujet de l'ordre**:
+         - `'path'` (par défaut): Ordre par chemin de fichier complet.
+         - `'name'`: Ordre par nom de fichier uniquement.
+         - `'extension'`: Ordre par extension de fichier.
+   - Une combinaison d'un trait d'union préfixe optionnel pour indiquer l'ordre
+ascendant et l'une des valeurs suivantes sous la forme `[-]<value>` où
+`<value>` est l'une de:
+      - `'size'`: Ordre par taille de fichier.
+      - `'mtime'`: Ordre par heure de modification du fichier.
+      - `'ctime'`: Ordre par heure de création du fichier (ou la dernière heure de
+changement de métadonnées sur les systèmes Unix).
+      - `'atime'`: Ordre par dernière heure d'accès au fichier.
+   - `'random'`: Ordre aléatoire.
+   - `'system'`: Ordre fourni par le système d'exploitation. C'est la même chose que
+de ne spécifier aucun ordre et de se fier à l'ordre par défaut du système de
+fichiers. Cela peut être différent entre les systèmes d'exploitation, alors
+utilisez-le avec précaution.
 - <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a>
 **encoding** (*'utf-8'*): Spécifiez l'encodage du fichier inclus. S'il n'est
 pas défini, `'utf-8'` sera utilisé.
@@ -238,11 +267,19 @@ négatives pour supprimer les caractères `#` de tête.
 {%
     include-markdown "**"
     exclude="./{index,LICENSE}.md"
+    order="name"
 %}
 ```
 
 ```jinja
 {% include-markdown '/escap\'ed/single-quotes/in/file\'/name.md' %}
+```
+
+```jinja
+{%
+    include-markdown "**"
+    order="-natural-extension"
+%}
 ```
 
 #### **`include`**
@@ -271,6 +308,35 @@ valeurs possibles sont `true` et `false`.
 (*true*): Lorsque cette option est désactivée, les fichiers inclus ne sont pas
 traités pour des inclusions récursives. Les valeurs possibles sont `true` et
 `false`.
+- <a name="include_order" href="#include_order">#</a> **order** (*'alpha-path'*):
+Définit l'ordre dans lequel plusieurs fichiers sont inclus lors de
+l'utilisation de globs. Les possibles valeurs sont:
+   - Une combinaison d'un type de commande optionnel et d'un sujet de commande
+optionnel séparés par un trait d'union (`-`), et éventuellement précédés par
+un trait d'union (`-`) pour indiquer l'ordre ascendant. Si un type d'ordre ou un
+sujet d'ordre n'est pas spécifié, les valeurs par défaut sont utilisées. Il suit
+la forme: `[-]<type_d'ordre>-<sujet_d'ordre>` où:
+      - **Type d'ordre**:
+         - `'alpha'` (par défaut): Ordre alphabétique.
+         - `'natural'`: Ordre naturel, de sorte que par exemple `file2.md` vient avant
+`file10.md`.
+      - **Sujet de l'ordre**:
+         - `'path'` (par défaut): Ordre par chemin de fichier complet.
+         - `'name'`: Ordre par nom de fichier uniquement.
+         - `'extension'`: Ordre par extension de fichier.
+   - Une combinaison d'un trait d'union préfixe optionnel pour indiquer l'ordre
+ascendant et l'une des valeurs suivantes sous la forme `[-]<value>` où
+`<value>` est l'une de:
+      - `'size'`: Ordre par taille de fichier.
+      - `'mtime'`: Ordre par heure de modification du fichier.
+      - `'ctime'`: Ordre par heure de création du fichier (ou la dernière heure de
+changement de métadonnées sur les systèmes Unix).
+      - `'atime'`: Ordre par dernière heure d'accès au fichier.
+   - `'random'`: Ordre aléatoire.
+   - `'system'`: Ordre fourni par le système d'exploitation. C'est la même chose que
+de ne spécifier aucun ordre et de se fier à l'ordre par défaut du système de
+fichiers. Cela peut être différent entre les systèmes d'exploitation, alors
+utilisez-le avec précaution.
 - <a name="include_encoding" href="#include_encoding">#</a> **encoding**
 (*'utf-8'*): Spécifiez l'encodage du fichier inclus. S'il n'est pas défini,
 `'utf-8'` sera utilisé.
@@ -295,6 +361,7 @@ traités pour des inclusions récursives. Les valeurs possibles sont `true` et
 {%
     include '**'
     exclude='./*.md'
+    order='random'
 %}
 ```
 

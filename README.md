@@ -191,6 +191,32 @@ content to include.
 - <a name="include-markdown_recursive" href="#include-markdown_recursive">#</a>
   **recursive** (_true_): When this option is disabled, included files are not
   processed for recursive includes. Possible values are `true` and `false`.
+- <a name="include-markdown_order" href="#include-markdown_order">#</a>
+  **order** (_'alpha-path'_): Define the order in which multiple files are included
+  when using globs. Possible values are:
+  - A combination of an optional order type and an optional order by separated
+    by a hyphen (`-`), and optionally prefixed by a hyphen (`-`) to indicate
+    ascending order. If an order type or an order by is not specified, the defaults
+    are used. It follows the form:
+    `[-]<order_type>-<order_by>` where:
+    - **Order type**:
+      - `'alpha'` (default): Alphabetical order.
+      - `'natural'`: Natural order, so that e.g. `file2.md` comes before `file10.md`.
+    - **Order by**:
+      - `'path'` (default): Order by full file path.
+      - `'name'`: Order by file name only.
+      - `'extension'`: Order by file extension.
+  - A combination of an optional prefix hyphen to denote ascending order and
+    one of the following values in the form `[-]<value>` where `<value>` is one of:
+    - `'size'`: Order by file size.
+    - `'mtime'`: Order by file modification time.
+    - `'ctime'`: Order by file creation time (or the last metadata change time
+      on Unix systems).
+    - `'atime'`: Order by file last access time.
+  - `'random'`: Random order.
+  - `'system'`: Order provided by the operating system. This is the same as not
+    specifying any order and relying on the default order of the filesystem. This
+    may be different between operating systems, so use it with care.
 - <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a>
   **encoding** (_'utf-8'_): Specify the encoding of the included file.
   If not defined `'utf-8'` will be used.
@@ -249,11 +275,19 @@ content to include.
 {%
     include-markdown "**"
     exclude="./{index,LICENSE}.md"
+    order="name"
 %}
 ```
 
 ```jinja
 {% include-markdown '/escap\'ed/single-quotes/in/file\'/name.md' %}
+```
+
+```jinja
+{%
+    include-markdown "**"
+    order="-natural-extension"
+%}
 ```
 
 <!-- mdpo-disable-next-line -->
@@ -282,6 +316,32 @@ Includes the content of a file or a group of files.
 - <a name="include_recursive" href="#include_recursive">#</a>
   **recursive** (_true_): When this option is disabled, included files are not
   processed for recursive includes. Possible values are `true` and `false`.
+- <a name="include_order" href="#include_order">#</a>
+  **order** (_'alpha-path'_): Define the order in which multiple files are included
+  when using globs. Possible values are:
+  - A combination of an optional order type and an optional order by separated
+    by a hyphen (`-`), and optionally prefixed by a hyphen (`-`) to indicate
+    ascending order. If an order type or an order by is not specified, the defaults
+    are used. It follows the form:
+    `[-]<order_type>-<order_by>` where:
+    - **Order type**:
+      - `'alpha'` (default): Alphabetical order.
+      - `'natural'`: Natural order, so that e.g. `file2.md` comes before `file10.md`.
+    - **Order by**:
+      - `'path'` (default): Order by full file path.
+      - `'name'`: Order by file name only.
+      - `'extension'`: Order by file extension.
+  - A combination of an optional prefix hyphen to denote ascending order and
+    one of the following values in the form `[-]<value>` where `<value>` is one of:
+    - `'size'`: Order by file size.
+    - `'mtime'`: Order by file modification time.
+    - `'ctime'`: Order by file creation time (or the last metadata change time
+      on Unix systems).
+    - `'atime'`: Order by file last access time.
+  - `'random'`: Random order.
+  - `'system'`: Order provided by the operating system. This is the same as not
+    specifying any order and relying on the default order of the filesystem. This
+    may be different between operating systems, so use it with care.
 - <a name="include_encoding" href="#include_encoding">#</a>
   **encoding** (_'utf-8'_): Specify the encoding of the included file.
   If not defined `'utf-8'` will be used.
@@ -306,6 +366,7 @@ Includes the content of a file or a group of files.
 {%
     include '**'
     exclude='./*.md'
+    order='random'
 %}
 ```
 
