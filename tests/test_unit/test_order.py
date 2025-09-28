@@ -586,7 +586,7 @@ def test_invalid_order_argument(directive, page, tmp_path, caplog, plugin):
     page_to_include_filepath = directory_to_include / 'included.md'
     page_to_include_filepath.write_text('Content that should be included\n')
 
-    page_to_exclude_filepath = directory_to_include / 'igno"re"d.md'
+    page_to_exclude_filepath = directory_to_include / 'ignored.md'
     page_to_exclude_filepath.write_text('Content that should be excluded\n')
 
     includer_glob = os.path.join(str(directory_to_include), '*.md')
