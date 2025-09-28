@@ -542,18 +542,6 @@ def sort_paths(paths: list[str], order: OrderOption) -> list[str]:
         if order_by == 'name':
             def key(p: str) -> str:
                 return os.path.basename(p)
-        elif order_by == 'size':
-            def key(p: str) -> int:  # type: ignore
-                return os.path.getsize(p)
-        elif order_by == 'mtime':
-            def key(p: str) -> float:  # type: ignore
-                return os.path.getmtime(p)
-        elif order_by == 'ctime':
-            def key(p: str) -> float:  # type: ignore
-                return os.path.getctime(p)
-        elif order_by == 'atime':
-            def key(p: str) -> float:  # type: ignore
-                return os.path.getatime(p)
         elif order_by == 'extension':
             def key(p: str) -> str:
                 return os.path.splitext(p)[1]
@@ -566,6 +554,19 @@ def sort_paths(paths: list[str], order: OrderOption) -> list[str]:
                 return natural_sort_key(os.path.basename(p))  # type: ignore
         else:
             key = natural_sort_key  # type: ignore
+    elif order_type == 'size':
+        def key(p: str) -> int:  # type: ignore
+            return os.path.getsize(p)
+        ascending = not ascending  # larger files first
+    elif order_type == 'mtime':
+        def key(p: str) -> float:  # type: ignore
+            return os.path.getmtime(p)
+    elif order_type == 'ctime':
+        def key(p: str) -> float:  # type: ignore
+            return os.path.getctime(p)
+    elif order_type == 'atime':
+        def key(p: str) -> float:  # type: ignore
+            return os.path.getatime(p)
     paths.sort(key=key, reverse=ascending)
     return paths
 

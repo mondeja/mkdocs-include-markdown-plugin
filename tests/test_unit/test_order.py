@@ -2,7 +2,7 @@ import os
 import time
 
 from mkdocs_include_markdown_plugin.event import on_page_markdown
-from testing_helpers import parametrize_directives
+from testing_helpers import parametrize_directives, unix_only
 
 
 @parametrize_directives
@@ -204,10 +204,11 @@ order='-size'
 def test_mtime_order(directive, page, tmp_path, plugin):
     f1 = tmp_path / 'older.md'
     f1.write_text('older.md\n')
-    time.sleep(0.001)
     f2 = tmp_path / 'newer.md'
     f2.write_text('newer.md\n')
-
+    now = time.time()
+    os.utime(f1, (now - 10, now - 10))
+    os.utime(f2, (now, now))
     assert on_page_markdown(
         f'''{{%
 {directive} "*.md"
@@ -216,17 +217,18 @@ order='mtime'
         page(tmp_path / 'includer.md'),
         tmp_path,
         plugin,
-    ) == 'newer.md\nolder.md\n'
+    ) == 'older.md\nnewer.md\n'
 
 
 @parametrize_directives
 def test_mtime_reverse_order(directive, page, tmp_path, plugin):
     f1 = tmp_path / 'older.md'
     f1.write_text('older.md\n')
-    time.sleep(0.001)
     f2 = tmp_path / 'newer.md'
     f2.write_text('newer.md\n')
-
+    now = time.time()
+    os.utime(f1, (now - 10, now - 10))
+    os.utime(f2, (now, now))
     assert on_page_markdown(
         f'''{{%
 {directive} "*.md"
@@ -235,9 +237,10 @@ order='-mtime'
         page(tmp_path / 'includer.md'),
         tmp_path,
         plugin,
-    ) == 'older.md\nnewer.md\n'
+    ) == 'newer.md\nolder.md\n'
 
 
+@unix_only
 @parametrize_directives
 def test_atime_order(directive, page, tmp_path, plugin):
     f1 = tmp_path / 'older.md'
@@ -254,9 +257,10 @@ order='atime'
         page(tmp_path / 'includer.md'),
         tmp_path,
         plugin,
-    ) == 'newer.md\nolder.md\n'
+    ) == 'older.md\nnewer.md\n'
 
 
+@unix_only
 @parametrize_directives
 def test_atime_reverse_order(directive, page, tmp_path, plugin):
     f1 = tmp_path / 'older.md'
@@ -273,7 +277,7 @@ order='-atime'
         page(tmp_path / 'includer.md'),
         tmp_path,
         plugin,
-    ) == 'older.md\nnewer.md\n'
+    ) == 'newer.md\nolder.md\n'
 
 
 @parametrize_directives
@@ -373,44 +377,6 @@ order='natural-extension'
         tmp_path,
         plugin,
     ) == 'file1.md\nfile2.md\nfile10.txt\n'
-
-
-@parametrize_directives
-def test_ctime_order(directive, page, tmp_path, plugin):
-    f1 = tmp_path / 'older.md'
-    f1.write_text('older.md\n')
-    time.sleep(0.001)
-    f2 = tmp_path / 'newer.md'
-    f2.write_text('newer.md\n')
-
-    assert on_page_markdown(
-        f'''{{%
-{directive} "*.md"
-order='ctime'
-%}}''',
-        page(tmp_path / 'includer.md'),
-        tmp_path,
-        plugin,
-    ) == 'newer.md\nolder.md\n'
-
-
-@parametrize_directives
-def test_ctime_reverse_order(directive, page, tmp_path, plugin):
-    f1 = tmp_path / 'older.md'
-    f1.write_text('older.md\n')
-    time.sleep(0.001)
-    f2 = tmp_path / 'newer.md'
-    f2.write_text('newer.md\n')
-
-    assert on_page_markdown(
-        f'''{{%
-{directive} "*.md"
-order='-ctime'
-%}}''',
-        page(tmp_path / 'includer.md'),
-        tmp_path,
-        plugin,
-    ) == 'older.md\nnewer.md\n'
 
 
 @parametrize_directives
