@@ -168,7 +168,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             order,
         )
 
-        if is_url and 'order' in used_arguments:
+        if is_url and 'order' in used_arguments:  # pragma: no cover
             location = process.file_lineno_message(
                 page_src_path, docs_dir, directive_lineno(),
             )
@@ -408,7 +408,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             order,
         )
 
-        if is_url and 'order' in used_arguments:
+        if is_url and 'order' in used_arguments:  # pragma: no cover
             location = process.file_lineno_message(
                 page_src_path, docs_dir, directive_lineno(),
             )
