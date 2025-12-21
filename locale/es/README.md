@@ -129,6 +129,8 @@ plugins:
 Este plugin provee dos directivas, una para incluir archivos Markdown y otra para
 incluir archivos de cualquier tipo.
 
+#### Argumentos comunes
+
 Las rutas de los archivos a incluir pueden ser:
 
 - URLs para incluir contenido remoto.
@@ -148,38 +150,32 @@ Las cadenas **start** y **end** pueden contener caracteres usuales de secuencias
 de escape (al estilo Python) como `\n` para hacer coincidir contra caracteres de
 salto de línea.
 
-#### **`include-markdown`**
-
-Incluye contenido de archivos Markdown, opcionalmente usando dos delimitadores
-para filtrar el contenido a incluir.
-
-- <a name="include-markdown_start" href="#include-markdown_start">#</a>
-**start**: Delimitador que marca el comienzo del contenido a incluir.
-- <a name="include-markdown_end" href="#include-markdown_end">#</a> **end**:
-Delimitador que marca el final del contenido a incluir.
-- <a name="include-markdown_preserve-includer-indent"
-href="#include-markdown_preserve-includer-indent">#</a>
-**preserve-includer-indent** (*true*): Cuando esta opción está habilitada (por
-defecto), cada línea del contenido a incluir es indentada con el mismo número de
-espacios usados para indentar la plantilla `{% %}` incluidora. Los valores
-posibles son `true` y `false`.
-- <a name="include-markdown_dedent" href="#include-markdown_dedent">#</a>
-**dedent** (*false*): Si se habilita, el contenido incluido será dedentado.
-- <a name="include-markdown_exclude" href="#include-markdown_exclude">#</a>
-**exclude**: Expecifica mediante un glob los archivos que deben ser ignorados.
-Sólo es útil pasando globs para incluir múltiples archivos.
-- <a name="include-markdown_trailing-newlines"
-href="#include-markdown_trailing-newlines">#</a> **trailing-newlines**
-(*true*): Cuando esta opción está deshabilitada, los saltos de línea finales que
-se encuentran en el contenido a incluir se eliminan. Los valores posibles son
-`true` y `false`.
-- <a name="include-markdown_recursive" href="#include-markdown_recursive">#</a>
-**recursive** (*true*): Cuando esta opción está deshabilitada, los archivos
-incluidos no son procesados para incluir de forma recursiva. Los valores
-posibles son `true` y `false`.
-- <a name="include-markdown_order" href="#include-markdown_order">#</a> **order**
-(*'alpha-path'*): Define el orden en el que múltiples archivos son incluidos
-al usar globs. Los valores posibles son:
+- <a name="include_start" href="#include_start">#</a> **start**: Delimitador que
+marca el comienzo del contenido a incluir.
+- <a name="include_end" href="#include_end">#</a> **end**: Delimitador que marca
+el final del contenido a incluir.
+- <a name="include_preserve-includer-indent"
+href="#include_preserve-includer-indent">#</a> **preserve-includer-indent**
+(*true*): Cuando esta opción está habilitada (por defecto), cada línea del
+contenido a incluir es indentada con el mismo número de espacios usados para
+indentar la plantilla `{% %}` incluidora. Los valores posibles son `true` y
+`false`.
+- <a name="include_dedent" href="#include_dedent">#</a> **dedent** (*false*): Si
+se habilita, el contenido incluido será dedentado.
+- <a name="include_exclude" href="#include_exclude">#</a> **exclude**: Especifica
+mediante un glob los archivos que deben ser ignorados. Sólo es útil pasando
+globs para incluir múltiples archivos.
+- <a name="include_trailing-newlines" href="#include_trailing-newlines">#</a>
+**trailing-newlines** (*true*): Cuando esta opción está deshabilitada, los
+saltos de línea finales que se encuentran en el contenido a incluir se eliminan.
+Los valores posibles son `true` y `false`.
+- <a name="include_recursive" href="#include_recursive">#</a> **recursive**
+(*true*): Cuando esta opción está deshabilitada, los archivos incluidos no son
+procesados para incluir de forma recursiva. Los valores posibles son `true` y
+`false`.
+- <a name="include_order" href="#include_order">#</a> **order** (*'alpha-path'*):
+Define el orden en el que múltiples archivos son incluidos al usar globs. Los
+posibles valores son:
    - Una combinación de un tipo de orden opcional y un sujeto de ordenación opcional
 separados por un guion (`-`), y opcionalmente precedidos por un guion (`-`)
 para indicar orden ascendente. Si no se especifica un tipo de orden o un sujeto
@@ -206,9 +202,15 @@ cambio de metadatos en sistemas Unix).
 no especificar ningún orden y confiar en el orden por defecto del sistema de
 archivos. Esto puede ser diferente entre sistemas operativos, así que úsalo con
 precaución.
-- <a name="include-markdown_encoding" href="#include-markdown_encoding">#</a>
-**encoding** (*'utf-8'*): Especifica la codificación del archivo incluído. Si
-no se define, se usará `'utf-8'`.
+- <a name="include_encoding" href="#include_encoding">#</a> **encoding**
+(*'utf-8'*): Especifica la codificación del archivo incluído. Si no se define,
+se usará `'utf-8'`.
+
+#### **`include-markdown`**
+
+Incluye contenido de archivos Markdown, opcionalmente usando dos delimitadores
+para filtrar el contenido a incluir.
+
 - <a name="include-markdown_rewrite-relative-urls"
 href="#include-markdown_rewrite-relative-urls">#</a> **rewrite-relative-urls**
 (*true*): Cuando esta opción está habilitada (por defecto), los enlaces e
@@ -284,62 +286,6 @@ especificado. Sólo soporta la sintaxis de encabezado de caracteres de hash
 #### **`include`**
 
 Incluye el contenido de un archivo o un grupo de archivos.
-
-- <a name="include_start" href="#include_start">#</a> **start**: Delimitador que
-marca el comienzo del contenido a incluir.
-- <a name="include_end" href="#include_end">#</a> **end**: Delimitador que marca
-el final del contenido a incluir.
-- <a name="include_preserve-includer-indent"
-href="#include_preserve-includer-indent">#</a> **preserve-includer-indent**
-(*true*): Cuando esta opción está habilitada (por defecto), cada línea del
-contenido a incluir es indentada con el mismo número de espacios usados para
-indentar la plantilla `{% %}` incluidora. Los valores posibles son `true` y
-`false`.
-- <a name="include_dedent" href="#include_dedent">#</a> **dedent** (*false*): Si
-se habilita, el contenido incluido será dedentado.
-- <a name="include_exclude" href="#include_exclude">#</a> **exclude**: Especifica
-mediante un glob los archivos que deben ser ignorados. Sólo es útil pasando
-globs para incluir múltiples archivos.
-- <a name="include_trailing-newlines" href="#include_trailing-newlines">#</a>
-**trailing-newlines** (*true*): Cuando esta opción está deshabilitada, los
-saltos de línea finales que se encuentran en el contenido a incluir se eliminan.
-Los valores posibles son `true` y `false`.
-- <a name="include_recursive" href="#include_recursive">#</a> **recursive**
-(*true*): Cuando esta opción está deshabilitada, los archivos incluidos no son
-procesados para incluir de forma recursiva. Los valores posibles son `true` y
-`false`.
-- <a name="include_order" href="#include_order">#</a> **order** (*'alpha-path'*):
-Define el orden en el que múltiples archivos son incluidos al usar globs. Los
-posibles valores son:
-   - Una combinación de un tipo de orden opcional y un sujeto de ordenación opcional
-separados por un guion (`-`), y opcionalmente precedidos por un guion (`-`)
-para indicar orden ascendente. Si no se especifica un tipo de orden o un sujeto
-de ordenación, se usan los valores por defecto. Sigue la forma:
-`[-]<tipo_de_orden>-<sujeto_de_ordenación>` donde:
-      - **Tipo de orden**:
-         - `'alpha'` (por defecto): Orden alfabético.
-         - `'natural'`: Orden natural, de modo que por ejemplo `file2.md` va antes
-`file10.md`.
-      - **Sujeto de ordenación**:
-         - `'path'` (por defecto): Ordena por la ruta completa del archivo.
-         - `'name'`: Ordena sólo por el nombre del archivo.
-         - `'extension'`: Ordena por la extensión del archivo.
-   - Una combinación de un guion opcional al principio para denotar orden ascendente
-y uno de los siguientes valores en la forma `[-]<valor>` donde `<valor>` es
-uno de los siguientes:
-      - `'size'`: Ordena por el tamaño del archivo.
-      - `'mtime'`: Ordena por la hora de modificación del archivo.
-      - `'ctime'`: Ordena por la hora de creación del archivo (o la última hora de
-cambio de metadatos en sistemas Unix).
-      - `'atime'`: Ordena por la última hora de acceso al archivo.
-   - `'random'`: Orden aleatorio.
-   - `'system'`: Orden proporcionado por el sistema operativo. Esto es lo mismo que
-no especificar ningún orden y confiar en el orden por defecto del sistema de
-archivos. Esto puede ser diferente entre sistemas operativos, así que úsalo con
-precaución.
-- <a name="include_encoding" href="#include_encoding">#</a> **encoding**
-(*'utf-8'*): Especifica la codificación del archivo incluído. Si no se define,
-se usará `'utf-8'`.
 
 ##### Ejemplos
 

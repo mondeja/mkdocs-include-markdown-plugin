@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.6.2
+    rev: v3.7.4
     hooks:
       - id: prettier
         types_or:
@@ -37,14 +37,14 @@ repos:
       - id: end-of-file-fixer
         name: end-of-file-fixer
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.33.3
+    rev: 0.36.0
     hooks:
       - id: check-github-workflows
         name: check-github-workflows
         args:
           - --verbose
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.10
+    rev: v0.14.10
     hooks:
       - id: ruff
         args:
@@ -78,19 +78,19 @@ repos:
     hooks:
       - id: yamllint
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.18.1
+    rev: v0.20.0
     hooks:
       - id: markdownlint-cli2
         name: markdownlint-readme
         files: ^README.md
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: 3.4.0
+    rev: 3.6.0
     hooks:
       - id: editorconfig-checker
         name: editorconfig-checker
         alias: ec
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.17.1
+    rev: v1.19.1
     hooks:
       - id: mypy
         name: mypy-mkdocs-1.5.0
@@ -100,7 +100,7 @@ repos:
           - platformdirs
           - wcmatch
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.17.1
+    rev: v1.19.1
     hooks:
       - id: mypy
         name: mypy-mkdocs-1.6.0
