@@ -197,11 +197,11 @@ uno de los siguientes:
       - `'ctime'`: Ordena por la hora de creación del archivo (o la última hora de
 cambio de metadatos en sistemas Unix).
       - `'atime'`: Ordena por la última hora de acceso al archivo.
-   - `'random'`: Orden aleatorio.
-   - `'system'`: Orden proporcionado por el sistema operativo. Esto es lo mismo que
+      - `'system'`: Orden proporcionado por el sistema operativo. Esto es lo mismo que
 no especificar ningún orden y confiar en el orden por defecto del sistema de
 archivos. Esto puede ser diferente entre sistemas operativos, así que úsalo con
 precaución.
+   - `'random'`: Orden aleatorio.
 - <a name="include_encoding" href="#include_encoding">#</a> **encoding**
 (*'utf-8'*): Especifica la codificación del archivo incluído. Si no se define,
 se usará `'utf-8'`.

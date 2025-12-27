@@ -208,10 +208,10 @@ sequences like `\n` to match against newlines.
     - `'ctime'`: Order by file creation time (or the last metadata change time
       on Unix systems).
     - `'atime'`: Order by file last access time.
+    - `'system'`: Order provided by the operating system. This is the same as not
+      specifying any order and relying on the default order of the filesystem.
+      This may be different between operating systems, so use it with care.
   - `'random'`: Random order.
-  - `'system'`: Order provided by the operating system. This is the same as not
-    specifying any order and relying on the default order of the filesystem. This
-    may be different between operating systems, so use it with care.
 - <a name="include_encoding" href="#include_encoding">#</a>
   **encoding** (_'utf-8'_): Specify the encoding of the included file.
   If not defined `'utf-8'` will be used.
