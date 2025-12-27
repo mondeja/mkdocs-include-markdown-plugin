@@ -197,11 +197,11 @@ ascendant et l'une des valeurs suivantes sous la forme `[-]<value>` où
       - `'ctime'`: Ordre par heure de création du fichier (ou la dernière heure de
 changement de métadonnées sur les systèmes Unix).
       - `'atime'`: Ordre par dernière heure d'accès au fichier.
-   - `'random'`: Ordre aléatoire.
-   - `'system'`: Ordre fourni par le système d'exploitation. C'est la même chose que
+      - `'system'`: Ordre fourni par le système d'exploitation. C'est la même chose que
 de ne spécifier aucun ordre et de se fier à l'ordre par défaut du système de
 fichiers. Cela peut être différent entre les systèmes d'exploitation, alors
 utilisez-le avec précaution.
+   - `'random'`: Ordre aléatoire.
 - <a name="include_encoding" href="#include_encoding">#</a> **encoding**
 (*'utf-8'*): Spécifiez l'encodage du fichier inclus. S'il n'est pas défini,
 `'utf-8'` sera utilisé.
