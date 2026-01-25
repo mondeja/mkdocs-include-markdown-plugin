@@ -545,7 +545,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
         # but they have been specified, so the warning(s) must be raised
         expected_but_any_found = [start is not None, end is not None]
 
-        text_to_include = ''
+        text_to_include_parts = []
         for file_path in file_paths_to_include:
             if process.is_url(filename):
                 new_text_to_include = process.read_url(
@@ -621,11 +621,10 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 new_text_to_include
             ):
                 lines = new_text_to_include.splitlines(keepends=True)
-                new_text_to_include = lines[0]
+                indented_lines = [lines[0]]
                 for i in range(1, len(lines)):
-                    new_text_to_include += (
-                        filled_includer_indent + lines[i]
-                    )
+                    indented_lines.append(filled_includer_indent + lines[i])
+                new_text_to_include = "".join(indented_lines)
 
             if offset:
                 new_text_to_include = process.increase_headings_offset(
@@ -633,7 +632,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     offset=offset + cumulative_heading_offset,
                 )
 
-            text_to_include += new_text_to_include
+            text_to_include_parts.append(new_text_to_include)
+
+        text_to_include = "".join(text_to_include_parts)
 
         # warn if expected start or ends haven't been found in included content
         for i, delimiter_name in enumerate(['start', 'end']):

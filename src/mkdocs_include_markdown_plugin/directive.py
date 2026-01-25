@@ -140,7 +140,7 @@ def _maybe_arguments_iter(arguments_string: str) -> Iterable[str]:
     inside_string = False
     escaping = False
     opening_argument = False  # whether we are at the beginning of an argument
-    current_value = ''
+    current_value = []
 
     for c in arguments_string:
         if inside_string:
@@ -153,24 +153,25 @@ def _maybe_arguments_iter(arguments_string: str) -> Iterable[str]:
             else:
                 escaping = False
         elif c == '=':
+            current_value_str = "".join(current_value)
             new_current_value = ''
-            for ch in reversed(current_value):
+            for ch in reversed(current_value_str):
                 if ch in string.whitespace:
-                    current_value = new_current_value[::-1]
+                    current_value_str = new_current_value[::-1]
                     break
                 new_current_value += ch
-            yield current_value
-            current_value = ''
+            yield current_value_str
+            current_value = []
             opening_argument = True
         elif opening_argument:
             opening_argument = False
             if c in ('"', "'"):
                 current_string_opening = c
                 inside_string = True
-                current_value += c
-                current_value += c
+                current_value.append(c)
+                current_value.append(c)
         else:
-            current_value += c
+            current_value.append(c)
 
 
 def warn_invalid_directive_arguments(
