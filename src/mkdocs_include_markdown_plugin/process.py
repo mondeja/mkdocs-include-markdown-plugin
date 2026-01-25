@@ -174,10 +174,12 @@ def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
     _maybe_icodeblock_lines: list[str] = []
     _previous_line_was_empty = False
 
-    lines, current_paragraph = ([], '')
+    lines = []
+    current_paragraph_lines: list[str] = []
 
     def process_current_paragraph() -> None:
-        lines.extend(func(current_paragraph).splitlines(keepends=True))
+        lines.extend(func(''.join(current_paragraph_lines),
+                          ).splitlines(keepends=True))
 
     # The next implementation takes into account that indented code
     # blocks must be surrounded by newlines as per the CommonMark
@@ -191,25 +193,24 @@ def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
             if lstripped_line.startswith(('```', '~~~')):
                 _current_fcodeblock_delimiter = lstripped_line[:3]
                 process_current_paragraph()
-                current_paragraph = ''
+                current_paragraph_lines = []
                 lines.append(line)
             elif line.startswith('    '):
                 if not lstripped_line or _maybe_icodeblock_lines:
                     # maybe enter indented codeblock
                     _maybe_icodeblock_lines.append(line)
                 else:
-                    current_paragraph += line
+                    current_paragraph_lines.append(line)
             elif _maybe_icodeblock_lines:
                 process_current_paragraph()
-                current_paragraph = ''
+                current_paragraph_lines = []
                 if not _previous_line_was_empty:
                     # wasn't an indented code block
-                    for line_ in _maybe_icodeblock_lines:
-                        current_paragraph += line_
+                    current_paragraph_lines.extend(_maybe_icodeblock_lines)
                     _maybe_icodeblock_lines = []
-                    current_paragraph += line
+                    current_paragraph_lines.append(line)
                     process_current_paragraph()
-                    current_paragraph = ''
+                    current_paragraph_lines = []
                 else:
                     # exit indented codeblock
                     for line_ in _maybe_icodeblock_lines:
@@ -217,7 +218,7 @@ def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
                     _maybe_icodeblock_lines = []
                     lines.append(line)
             else:
-                current_paragraph += line
+                current_paragraph_lines.append(line)
             _previous_line_was_empty = not lstripped_line
         else:
             lines.append(line)
@@ -230,14 +231,13 @@ def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
         if not _previous_line_was_empty:
             # at EOF
             process_current_paragraph()
-            current_paragraph = ''
-            for line_ in _maybe_icodeblock_lines:
-                current_paragraph += line_
+            current_paragraph_lines = []
+            current_paragraph_lines.extend(_maybe_icodeblock_lines)
             process_current_paragraph()
-            current_paragraph = ''
+            current_paragraph_lines = []
         else:
             process_current_paragraph()
-            current_paragraph = ''
+            current_paragraph_lines = []
             for line_ in _maybe_icodeblock_lines:
                 lines.append(line_)
     else:
