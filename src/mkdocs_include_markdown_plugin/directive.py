@@ -140,7 +140,7 @@ def _maybe_arguments_iter(arguments_string: str) -> Iterable[str]:
     inside_string = False
     escaping = False
     opening_argument = False  # whether we are at the beginning of an argument
-    current_value = []
+    current_value: list[str] = []
 
     for c in arguments_string:
         if inside_string:

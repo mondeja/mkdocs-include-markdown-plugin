@@ -175,7 +175,7 @@ def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
     _previous_line_was_empty = False
 
     lines = []
-    current_paragraph_lines = []
+    current_paragraph_lines: list[str] = []
 
     def process_current_paragraph() -> None:
         lines.extend(func("".join(current_paragraph_lines)).splitlines(keepends=True))
