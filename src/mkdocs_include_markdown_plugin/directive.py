@@ -153,7 +153,7 @@ def _maybe_arguments_iter(arguments_string: str) -> Iterable[str]:
             else:
                 escaping = False
         elif c == '=':
-            current_value_str = "".join(current_value)
+            current_value_str = ''.join(current_value)
             new_current_value = ''
             for ch in reversed(current_value_str):
                 if ch in string.whitespace:

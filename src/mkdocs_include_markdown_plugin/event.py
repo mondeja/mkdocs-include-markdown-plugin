@@ -624,7 +624,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                 indented_lines = [lines[0]]
                 for i in range(1, len(lines)):
                     indented_lines.append(filled_includer_indent + lines[i])
-                new_text_to_include = "".join(indented_lines)
+                new_text_to_include = ''.join(indented_lines)
 
             if offset:
                 new_text_to_include = process.increase_headings_offset(
@@ -634,7 +634,7 @@ def get_file_content(  # noqa: PLR0913, PLR0915
 
             text_to_include_parts.append(new_text_to_include)
 
-        text_to_include = "".join(text_to_include_parts)
+        text_to_include = ''.join(text_to_include_parts)
 
         # warn if expected start or ends haven't been found in included content
         for i, delimiter_name in enumerate(['start', 'end']):
