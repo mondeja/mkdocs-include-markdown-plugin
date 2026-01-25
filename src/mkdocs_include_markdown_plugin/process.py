@@ -178,7 +178,8 @@ def transform_p_by_p_skipping_codeblocks(  # noqa: PLR0912, PLR0915
     current_paragraph_lines: list[str] = []
 
     def process_current_paragraph() -> None:
-        lines.extend(func(''.join(current_paragraph_lines)).splitlines(keepends=True))
+        lines.extend(func(''.join(current_paragraph_lines),
+                          ).splitlines(keepends=True))
 
     # The next implementation takes into account that indented code
     # blocks must be surrounded by newlines as per the CommonMark
