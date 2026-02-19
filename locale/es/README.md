@@ -229,6 +229,11 @@ especificado. Sólo soporta la sintaxis de encabezado de caracteres de hash
 (`#`). Acepta valores negativos para eliminar caracteres `#` a la izquierda.
 
 ##### Ejemplos
+```jinja
+{%
+    include-markdown "https://myurl.com/folder1/folder2/file.md"
+%}
+```
 
 ```jinja
 {%

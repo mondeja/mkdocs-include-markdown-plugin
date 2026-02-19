@@ -242,6 +242,12 @@ content to include.
 
 ```jinja
 {%
+    include-markdown "https://myurl.com/folder1/folder2/file.md"
+%}
+```
+
+```jinja
+{%
     include-markdown "../README.md"
     start="<!--intro-start-->"
     end="<!--intro-end-->"

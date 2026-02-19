@@ -291,6 +291,10 @@ def rewrite_relative_urls(
     ``source_path`` will still work when inserted into a file at
     ``destination_path``.
     """
+
+    if re.search(r'^https?://', source_path): # if source_path is an URL, destination_path is not relevant
+        destination_path = ''
+
     def rewrite_url(url: str) -> str:
         if is_url(url) or is_absolute_path(url) or is_anchor(url):
             return url
@@ -302,6 +306,8 @@ def rewrite_relative_urls(
 
         # ensure forward slashes are used, on Windows
         new_path = new_path.replace('\\', '/').replace('//', '/')
+        new_path = re.sub(r'^http:/', 'http://', new_path)  # fix new_path if the source is an URL
+        new_path = re.sub(r'^https:/', 'https://', new_path) # fix new_path if the source is an URL
 
         try:
             if url[-1] == '/':

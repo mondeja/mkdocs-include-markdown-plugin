@@ -229,6 +229,11 @@ que la syntaxe d'en-tête du signe dièse (`#`). Cet argument accepte les valeur
 négatives pour supprimer les caractères `#` de tête.
 
 ##### Exemples
+```jinja
+{%
+    include-markdown "https://myurl.com/folder1/folder2/file.md"
+%}
+```
 
 ```jinja
 {%

@@ -15,6 +15,20 @@ from mkdocs_include_markdown_plugin.process import (
     (
         # Markdown Relative Links
         pytest.param(
+            "Here's an image: ![link1](../vector.drawio.svg) and another image ![link2](../../image.png) to the changelog.",
+            'http://example.com/folder1/folder2/folder3/README.md',
+            'docs/nav.md',
+            "Here's an image: ![link1](http://example.com/folder1/folder2/vector.drawio.svg) and another image ![link2](http://example.com/folder1/image.png) to the changelog.",
+            id='relative-link',
+        ),
+        pytest.param(
+            "Here's an image: ![link1](../vector.drawio.svg) and another image ![link2](../../image.png) to the changelog.",
+            'https://example.com/folder1/folder2/folder3/README.md',
+            'docs/nav.md',
+            "Here's an image: ![link1](https://example.com/folder1/folder2/vector.drawio.svg) and another image ![link2](https://example.com/folder1/image.png) to the changelog.",
+            id='relative-link',
+        ),
+        pytest.param(
             "Here's a [link](CHANGELOG.md) to the changelog.",
             'README',
             'docs/nav.md',
