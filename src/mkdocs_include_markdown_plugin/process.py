@@ -550,10 +550,10 @@ def sort_paths(paths: list[str], order: OrderOption) -> list[str]:
             def key(p: str) -> str:
                 return natural_sort_key(os.path.splitext(p)[1])  # type: ignore
         elif order_by == 'name':
-            def key(p: str):
+            def key(p: str) -> tuple[str, str]:  # type: ignore
                 ext = os.path.splitext(p)[1].lower()
                 name = os.path.basename(p)
-                return (
+                return (  # type: ignore
                     ext,
                     natural_sort_key(name),
                 )
