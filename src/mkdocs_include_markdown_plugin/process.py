@@ -550,8 +550,13 @@ def sort_paths(paths: list[str], order: OrderOption) -> list[str]:
             def key(p: str) -> str:
                 return natural_sort_key(os.path.splitext(p)[1])  # type: ignore
         elif order_by == 'name':
-            def key(p: str) -> str:
-                return natural_sort_key(os.path.basename(p))  # type: ignore
+            def key(p: str):
+                ext = os.path.splitext(p)[1].lower()
+                name = os.path.basename(p)
+                return (
+                    ext,
+                    natural_sort_key(name),
+                )
         else:
             key = natural_sort_key  # type: ignore
     elif order_type == 'size':
