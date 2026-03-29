@@ -6,6 +6,7 @@ from mkdocs.exceptions import PluginError
 
 from mkdocs_include_markdown_plugin.directive import get_order_option_regex
 from mkdocs_include_markdown_plugin.event import on_page_markdown
+from mkdocs_include_markdown_plugin.process import sort_paths
 from testing_helpers import parametrize_directives, unix_only, windows_only
 
 
@@ -387,6 +388,29 @@ order='natural-extension'
     ) == 'file1.md\nfile2.md\nfile10.txt\n'
 
 
+def test_natural_order_by_extension_is_deterministic():
+    """Regression test: natural-extension must be deterministic when
+    multiple files share the same extension.
+
+    The original bug: if the filesystem returned file2.md before file1.md,
+    the stable sort kept them in that order because both had the same
+    key (.md). The result depended on the filesystem's file ordering.
+
+    The fix: use (extension, name) as a composite key to break ties.
+    """
+    # Feed paths in the "wrong" order directly to sort_paths,
+    # bypassing any filesystem/glob ordering entirely.
+    paths = ['file2.md', 'file10.txt', 'file1.md']
+
+    result = sort_paths(paths, order=(False, 'natural', 'extension'))
+    assert result == ['file1.md', 'file2.md', 'file10.txt']
+
+    # Same in reverse
+    paths = ['file2.md', 'file10.txt', 'file1.md']
+    result = sort_paths(paths, order=(True, 'natural', 'extension'))
+    assert result == ['file10.txt', 'file2.md', 'file1.md']
+
+
 @parametrize_directives
 @pytest.mark.parametrize('order_value', ('alpha-name', 'name'))
 def test_alpha_order_by_name(directive, order_value, page, tmp_path, plugin):
@@ -524,7 +548,7 @@ order='-natural-extension'
         page(tmp_path / 'includer.md'),
         tmp_path,
         plugin,
-    ) == 'file10.txt\nfile1.md\nfile2.md\n'
+    ) == 'file10.txt\nfile2.md\nfile1.md\n'
 
 
 @parametrize_directives
