@@ -396,7 +396,7 @@ def test_natural_order_by_extension_is_deterministic():
     the stable sort kept them in that order because both had the same
     key (.md). The result depended on the filesystem's file ordering.
 
-    The fix: use (extension, name) as a composite key to break ties.
+    See https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/289
     """
     # Feed paths in the "wrong" order directly to sort_paths,
     # bypassing any filesystem/glob ordering entirely.
