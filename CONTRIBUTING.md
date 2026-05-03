@@ -37,3 +37,4 @@ git push origin "v$version"
 ## Compatibility
 
 Latest version supporting Python3.7 and Mkdocs<1.4.0 is v4.0.4.
+Latest version supporting Python3.9 is v7.2.2.

@@ -49,11 +49,11 @@ jobs:
       fail-fast: false
       matrix:
         py:
-          - 3.9
           - "3.10"
           - "3.11"
           - "3.12"
           - "3.13"
+          - "3.14"
         platform:
           - ubuntu-latest
           - macos-latest
@@ -75,9 +75,6 @@ jobs:
               file_handler.write(env)
       - name: Install dependencies
         run: pip install -U hatch
-      - name: Patch virtualenv on Python3.9
-        if: matrix.py == '3.9'
-        run: pip install --force-reinstall "virtualenv<21"
       - name: Run tests
         run: |
           hatch run +py=${{ steps.env.outputs.py }} tests:all
