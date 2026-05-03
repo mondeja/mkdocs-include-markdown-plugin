@@ -93,19 +93,19 @@ repos:
     rev: v1.19.1
     hooks:
       - id: mypy
-        name: mypy-mkdocs-1.5.0
+        name: mypy-mkdocs-ng-1.7.0
         files: ^src
         additional_dependencies:
-          - mkdocs>=1.5.0,<1.6.0
+          - mkdocs-ng>=1.7.0,<1.7.1
           - platformdirs
           - wcmatch
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.19.1
     hooks:
       - id: mypy
-        name: mypy-mkdocs-1.6.0
+        name: mypy-mkdocs-ng-1.7.2
         files: ^src
         additional_dependencies:
-          - mkdocs>=1.6.0,<1.7.0
+          - mkdocs-ng>=1.7.2,<1.8.0
           - platformdirs
           - wcmatch

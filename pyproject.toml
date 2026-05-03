@@ -23,7 +23,7 @@ classifiers = [
 ]
 keywords = ["markdown", "mkdocs", "includer", "plugin"]
 dependencies = [
-  "mkdocs>=1.4",
+  "mkdocs-ng>=1.7.0",
   "wcmatch"
 ]
 
@@ -74,16 +74,14 @@ dependencies = ["pytest~=7.0", "coverage~=6.4", "covdefaults"]
 
 [[tool.hatch.envs.tests.matrix]]
 python = ["py39", "py310", "py311", "py312", "py313"]
-mkdocs = ["1.4.0", "1.4.3", "1.5.0", "1.5.3", "1.6.0"]
+mkdocs = ["1.7.0", "1.7.1", "1.7.2"]
 cache = ["yes", "no"]
 
 [tool.hatch.envs.tests.overrides]
 matrix.mkdocs.dependencies = [
-  { value = "mkdocs==1.4.0", if = ["1.4.0"] },
-  { value = "mkdocs==1.4.3", if = ["1.4.3"] },
-  { value = "mkdocs==1.5.0", if = ["1.5.0"] },
-  { value = "mkdocs==1.5.3", if = ["1.5.3"] },
-  { value = "mkdocs==1.6.0", if = ["1.6.0"] },
+  { value = "mkdocs-ng==1.7.0", if = ["1.7.0"] },
+  { value = "mkdocs-ng==1.7.1", if = ["1.7.1"] },
+  { value = "mkdocs-ng==1.7.2", if = ["1.7.2"] },
 ]
 matrix.cache.dependencies = [{ value = "platformdirs", if = ["yes"] }]
 
