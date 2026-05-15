@@ -125,6 +125,16 @@ plugins:
         include: replace
 ```
 
+#### `include_from_url`
+
+Permite incluir contenido desde URLs.
+
+```yaml
+plugins:
+  - include-markdown:
+      include_from_url: true
+```
+
 ### Referencia
 
 Este plugin provee dos directivas, una para incluir archivos Markdown y otra para

@@ -142,6 +142,18 @@ plugins:
         include: replace
 ```
 
+<!-- mdpo-disable-next-line -->
+
+#### `include_from_url`
+
+Allow including content from URLs.
+
+```yaml
+plugins:
+  - include-markdown:
+      include_from_url: true
+```
+
 ### Reference
 
 This plugin provides two directives, one to include Markdown files and another

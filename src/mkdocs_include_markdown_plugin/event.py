@@ -55,6 +55,7 @@ if TYPE_CHECKING:  # pragma: no cover
 @dataclass
 class Settings:  # noqa: D101
     exclude: list[str] | None
+    include_from_url: bool = False
 
 
 def get_file_content(  # noqa: PLR0913, PLR0915
@@ -169,14 +170,25 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             order,
         )
 
-        if is_url and 'order' in used_arguments:  # pragma: no cover
-            location = process.file_lineno_message(
-                page_src_path, docs_dir, directive_lineno(),
-            )
-            logger.warning(
-                f"Ignoring 'order' argument of 'include' directive"
-                f" at {location} because the included path is a URL",
-            )
+        if is_url:
+            if 'order' in used_arguments:  # pragma: no cover
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                logger.warning(
+                    f"Ignoring 'order' argument of 'include' directive"
+                    f" at {location} because the included path is a URL",
+                )
+
+            if not settings.include_from_url:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    f'Including from URL at {location} is not allowed because'
+                    ' include-markdown is configured with include_from_url set'
+                    ' to false',
+                )
 
         if not file_paths_to_include:
             location = process.file_lineno_message(
@@ -414,14 +426,25 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             order,
         )
 
-        if is_url and 'order' in used_arguments:  # pragma: no cover
-            location = process.file_lineno_message(
-                page_src_path, docs_dir, directive_lineno(),
-            )
-            logger.warning(
-                f"Ignoring 'order' argument of 'include-markdown' directive"
-                f" at {location} because the included path is a URL",
-            )
+        if is_url:
+            if 'order' in used_arguments:  # pragma: no cover
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                logger.warning(
+                    f"Ignoring 'order' argument of 'include-markdown' directive"
+                    f" at {location} because the included path is a URL",
+                )
+
+            if not settings.include_from_url:
+                location = process.file_lineno_message(
+                    page_src_path, docs_dir, directive_lineno(),
+                )
+                raise PluginError(
+                    f'Including from URL at {location} is not allowed because'
+                    ' include-markdown is configured with include_from_url set'
+                    ' to false',
+                )
 
         if not file_paths_to_include:
             location = process.file_lineno_message(
@@ -713,6 +736,7 @@ def on_page_markdown(
         },
         Settings(
             exclude=config.exclude,
+            include_from_url=config.include_from_url,
         ),
         files_watcher=plugin._files_watcher,
         http_cache=plugin._cache or http_cache,

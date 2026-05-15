@@ -35,3 +35,4 @@ class PluginConfig(Config):  # noqa: D101
             'include-markdown': 'include-markdown',
         },
     )
+    include_from_url = MkType(bool, default=True)
