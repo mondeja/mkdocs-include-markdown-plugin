@@ -39,5 +39,5 @@ class FakeConfig:
 def mock_read_url(monkeypatch, content):
     monkeypatch.setattr(
         'mkdocs_include_markdown_plugin.process.read_url',
-        lambda url, http_cache, encoding='utf-8': content,
+        lambda: content,
     )
