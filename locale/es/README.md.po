@@ -480,3 +480,6 @@ msgstr ""
 
 msgid "Common arguments"
 msgstr "Argumentos comunes"
+
+msgid "Allow including content from URLs."
+msgstr "Permite incluir contenido desde URLs."

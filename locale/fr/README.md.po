@@ -478,3 +478,6 @@ msgstr ""
 
 msgid "Common arguments"
 msgstr "Arguments communs"
+
+msgid "Allow including content from URLs."
+msgstr "Autoriser l'inclusion de contenu provenant d'URL."

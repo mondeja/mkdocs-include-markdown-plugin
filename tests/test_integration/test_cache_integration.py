@@ -4,7 +4,6 @@ import pytest
 from mkdocs.exceptions import PluginError
 
 import mkdocs_include_markdown_plugin.cache
-from mkdocs_include_markdown_plugin import IncludeMarkdownPlugin
 from mkdocs_include_markdown_plugin.cache import (
     Cache,
     get_cache_directory,
@@ -12,7 +11,7 @@ from mkdocs_include_markdown_plugin.cache import (
     is_platformdirs_installed,
 )
 from mkdocs_include_markdown_plugin.event import on_page_markdown
-from testing_helpers import FakeConfig, parametrize_directives
+from testing_helpers import parametrize_directives
 
 
 @pytest.mark.parametrize(
@@ -80,14 +79,14 @@ def test_page_included_by_url_is_cached(
     os.remove(file_path)
 
 
-def test_cache_setting_when_not_available_raises_error(monkeypatch):
+def test_cache_setting_when_not_available_raises_error(plugin, monkeypatch):
     monkeypatch.setattr(
         mkdocs_include_markdown_plugin.cache,
         'is_platformdirs_installed',
         lambda: False,
     )
-    plugin = IncludeMarkdownPlugin()
-    plugin.config = FakeConfig(cache=600, cache_dir='')
+    monkeypatch.setattr(plugin.config, 'cache', 600)
+    monkeypatch.setattr(plugin.config, 'cache_dir', '')
     with pytest.raises(PluginError) as exc:
         plugin.on_config({})
     assert (
@@ -96,12 +95,12 @@ def test_cache_setting_when_not_available_raises_error(monkeypatch):
     ) in str(exc.value)
 
 
-def test_cache_setting_available_with_cache_dir(monkeypatch):
+def test_cache_setting_available_with_cache_dir(plugin, monkeypatch):
     monkeypatch.setattr(
         mkdocs_include_markdown_plugin.cache,
         'is_platformdirs_installed',
         lambda: False,
     )
-    plugin = IncludeMarkdownPlugin()
-    plugin.config = FakeConfig(cache=600, cache_dir='foo')
+    monkeypatch.setattr(plugin.config, 'cache', 600)
+    monkeypatch.setattr(plugin.config, 'cache_dir', 'foo')
     plugin.on_config({})
