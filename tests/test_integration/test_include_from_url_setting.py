@@ -3,7 +3,6 @@
 import pytest
 from mkdocs.exceptions import PluginError
 
-import mkdocs_include_markdown_plugin.process
 from mkdocs_include_markdown_plugin.event import on_page_markdown
 from testing_helpers import mock_read_url, parametrize_directives
 

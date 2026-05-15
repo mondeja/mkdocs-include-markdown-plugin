@@ -185,9 +185,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     page_src_path, docs_dir, directive_lineno(),
                 )
                 raise PluginError(
-                    f"Including from URL at {location} is not allowed because"
-                    " include-markdown is configured with include_from_url set"
-                    " to false",
+                    f'Including from URL at {location} is not allowed because'
+                    ' include-markdown is configured with include_from_url set'
+                    ' to false',
                 )
 
         if not file_paths_to_include:
@@ -441,9 +441,9 @@ def get_file_content(  # noqa: PLR0913, PLR0915
                     page_src_path, docs_dir, directive_lineno(),
                 )
                 raise PluginError(
-                    f"Including from URL at {location} is not allowed because"
-                    " include-markdown is configured with include_from_url set"
-                    " to false",
+                    f'Including from URL at {location} is not allowed because'
+                    ' include-markdown is configured with include_from_url set'
+                    ' to false',
                 )
 
         if not file_paths_to_include:
