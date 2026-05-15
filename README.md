@@ -61,6 +61,7 @@ plugins:
       start: <!--start-->
       end: <!--end-->
       recursive: true
+      order: alpha-path
 ```
 
 #### `opening_tag` and `closing_tag`
