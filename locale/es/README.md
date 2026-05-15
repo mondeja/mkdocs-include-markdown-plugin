@@ -50,6 +50,7 @@ plugins:
       start: <!--start-->
       end: <!--end-->
       recursive: true
+      order: alpha-path
 ```
 
 #### `opening_tag` y `closing_tag`
