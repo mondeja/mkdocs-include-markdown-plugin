@@ -9,6 +9,7 @@ import re
 import stat
 from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING
+from urllib.parse import urljoin
 
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -291,8 +292,19 @@ def rewrite_relative_urls(
     ``source_path`` will still work when inserted into a file at
     ``destination_path``.
     """
+    source_is_url = is_url(source_path)
+
     def rewrite_url(url: str) -> str:
-        if is_url(url) or is_absolute_path(url) or is_anchor(url):
+        if is_anchor(url):
+            return url
+
+        if source_is_url:
+            # `source_path` is a remote URL, so relative and
+            # root-relative references must resolve against it rather
+            # than against the local `destination_path`.
+            return url if is_url(url) else urljoin(source_path, url)
+
+        if is_url(url) or is_absolute_path(url):
             return url
 
         new_path = os.path.relpath(
