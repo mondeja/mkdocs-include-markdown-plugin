@@ -299,9 +299,6 @@ def rewrite_relative_urls(
             return url
 
         if source_is_url:
-            # `source_path` is a remote URL, so relative and
-            # root-relative references must resolve against it rather
-            # than against the local `destination_path`.
             return url if is_url(url) else urljoin(source_path, url)
 
         if is_url(url) or is_absolute_path(url):
