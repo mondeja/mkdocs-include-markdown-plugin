@@ -371,6 +371,53 @@ const auto lambda = []() { .... };
             'This is a link to an [internal anchor](#internal-anchor).',
             id='internal-anchor',
         ),
+        # Remote source (content included from a URL): relative and
+        # root-relative references must resolve against that URL, not
+        # against the local destination file.
+        # https://github.com/mondeja/mkdocs-include-markdown-plugin/issues/302
+        pytest.param(
+            "Here's a diagram: ![diagram](assets/diagram.png)",
+            'https://raw.githubusercontent.com/user/repo/main/README.md',
+            'docs/home.md',
+            (
+                "Here's a diagram: ![diagram]("
+                'https://raw.githubusercontent.com/user/repo/main'
+                '/assets/diagram.png)'
+            ),
+            id='image-remote-source',
+        ),
+        pytest.param(
+            '[link](../CHANGELOG.md)',
+            'https://raw.githubusercontent.com/user/repo/main/docs/nav.md',
+            'docs/home.md',
+            (
+                '[link]('
+                'https://raw.githubusercontent.com/user/repo/main'
+                '/CHANGELOG.md)'
+            ),
+            id='relative-link-up-remote-source',
+        ),
+        pytest.param(
+            '[abs](/images/diagram.png)',
+            'https://raw.githubusercontent.com/user/repo/main/README.md',
+            'docs/home.md',
+            '[abs](https://raw.githubusercontent.com/images/diagram.png)',
+            id='root-relative-remote-source',
+        ),
+        pytest.param(
+            '[ext](https://example.com/index.html)',
+            'https://raw.githubusercontent.com/user/repo/main/README.md',
+            'docs/home.md',
+            '[ext](https://example.com/index.html)',
+            id='external-link-remote-source-unchanged',
+        ),
+        pytest.param(
+            'This is a link to an [internal anchor](#internal-anchor).',
+            'https://raw.githubusercontent.com/user/repo/main/README.md',
+            'docs/home.md',
+            'This is a link to an [internal anchor](#internal-anchor).',
+            id='internal-anchor-remote-source',
+        ),
     ),
 )
 def test_rewrite_relative_urls(
