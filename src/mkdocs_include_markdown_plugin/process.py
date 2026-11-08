@@ -11,6 +11,8 @@ from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
+from mkdocs.utils.meta import YAML_RE, get_data
+
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any
@@ -479,6 +481,17 @@ def increase_headings_offset(markdown: str, offset: int = 0) -> str:
         _transform_positive_offset_func_factory(offset) if offset > 0
         else _transform_negative_offset_func_factory(offset),
     )
+
+
+def remove_yaml_front_matter(markdown: str) -> str:
+    """Removes the YAML front matter from the start of a Markdown content.
+
+    The front matter is detected the same way that MkDocs does it for pages,
+    so it is only removed if it is a valid YAML mapping.
+    """
+    if YAML_RE.match(markdown):
+        return get_data(markdown)[0]
+    return markdown
 
 
 def rstrip_trailing_newlines(content: str) -> str:

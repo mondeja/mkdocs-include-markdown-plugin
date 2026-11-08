@@ -37,6 +37,13 @@ msgstr ""
 "Inclut contenu des Markdown fichiers, en utilisant éventuellement deux "
 "délimiteurs pour filtrer le contenu à inclure."
 
+msgid ""
+"The YAML front matter at the beginning of the included files is skipped, "
+"unless a **start** delimiter is defined."
+msgstr ""
+"Le front matter YAML au début des fichiers inclus est ignoré, sauf si un "
+"délimiteur **start** est défini."
+
 msgid "Includes the content of a file or a group of files."
 msgstr "Inclus le contenu d'un fichier ou d'un groupe de fichiers."
 

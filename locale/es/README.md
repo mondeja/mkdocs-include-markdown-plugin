@@ -222,6 +222,9 @@ se usará `'utf-8'`.
 Incluye contenido de archivos Markdown, opcionalmente usando dos delimitadores
 para filtrar el contenido a incluir.
 
+Se omite el front matter YAML al comienzo de los archivos incluidos, a menos que
+se defina un delimitador **start**.
+
 - <a name="include-markdown_rewrite-relative-urls"
 href="#include-markdown_rewrite-relative-urls">#</a> **rewrite-relative-urls**
 (*true*): Cuando esta opción está habilitada (por defecto), los enlaces e

@@ -236,6 +236,9 @@ sequences like `\n` to match against newlines.
 Includes Markdown files content, optionally using two delimiters to filter the
 content to include.
 
+The YAML front matter at the beginning of the included files is skipped,
+unless a **start** delimiter is defined.
+
 - <a name="include-markdown_rewrite-relative-urls" href="#include-markdown_rewrite-relative-urls">#</a>
   **rewrite-relative-urls** (_true_): When this option is enabled (default),
   Markdown links and images in the content that are specified by a relative URL

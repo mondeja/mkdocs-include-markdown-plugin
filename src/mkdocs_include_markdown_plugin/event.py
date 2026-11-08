@@ -577,6 +577,13 @@ def get_file_content(  # noqa: PLR0913, PLR0915
             else:
                 new_text_to_include = process.read_file(file_path, encoding)
 
+            # YAML front matter of the included file is metadata of that file,
+            # not content, unless explicitly included using a start delimiter
+            if not start:
+                new_text_to_include = process.remove_yaml_front_matter(
+                    new_text_to_include,
+                )
+
             if start or end:
                 new_text_to_include, *expected_not_found = (
                     process.filter_inclusions(
