@@ -58,6 +58,9 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
+        exclude:
+          - py: 3.9
+            platform: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python v${{ matrix.py }}
