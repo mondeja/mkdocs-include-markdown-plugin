@@ -222,6 +222,9 @@ utilisez-le avec précaution.
 Inclut contenu des Markdown fichiers, en utilisant éventuellement deux
 délimiteurs pour filtrer le contenu à inclure.
 
+Le front matter YAML au début des fichiers inclus est ignoré, sauf si un
+délimiteur **start** est défini.
+
 - <a name="include-markdown_rewrite-relative-urls"
 href="#include-markdown_rewrite-relative-urls">#</a> **rewrite-relative-urls**
 (*true*): Lorsque cette option est activée (par défaut), liens et images

@@ -798,6 +798,134 @@ Content to include
             [],
             id='placeholder-collision',
         ),
+
+        # YAML front matter of included files is not included
+        pytest.param(
+            '''# Header
+
+{% include-markdown "{filepath}" %}
+''',
+            '''---
+title: My Document
+tags:
+  - important
+---
+
+This is the first paragraph.
+''',
+            '''# Header
+
+This is the first paragraph.
+
+''',
+            [],
+            id='yaml-front-matter',
+        ),
+
+        # YAML front matter closed with dots
+        pytest.param(
+            '''# Header
+
+{% include-markdown "{filepath}" %}
+''',
+            '''---
+title: My Document
+...
+This is the first paragraph.
+''',
+            '''# Header
+
+This is the first paragraph.
+
+''',
+            [],
+            id='yaml-front-matter-dots',
+        ),
+
+        # YAML front matter and end delimiter
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  end="<!--end-->"
+%}
+''',
+            '''---
+title: My Document
+---
+
+Included.
+<!--end-->
+Ignored.
+''',
+            '''# Header
+
+Included.
+
+''',
+            [],
+            id='yaml-front-matter-end',
+        ),
+
+        # Leading horizontal rules are not front matter
+        pytest.param(
+            '''# Header
+
+{% include-markdown "{filepath}" %}
+''',
+            '''---
+
+Some text.
+
+---
+
+Other text.
+''',
+            '''# Header
+
+---
+
+Some text.
+
+---
+
+Other text.
+
+''',
+            [],
+            id='leading-horizontal-rules',
+        ),
+
+        # A start delimiter can be used to include the front matter
+        pytest.param(
+            '''# Header
+
+{%
+  include-markdown "{filepath}"
+  start="<!--start-->"
+%}
+''',
+            '''<!--start-->
+---
+title: My Document
+---
+
+Content.
+''',
+            '''# Header
+
+
+---
+title: My Document
+---
+
+Content.
+
+''',
+            [],
+            id='yaml-front-matter-after-start',
+        ),
     ),
 )
 def test_include_markdown(
